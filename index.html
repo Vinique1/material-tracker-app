@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBARAN GCBD Phase 2 - Material Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .modal {
+            display: none; /* Hidden by default */
+        }
+        .modal.show {
+            display: flex; /* Show when 'show' class is added */
+        }
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800">GBARAN GCBD Phase 2 - Material Tracker</h1>
+                <div id="user-info" class="flex items-center space-x-2 text-sm text-gray-500">
+                    <span id="user-id-display"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Dashboard Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Materials</p>
+                        <p id="total-materials" class="text-3xl font-bold text-gray-900">0</p>
+                    </div>
+                    <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
+                        <i data-lucide="package"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Delivered</p>
+                        <p id="total-delivered" class="text-3xl font-bold text-gray-900">0</p>
+                    </div>
+                    <div class="bg-green-100 text-green-600 p-3 rounded-full">
+                        <i data-lucide="truck"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Issued</p>
+                        <p id="total-issued" class="text-3xl font-bold text-gray-900">0</p>
+                    </div>
+                    <div class="bg-yellow-100 text-yellow-600 p-3 rounded-full">
+                        <i data-lucide="send"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials Table -->
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-gray-800">Material Inventory</h2>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" id="search-input" placeholder="Search materials..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="search" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <button id="add-material-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2">
+                            <i data-lucide="plus" class="h-5 w-5"></i>
+                            <span>Add Material</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PO Number</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivered</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issued</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="materials-tbody" class="bg-white divide-y divide-gray-200">
+                            <!-- JS will populate this -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Material Modal -->
+    <div id="material-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full items-center justify-center">
+        <div class="relative mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 id="modal-title" class="text-2xl font-semibold">Add New Material</h3>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+            <form id="material-form" class="mt-5 space-y-4">
+                <input type="hidden" id="material-id">
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="description" name="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required></textarea>
+                </div>
+                <div>
+                    <label for="po-number" class="block text-sm font-medium text-gray-700">Purchase Order (PO) Number</label>
+                    <input type="text" id="po-number" name="po-number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="expected-qty" class="block text-sm font-medium text-gray-700">Expected Quantity</label>
+                    <input type="number" id="expected-qty" name="expected-qty" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required min="0">
+                </div>
+                <div class="flex justify-end pt-4">
+                    <button type="button" id="cancel-modal-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-2 hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Save Material</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Delivery/Issuance Modal -->
+    <div id="transaction-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full items-center justify-center">
+        <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center border-b pb-3">
+                 <h3 id="transaction-modal-title" class="text-2xl font-semibold"></h3>
+                <button id="close-transaction-modal-btn" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+            <form id="transaction-form" class="mt-5 space-y-4">
+                <input type="hidden" id="transaction-material-id">
+                <input type="hidden" id="transaction-type">
+                <p id="transaction-material-desc" class="text-gray-800 font-medium"></p>
+                <div>
+                    <label for="transaction-qty" class="block text-sm font-medium text-gray-700">Quantity</label>
+                    <input type="number" id="transaction-qty" name="transaction-qty" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required min="1">
+                </div>
+                 <div>
+                    <label for="transaction-date" class="block text-sm font-medium text-gray-700">Date</label>
+                    <input type="date" id="transaction-date" name="transaction-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div class="flex justify-end pt-4">
+                    <button type="button" id="cancel-transaction-modal-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-2 hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, onSnapshot, setDoc, deleteDoc, query, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyBMA6HduuXEM-OF953tDiaXG3a8zYXnlEk",
+          authDomain: "inventory-tracker-e5b38.firebaseapp.com",
+          projectId: "inventory-tracker-e5b38",
+          storageBucket: "inventory-tracker-e5b38.firebasestorage.app",
+          messagingSenderId: "486657758459",
+          appId: "1:486657758459:web:ba935a81c82aa5c8394c5e"
+        };
+
+        // --- INITIALIZE FIREBASE ---
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let userId = null;
+        let materialsUnsubscribe = null;
+
+        // --- DOM ELEMENTS ---
+        const materialsTbody = document.getElementById('materials-tbody');
+        const addMaterialBtn = document.getElementById('add-material-btn');
+        const materialModal = document.getElementById('material-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const cancelModalBtn = document.getElementById('cancel-modal-btn');
+        const materialForm = document.getElementById('material-form');
+        const modalTitle = document.getElementById('modal-title');
+        const materialIdInput = document.getElementById('material-id');
+        const searchInput = document.getElementById('search-input');
+        
+        const transactionModal = document.getElementById('transaction-modal');
+        const transactionModalTitle = document.getElementById('transaction-modal-title');
+        const closeTransactionModalBtn = document.getElementById('close-transaction-modal-btn');
+        const cancelTransactionModalBtn = document.getElementById('cancel-transaction-modal-btn');
+        const transactionForm = document.getElementById('transaction-form');
+        const transactionMaterialIdInput = document.getElementById('transaction-material-id');
+        const transactionTypeInput = document.getElementById('transaction-type');
+        const transactionMaterialDesc = document.getElementById('transaction-material-desc');
+
+
+        // --- AUTHENTICATION ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                document.getElementById('user-id-display').textContent = `User ID: ${userId}`;
+                if (materialsUnsubscribe) materialsUnsubscribe();
+                loadMaterials();
+            } else {
+                try {
+                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Authentication failed:", error);
+                }
+            }
+        });
+
+        // --- DATA HANDLING ---
+        function getMaterialsCollection() {
+             return collection(db, `artifacts/${appId}/users/${userId}/materials`);
+        }
+
+        function loadMaterials() {
+            if (!userId) return;
+
+            const q = query(getMaterialsCollection());
+            materialsUnsubscribe = onSnapshot(q, (snapshot) => {
+                const materials = [];
+                snapshot.forEach(doc => {
+                    materials.push({ id: doc.id, ...doc.data() });
+                });
+                renderMaterials(materials);
+                updateDashboard(materials);
+            }, (error) => {
+                console.error("Error fetching materials:", error);
+            });
+        }
+        
+        function renderMaterials(materials) {
+            materialsTbody.innerHTML = '';
+             if (materials.length === 0) {
+                materialsTbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-gray-500">No materials found. Click 'Add Material' to get started.</td></tr>`;
+                return;
+            }
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredMaterials = materials.filter(material => 
+                material.description.toLowerCase().includes(searchTerm) ||
+                (material.poNumber && material.poNumber.toLowerCase().includes(searchTerm))
+            );
+
+            filteredMaterials.forEach(material => {
+                const delivered = material.delivered || 0;
+                const issued = material.issued || 0;
+                const balance = delivered - issued;
+
+                let status, statusColor;
+                if (delivered >= material.expectedQty) {
+                    status = 'Fully Delivered';
+                    statusColor = 'bg-green-100 text-green-800';
+                } else if (delivered > 0) {
+                    status = 'Partially Delivered';
+                    statusColor = 'bg-yellow-100 text-yellow-800';
+                } else {
+                    status = 'Pending Delivery';
+                    statusColor = 'bg-red-100 text-red-800';
+                }
+
+                const row = `
+                    <tr id="material-${material.id}">
+                        <td class="px-6 py-4 whitespace-pre-wrap max-w-sm">
+                            <div class="text-sm font-medium text-gray-900">${material.description}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${material.poNumber || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${material.expectedQty}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">${delivered}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600 font-semibold">${issued}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold ${balance >= 0 ? 'text-blue-600' : 'text-red-600'}">${balance}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor}">
+                                ${status}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex items-center space-x-2">
+                                <button class="deliver-btn text-green-600 hover:text-green-900" data-id="${material.id}" data-desc="${material.description}">Deliver</button>
+                                <button class="issue-btn text-yellow-600 hover:text-yellow-900" data-id="${material.id}" data-desc="${material.description}">Issue</button>
+                                <button class="edit-btn text-blue-600 hover:text-blue-900" data-id="${material.id}"><i data-lucide="edit" class="h-4 w-4"></i></button>
+                                <button class="delete-btn text-red-600 hover:text-red-900" data-id="${material.id}"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                materialsTbody.innerHTML += row;
+            });
+            lucide.createIcons();
+        }
+        
+        function updateDashboard(materials) {
+            const totalMaterials = materials.length;
+            const totalDelivered = materials.reduce((sum, m) => sum + (m.delivered || 0), 0);
+            const totalIssued = materials.reduce((sum, m) => sum + (m.issued || 0), 0);
+
+            document.getElementById('total-materials').textContent = totalMaterials;
+            document.getElementById('total-delivered').textContent = totalDelivered;
+            document.getElementById('total-issued').textContent = totalIssued;
+        }
+
+        // --- MODAL HANDLING ---
+        function openModal(material = null) {
+            materialForm.reset();
+            if (material) {
+                modalTitle.textContent = 'Edit Material';
+                materialIdInput.value = material.id;
+                document.getElementById('description').value = material.description;
+                document.getElementById('po-number').value = material.poNumber;
+                document.getElementById('expected-qty').value = material.expectedQty;
+            } else {
+                modalTitle.textContent = 'Add New Material';
+                materialIdInput.value = '';
+            }
+            materialModal.classList.add('show');
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            materialModal.classList.remove('show');
+        }
+
+        function openTransactionModal(type, materialId, description) {
+            transactionForm.reset();
+            transactionModalTitle.textContent = type === 'deliver' ? 'Log Delivery' : 'Log Issuance';
+            transactionMaterialIdInput.value = materialId;
+            transactionTypeInput.value = type;
+            transactionMaterialDesc.textContent = description;
+            document.getElementById('transaction-date').value = new Date().toISOString().slice(0, 10);
+            transactionModal.classList.add('show');
+        }
+        
+        function closeTransactionModal() {
+            transactionModal.classList.remove('show');
+        }
+
+        // --- EVENT LISTENERS ---
+        addMaterialBtn.addEventListener('click', () => openModal());
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelModalBtn.addEventListener('click', closeModal);
+        
+        closeTransactionModalBtn.addEventListener('click', closeTransactionModal);
+        cancelTransactionModalBtn.addEventListener('click', closeTransactionModal);
+
+        materialForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!userId) {
+                alert("You must be logged in to save materials.");
+                return;
+            }
+
+            const id = materialIdInput.value;
+            const materialData = {
+                description: document.getElementById('description').value,
+                poNumber: document.getElementById('po-number').value,
+                expectedQty: parseInt(document.getElementById('expected-qty').value, 10),
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                if (id) {
+                    // Update existing material
+                    const materialRef = doc(getMaterialsCollection(), id);
+                    await updateDoc(materialRef, materialData);
+                } else {
+                    // Add new material
+                    materialData.createdAt = new Date().toISOString();
+                    materialData.delivered = 0;
+                    materialData.issued = 0;
+                    await addDoc(getMaterialsCollection(), materialData);
+                }
+                closeModal();
+            } catch (error) {
+                console.error("Error saving material: ", error);
+                alert("Failed to save material. See console for details.");
+            }
+        });
+        
+        transactionForm.addEventListener('submit', async(e) => {
+            e.preventDefault();
+            if (!userId) return alert('You must be logged in.');
+            
+            const materialId = transactionMaterialIdInput.value;
+            const type = transactionTypeInput.value;
+            const qty = parseInt(document.getElementById('transaction-qty').value, 10);
+            const date = document.getElementById('transaction-date').value;
+
+            if (isNaN(qty) || qty <= 0) {
+                return alert('Please enter a valid quantity.');
+            }
+
+            const materialRef = doc(getMaterialsCollection(), materialId);
+            const batch = writeBatch(db);
+
+            try {
+                const materialDoc = await getDoc(materialRef);
+                if (!materialDoc.exists()) throw new Error("Material not found");
+                
+                const currentData = materialDoc.data();
+                
+                if (type === 'deliver') {
+                    const newDelivered = (currentData.delivered || 0) + qty;
+                    batch.update(materialRef, { delivered: newDelivered });
+                } else if (type === 'issue') {
+                    const balance = (currentData.delivered || 0) - (currentData.issued || 0);
+                    if (qty > balance) {
+                       return alert(`Cannot issue ${qty} items. Only ${balance} available in stock.`);
+                    }
+                    const newIssued = (currentData.issued || 0) + qty;
+                    batch.update(materialRef, { issued: newIssued });
+                }
+                
+                await batch.commit();
+                closeTransactionModal();
+
+            } catch (error) {
+                 console.error("Transaction failed: ", error);
+                 alert("Transaction failed. See console for details.");
+            }
+        });
+
+
+        materialsTbody.addEventListener('click', async (e) => {
+            if (!userId) return;
+
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            const id = target.dataset.id;
+            
+            if(target.classList.contains('deliver-btn')) {
+                openTransactionModal('deliver', id, target.dataset.desc);
+            }
+            
+            if(target.classList.contains('issue-btn')) {
+                openTransactionModal('issue', id, target.dataset.desc);
+            }
+            
+            if (target.classList.contains('edit-btn')) {
+                const materialRef = doc(getMaterialsCollection(), id);
+                const docSnap = await getDoc(materialRef);
+                if (docSnap.exists()) {
+                    openModal({ id: docSnap.id, ...docSnap.data() });
+                }
+            }
+
+            if (target.classList.contains('delete-btn')) {
+                if (confirm('Are you sure you want to delete this material?')) {
+                    try {
+                        await deleteDoc(doc(getMaterialsCollection(), id));
+                    } catch (error) {
+                        console.error("Error deleting material: ", error);
+                        alert("Failed to delete material.");
+                    }
+                }
+            }
+        });
+        
+        searchInput.addEventListener('input', () => {
+             if (userId) loadMaterials();
+        });
+
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
