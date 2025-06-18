@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from './Header';
 import MaterialTable from './MaterialTable';
-import { useAuth } from '../authContext';
+import { useAuth } from '../context/authContext';
 
 const Dashboard = () => {
     const { currentUser } = useAuth();

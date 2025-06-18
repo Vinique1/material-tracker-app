@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Box, Truck, LineChart } from 'lucide-react';
-import { auth } from '../firebase'; // Correct: Import the auth instance
-import { signInWithEmailAndPassword } from 'firebase/auth'; // Correct: Import the function from the SDK
+import { Mail, Lock, Box, Truck, LineChart } from 'lucide-react'; // FIXED: Added Box, Truck, and LineChart back
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const Login = () => {
   const [email, setEmail] = useState('');

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../authContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { X } from 'lucide-react';

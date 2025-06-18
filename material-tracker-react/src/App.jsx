@@ -1,19 +1,34 @@
 import React from 'react';
-import { AuthProvider, useAuth } from './authContext';
-import Dashboard from './components/Dashboard';
+import { Routes, Route } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
+import MainLayout from './layouts/MainLayout';
+import MaterialListPage from './pages/MaterialListPage';
 
 const App = () => {
   return (
     <AuthProvider>
-      <Main />
+      <AppRoutes />
     </AuthProvider>
   );
-}
+};
 
-const Main = () => {
+const AppRoutes = () => {
   const { currentUser } = useAuth();
-  return currentUser ? <Dashboard /> : <Login />;
-}
+
+  if (!currentUser) {
+    return <Login />;
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<MaterialListPage />} />
+        <Route path="category/:filterValue" element={<MaterialListPage />} />
+        <Route path="supplier/:filterValue" element={<MaterialListPage />} />
+      </Route>
+    </Routes>
+  );
+};
 
 export default App;
