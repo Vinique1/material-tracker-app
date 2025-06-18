@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
 import MainLayout from './layouts/MainLayout';
 import MaterialListPage from './pages/MaterialListPage';
+import LogPage from './pages/LogPage'; // NEW: Import LogPage
 
 const App = () => {
   return (
@@ -26,6 +27,9 @@ const AppRoutes = () => {
         <Route index element={<MaterialListPage />} />
         <Route path="category/:filterValue" element={<MaterialListPage />} />
         <Route path="supplier/:filterValue" element={<MaterialListPage />} />
+        {/* NEW: Routes for Delivery and Issuance logs */}
+        <Route path="delivery-log" element={<LogPage type="delivery" />} />
+        <Route path="issuance-log" element={<LogPage type="issuance" />} />
       </Route>
     </Routes>
   );
