@@ -21,12 +21,11 @@ const LogTable = ({ logs, type, onEdit }) => {
         if (!materialDoc.exists()) throw new Error("Associated material not found!");
         
         const materialData = materialDoc.data();
-        const quantityChange = -log.quantity; // We are subtracting from the total
+        const quantityChange = -log.quantity;
 
         const newDelivered = (materialData.delivered || 0) + (type === 'delivery' ? quantityChange : 0);
         const newIssued = (materialData.issued || 0) + (type === 'issuance' ? quantityChange : 0);
 
-        // INTEGRITY CHECK
         if (newDelivered < newIssued) {
             throw new Error("Deletion failed: This would result in a negative stock balance.");
         }
@@ -35,7 +34,6 @@ const LogTable = ({ logs, type, onEdit }) => {
         transaction.update(materialRef, {
             delivered: newDelivered,
             issued: newIssued,
-            balance: newDelivered - newIssued,
         });
       });
       toast.success("Log deleted successfully.", { id: toastId });
@@ -51,25 +49,27 @@ const LogTable = ({ logs, type, onEdit }) => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">S/N</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Material</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remarks</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {logs.length > 0 ? logs.map(log => (
+            {logs.length > 0 ? logs.map((log, index) => (
               <tr key={log.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{log.date}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{index + 1}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">{log.date}</td>
                 <td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm text-gray-700">{log.materialDescription}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">{log.quantity}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold text-center">{log.quantity}</td>
                 <td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500">{log.remarks || 'N/A'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{log.createdBy}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{log.createdBy}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                   {!currentUser.isViewer && (
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-center space-x-4">
                       <button onClick={() => onEdit(log)} className="text-blue-600 hover:text-blue-900"><Edit size={16} /></button>
                       <button onClick={() => handleDelete(log)} className="text-red-600 hover:text-red-900"><Trash2 size={16} /></button>
                     </div>
@@ -77,7 +77,7 @@ const LogTable = ({ logs, type, onEdit }) => {
                 </td>
               </tr>
             )) : (
-              <tr><td colSpan="6" className="text-center py-10 text-gray-500">No logs found.</td></tr>
+              <tr><td colSpan="7" className="text-center py-10 text-gray-500">No logs found.</td></tr>
             )}
           </tbody>
         </table>
