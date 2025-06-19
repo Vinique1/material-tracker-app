@@ -9,7 +9,14 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [appMetadata, setAppMetadata] = useState({ categories: [], suppliers: [] });
+  // MODIFIED: Added new empty arrays to the initial state for the new fields.
+  const [appMetadata, setAppMetadata] = useState({ 
+    categories: [], 
+    suppliers: [], 
+    materialGrades: [],
+    boreSize1Options: [],
+    boreSize2Options: []
+  });
   const [loading, setLoading] = useState(true);
 
   const ADMIN_UID = "V8zL2oH8b1ZSmG1tdp11gmdtylM2";
@@ -28,13 +35,13 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    // Listen for changes in our metadata (categories, suppliers)
     const metadataRef = doc(db, 'app_metadata', 'lists');
     const unsubscribeMetadata = onSnapshot(metadataRef, (docSnap) => {
       if (docSnap.exists()) {
+        // MODIFIED: The entire metadata document is now fetched and set.
         setAppMetadata(docSnap.data());
       } else {
-        console.log("Metadata document does not exist!");
+        console.log("Metadata document does not exist! Please create it in Firestore.");
       }
     });
 

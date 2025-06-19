@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../context/authContext';
+import { useAuth } from './context/authContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { LogOut } from 'lucide-react';
