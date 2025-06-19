@@ -3,9 +3,9 @@ import { Package, Truck, Send } from 'lucide-react';
 
 const StatsCards = ({ stats }) => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <StatCard title="Total Materials" value={stats?.totalMaterials || 0} icon={<Package />} color="blue" />
-        <StatCard title="Total Delivered" value={stats?.totalDelivered || 0} icon={<Truck />} color="green" />
-        <StatCard title="Total Issued" value={stats?.totalIssued || 0} icon={<Send />} color="yellow" />
+        <StatCard title="Line Items" value={stats?.totalMaterials || 0} icon={<Package />} color="blue" />
+        <StatCard title="Total Qty Delivered" value={stats?.totalDelivered || 0} icon={<Truck />} color="green" />
+        <StatCard title="Total Qty Issued" value={stats?.totalIssued || 0} icon={<Send />} color="yellow" />
     </div>
 );
 
