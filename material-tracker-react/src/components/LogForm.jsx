@@ -18,6 +18,9 @@ const LogForm = ({ type, log, onClose }) => {
   const [error, setError] = useState('');
   const [materialQuery, setMaterialQuery] = useState('');
 
+  // NEW: State to control quantity input step (for decimals)
+  const [quantityStep, setQuantityStep] = useState(1);
+
   useEffect(() => {
     const materialsRef = collection(db, `materials/${ADMIN_UID}/items`);
     
@@ -35,6 +38,15 @@ const LogForm = ({ type, log, onClose }) => {
       }
     });
   }, [ADMIN_UID, log]);
+
+  // NEW: Effect to update quantity step when material changes
+  useEffect(() => {
+    if (selectedMaterial?.category?.toLowerCase() === 'pipes') {
+      setQuantityStep(0.01);
+    } else {
+      setQuantityStep(1);
+    }
+  }, [selectedMaterial]);
 
   const filteredMaterials = materialQuery === ''
     ? allMaterials
@@ -65,7 +77,11 @@ const LogForm = ({ type, log, onClose }) => {
 
         const materialData = materialDoc.data();
         const oldLogQty = log ? log.quantity : 0;
-        const quantityChange = quantity - oldLogQty;
+        
+        // NEW: Use parseFloat for pipes, otherwise parseInt
+        const numQuantity = quantityStep === 1 ? parseInt(quantity, 10) : parseFloat(quantity);
+
+        const quantityChange = numQuantity - oldLogQty;
         
         const newDelivered = (materialData.delivered || 0) + (type === 'delivery' ? quantityChange : 0);
         const newIssued = (materialData.issued || 0) + (type === 'issuance' ? quantityChange : 0);
@@ -86,7 +102,7 @@ const LogForm = ({ type, log, onClose }) => {
           materialGrade: selectedMaterial.materialGrade,
           boreSize1: selectedMaterial.boreSize1,
           boreSize2: selectedMaterial.boreSize2 || null,
-          quantity: Number(quantity),
+          quantity: numQuantity,
           remarks,
           date: logDate,
           supplier: type === 'delivery' ? selectedMaterial.supplier : null,
@@ -146,12 +162,7 @@ const LogForm = ({ type, log, onClose }) => {
                         <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm z-20">
                             {(type === 'issuance' ? issuanceOptions : filteredMaterials).map((material) => (
                                 <Combobox.Option key={material.id} value={material} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900'}`}>
-                                    {({ selected, active }) => (
-                                        <>
-                                            <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{material.label}</span>
-                                            {selected ? <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check/></span> : null}
-                                        </>
-                                    )}
+                                    {({ selected }) => ( <> <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{material.label}</span> {selected ? <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check/></span> : null} </>)}
                                 </Combobox.Option>
                             ))}
                         </Combobox.Options>
@@ -160,35 +171,17 @@ const LogForm = ({ type, log, onClose }) => {
                 )}
               </Combobox>
             </div>
-            {/* NEW: Display details of the selected material */}
             {selectedMaterial && (
                 <div className="grid grid-cols-3 gap-4 p-3 bg-slate-50 rounded-lg border border-slate-200 text-sm">
-                    <div className="flex items-center gap-2">
-                        <Layers size={14} className="text-gray-500" />
-                        <div>
-                            <span className="font-semibold">Grade: </span>
-                            <span>{selectedMaterial.materialGrade}</span>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Maximize2 size={14} className="text-gray-500" />
-                        <div>
-                            <span className="font-semibold">Bore 1: </span>
-                            <span>{selectedMaterial.boreSize1}</span>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Maximize2 size={14} className="text-gray-500" />
-                        <div>
-                            <span className="font-semibold">Bore 2: </span>
-                            <span>{selectedMaterial.boreSize2 || 'N/A'}</span>
-                        </div>
-                    </div>
+                    <div className="flex items-center gap-2"><Layers size={14} className="text-gray-500" /><div><span className="font-semibold">Grade: </span><span>{selectedMaterial.materialGrade}</span></div></div>
+                    <div className="flex items-center gap-2"><Maximize2 size={14} className="text-gray-500" /><div><span className="font-semibold">Bore 1: </span><span>{selectedMaterial.boreSize1}</span></div></div>
+                    <div className="flex items-center gap-2"><Maximize2 size={14} className="text-gray-500" /><div><span className="font-semibold">Bore 2: </span><span>{selectedMaterial.boreSize2 || 'N/A'}</span></div></div>
                 </div>
             )}
             <div>
               <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-              <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(Number(e.target.value))} className="w-full h-11 px-4 rounded-md border border-gray-300 shadow-sm" min="1" />
+              {/* NEW: Input step is now dynamic */}
+              <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(e.target.value)} step={quantityStep} className="w-full h-11 px-4 rounded-md border border-gray-300 shadow-sm" min="0.01" />
             </div>
             <div>
               <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Date</label>
