@@ -52,6 +52,9 @@ const LogTable = ({ logs, type, onEdit }) => {
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">S/N</th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Material</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Bore 1</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Bore 2</th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remarks</th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
@@ -64,6 +67,9 @@ const LogTable = ({ logs, type, onEdit }) => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{index + 1}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">{log.date}</td>
                 <td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm text-gray-700">{log.materialDescription}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{log.materialGrade || 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{log.boreSize1 || 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{log.boreSize2 || 'N/A'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold text-center">{log.quantity}</td>
                 <td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500">{log.remarks || 'N/A'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{log.createdBy}</td>
@@ -77,7 +83,7 @@ const LogTable = ({ logs, type, onEdit }) => {
                 </td>
               </tr>
             )) : (
-              <tr><td colSpan="7" className="text-center py-10 text-gray-500">No logs found.</td></tr>
+              <tr><td colSpan="10" className="text-center py-10 text-gray-500">No logs found.</td></tr>
             )}
           </tbody>
         </table>

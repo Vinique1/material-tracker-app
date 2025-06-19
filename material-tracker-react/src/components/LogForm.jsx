@@ -1,9 +1,9 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { collection, doc, runTransaction, serverTimestamp, query, where, getDocs, getDoc } from 'firebase/firestore';
+import { collection, doc, runTransaction, serverTimestamp, query, getDocs } from 'firebase/firestore';
 import toast from 'react-hot-toast';
-import { X, LoaderCircle, ChevronsUpDown, Check } from 'lucide-react';
+import { X, LoaderCircle, ChevronsUpDown, Check, Layers, Maximize2 } from 'lucide-react';
 import { Combobox, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 
@@ -18,7 +18,6 @@ const LogForm = ({ type, log, onClose }) => {
   const [error, setError] = useState('');
   const [materialQuery, setMaterialQuery] = useState('');
 
-  // Fetch all materials for the dropdown
   useEffect(() => {
     const materialsRef = collection(db, `materials/${ADMIN_UID}/items`);
     
@@ -37,12 +36,10 @@ const LogForm = ({ type, log, onClose }) => {
     });
   }, [ADMIN_UID, log]);
 
-  // Filter materials for the dropdown
   const filteredMaterials = materialQuery === ''
     ? allMaterials
     : allMaterials.filter(m => m.label.toLowerCase().includes(materialQuery.toLowerCase()));
   
-  // For issuance, further filter to only show items in stock
   const issuanceOptions = type === 'issuance' 
     ? filteredMaterials.filter(m => (m.delivered || 0) > (m.issued || 0)) 
     : filteredMaterials;
@@ -73,7 +70,6 @@ const LogForm = ({ type, log, onClose }) => {
         const newDelivered = (materialData.delivered || 0) + (type === 'delivery' ? quantityChange : 0);
         const newIssued = (materialData.issued || 0) + (type === 'issuance' ? quantityChange : 0);
         
-        // INTEGRITY CHECKS
         if (newDelivered < newIssued) {
           throw new Error("This action would result in a negative stock balance.");
         }
@@ -87,6 +83,9 @@ const LogForm = ({ type, log, onClose }) => {
         const logData = {
           materialId: selectedMaterial.id,
           materialDescription: selectedMaterial.label,
+          materialGrade: selectedMaterial.materialGrade,
+          boreSize1: selectedMaterial.boreSize1,
+          boreSize2: selectedMaterial.boreSize2 || null,
           quantity: Number(quantity),
           remarks,
           date: logDate,
@@ -161,6 +160,32 @@ const LogForm = ({ type, log, onClose }) => {
                 )}
               </Combobox>
             </div>
+            {/* NEW: Display details of the selected material */}
+            {selectedMaterial && (
+                <div className="grid grid-cols-3 gap-4 p-3 bg-slate-50 rounded-lg border border-slate-200 text-sm">
+                    <div className="flex items-center gap-2">
+                        <Layers size={14} className="text-gray-500" />
+                        <div>
+                            <span className="font-semibold">Grade: </span>
+                            <span>{selectedMaterial.materialGrade}</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Maximize2 size={14} className="text-gray-500" />
+                        <div>
+                            <span className="font-semibold">Bore 1: </span>
+                            <span>{selectedMaterial.boreSize1}</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Maximize2 size={14} className="text-gray-500" />
+                        <div>
+                            <span className="font-semibold">Bore 2: </span>
+                            <span>{selectedMaterial.boreSize2 || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div>
               <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
               <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(Number(e.target.value))} className="w-full h-11 px-4 rounded-md border border-gray-300 shadow-sm" min="1" />
