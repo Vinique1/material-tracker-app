@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { doc, updateDoc, addDoc, collection, arrayUnion } from 'firebase/firestore';
+import { doc, updateDoc, addDoc, collection, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import { Combobox, Transition } from '@headlessui/react';
 import { FileText, Tag, Hash, Plus, Check, ChevronsUpDown, LoaderCircle, Info, Maximize2, Layers, X } from 'lucide-react';
 import clsx from 'clsx';
@@ -18,14 +18,12 @@ const AddEditMaterialModal = ({ material, onClose }) => {
     const [selectedSupplier, setSelectedSupplier] = useState(material?.supplier || null);
     const [selectedMaterialGrade, setSelectedMaterialGrade] = useState(material?.materialGrade || null);
 
-    // State for dynamic lists from context
     const [categories, setCategories] = useState(appMetadata.categories || []);
     const [suppliers, setSuppliers] = useState(appMetadata.suppliers || []);
     const [materialGrades, setMaterialGrades] = useState(appMetadata.materialGrades || []);
     const [boreSize1Options, setBoreSize1Options] = useState(appMetadata.boreSize1Options || []);
     const [boreSize2Options, setBoreSize2Options] = useState(appMetadata.boreSize2Options || []);
   
-    // State for searchable dropdowns
     const [categoryQuery, setCategoryQuery] = useState('');
     const [supplierQuery, setSupplierQuery] = useState('');
     const [materialGradeQuery, setMaterialGradeQuery] = useState('');
@@ -37,13 +35,11 @@ const AddEditMaterialModal = ({ material, onClose }) => {
   
     const descriptionInputRef = useRef(null);
     useEffect(() => {
-        // Sync local lists with context on initial render
         setCategories(appMetadata.categories || []);
         setSuppliers(appMetadata.suppliers || []);
         setMaterialGrades(appMetadata.materialGrades || []);
         setBoreSize1Options(appMetadata.boreSize1Options || []);
         setBoreSize2Options(appMetadata.boreSize2Options || []);
-        // Auto-focus first input
         setTimeout(() => descriptionInputRef.current?.focus(), 100);
     }, [appMetadata]);
 
@@ -57,20 +53,7 @@ const AddEditMaterialModal = ({ material, onClose }) => {
         setExpectedQty(prev => Math.max(0, prev + amount));
     };
 
-    const validateField = (name, value) => {
-        let errorMsg = '';
-        if (name === 'description' && !value) errorMsg = 'Description cannot be empty.';
-        if (name === 'selectedBoreSize1' && !value) errorMsg = 'Bore Size 1 is required.';
-        if (name === 'selectedCategory' && !value) errorMsg = 'Please select a category.';
-        if (name === 'selectedSupplier' && !value) errorMsg = 'Please select a supplier.';
-        if (name === 'selectedMaterialGrade' && !value) errorMsg = 'Please select a material grade.';
-        setErrors(prev => ({ ...prev, [name]: errorMsg }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (currentUser.isViewer) return;
-        
+    const validateForm = () => {
         const newErrors = {};
         if (!description) newErrors.description = 'Description is required.';
         if (!selectedBoreSize1) newErrors.selectedBoreSize1 = 'Bore Size 1 is required.';
@@ -78,11 +61,31 @@ const AddEditMaterialModal = ({ material, onClose }) => {
         if (!selectedSupplier) newErrors.selectedSupplier = 'Supplier is required.';
         if (!selectedMaterialGrade) newErrors.selectedMaterialGrade = 'Material Grade is required.';
         setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
-        if (Object.keys(newErrors).length > 0) return;
+    // REFACTORED: Logic for creating a material
+    const createMaterial = async (data) => {
+        const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
+        await addDoc(materialsCollectionRef, {
+            ...data,
+            delivered: 0,
+            issued: 0,
+            createdAt: serverTimestamp(),
+        });
+    };
+
+    // REFACTORED: Logic for updating a material
+    const updateMaterial = async (data) => {
+        const materialRef = doc(db, `materials/${ADMIN_UID}/items`, material.id);
+        await updateDoc(materialRef, data);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (currentUser.isViewer || !validateForm()) return;
         
         setIsSubmitting(true);
-        const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
         const dataToSave = {
             description,
             category: selectedCategory,
@@ -91,19 +94,20 @@ const AddEditMaterialModal = ({ material, onClose }) => {
             boreSize1: selectedBoreSize1,
             boreSize2: selectedBoreSize2 || null,
             expectedQty: parseInt(expectedQty, 10),
-            updatedAt: new Date().toISOString()
+            updatedAt: serverTimestamp(),
         };
 
         try {
             if (material) {
-                await updateDoc(doc(materialsCollectionRef, material.id), dataToSave);
+                await updateMaterial(dataToSave);
             } else {
-                await addDoc(materialsCollectionRef, { ...dataToSave, delivered: 0, issued: 0, createdAt: new Date().toISOString() });
+                await createMaterial(dataToSave);
             }
             onClose();
         } catch (error) {
             console.error("Error saving material:", error);
             alert("Failed to save material.");
+        } finally {
             setIsSubmitting(false);
         }
     };
@@ -137,19 +141,11 @@ const AddEditMaterialModal = ({ material, onClose }) => {
     };
 
   return (
-    // MODIFIED: Added onClick handler to the overlay for closing the modal
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50"
-         onClick={(e) => {
-            if (e.target === e.currentTarget) {
-                onClose();
-            }
-         }}
-    >
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="relative mx-auto p-8 border w-full max-w-2xl shadow-lg rounded-xl bg-white">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">{material ? 'Edit Material' : 'Add New Material'}</h2>
         <p className="text-gray-500 mb-8">Fill out the details below to add an item to the inventory.</p>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X /></button>
-        
         <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-6">
             <div className="space-y-4 p-5 bg-slate-50 rounded-lg border border-slate-200">
@@ -159,14 +155,13 @@ const AddEditMaterialModal = ({ material, onClose }) => {
                 <div className="relative">
                   <FileText className="absolute left-3 top-4 h-5 w-5 text-gray-400" />
                   <textarea id="description" name="description" ref={descriptionInputRef} rows="3"
-                    className={clsx("w-full rounded-md border py-4 pl-10 pr-4 text-sm shadow-sm transition-colors",
-                      errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500')}
-                    value={description} onChange={(e) => setDescription(e.target.value)} onBlur={() => validateField('description', description)} />
+                    className={clsx("w-full rounded-md border py-4 pl-10 pr-4 text-sm shadow-sm transition-colors", errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500')}
+                    value={description} onChange={(e) => setDescription(e.target.value)} onBlur={() => validateForm()} />
                 </div>
                 {errors.description && <p className="mt-1 text-xs text-red-600 flex items-center gap-1"><Info size={14}/>{errors.description}</p>}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 <SearchableDropdown label="Bore Size 1" items={filteredBoreSize1} selectedItem={selectedBoreSize1} setSelectedItem={setSelectedBoreSize1} query={boreSize1Query} setQuery={setBoreSize1Query} onAddNew={(value) => handleAddNewItem('boreSize1', value)} error={errors.selectedBoreSize1} onBlur={() => validateField('selectedBoreSize1', selectedBoreSize1)} icon={<Maximize2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} allowAddNew={true} isRequired={true}/>
+                 <SearchableDropdown label="Bore Size 1" items={filteredBoreSize1} selectedItem={selectedBoreSize1} setSelectedItem={setSelectedBoreSize1} query={boreSize1Query} setQuery={setBoreSize1Query} onAddNew={(value) => handleAddNewItem('boreSize1', value)} error={errors.selectedBoreSize1} onBlur={() => validateForm()} icon={<Maximize2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} allowAddNew={true} isRequired={true}/>
                  <SearchableDropdown label="Bore Size 2" items={filteredBoreSize2} selectedItem={selectedBoreSize2} setSelectedItem={setSelectedBoreSize2} query={boreSize2Query} setQuery={setBoreSize2Query} onAddNew={(value) => handleAddNewItem('boreSize2', value)} icon={<Maximize2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} allowAddNew={true} isRequired={false}/>
               </div>
               <div>
@@ -176,16 +171,13 @@ const AddEditMaterialModal = ({ material, onClose }) => {
             </div>
             <div className="space-y-4 p-5 bg-slate-50 rounded-lg border border-slate-200">
                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Classification</h3>
-              <SearchableDropdown label="Category" items={filteredCategories} selectedItem={selectedCategory} setSelectedItem={setSelectedCategory} query={categoryQuery} setQuery={setCategoryQuery} onAddNew={(value) => handleAddNewItem('category', value)} error={errors.selectedCategory} onBlur={() => validateField('selectedCategory', selectedCategory)} icon={<Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
-              <SearchableDropdown label="Supplier" items={filteredSuppliers} selectedItem={selectedSupplier} setSelectedItem={setSelectedSupplier} query={supplierQuery} setQuery={setSupplierQuery} onAddNew={(value) => handleAddNewItem('supplier', value)} error={errors.selectedSupplier} onBlur={() => validateField('selectedSupplier', selectedSupplier)} icon={<Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
-              <SearchableDropdown label="Material Grade" items={filteredMaterialGrades} selectedItem={selectedMaterialGrade} setSelectedItem={setSelectedMaterialGrade} query={materialGradeQuery} setQuery={setMaterialGradeQuery} onAddNew={(value) => handleAddNewItem('materialGrade', value)} error={errors.selectedMaterialGrade} onBlur={() => validateField('selectedMaterialGrade', selectedMaterialGrade)} icon={<Layers className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
+              <SearchableDropdown label="Category" items={filteredCategories} selectedItem={selectedCategory} setSelectedItem={setSelectedCategory} query={categoryQuery} setQuery={setCategoryQuery} onAddNew={(value) => handleAddNewItem('category', value)} error={errors.selectedCategory} onBlur={() => validateForm()} icon={<Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
+              <SearchableDropdown label="Supplier" items={filteredSuppliers} selectedItem={selectedSupplier} setSelectedItem={setSelectedSupplier} query={supplierQuery} setQuery={setSupplierQuery} onAddNew={(value) => handleAddNewItem('supplier', value)} error={errors.selectedSupplier} onBlur={() => validateForm()} icon={<Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
+              <SearchableDropdown label="Material Grade" items={filteredMaterialGrades} selectedItem={selectedMaterialGrade} setSelectedItem={setSelectedMaterialGrade} query={materialGradeQuery} setQuery={setMaterialGradeQuery} onAddNew={(value) => handleAddNewItem('materialGrade', value)} error={errors.selectedMaterialGrade} onBlur={() => validateForm()} icon={<Layers className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
             </div>
           </div>
           <div className="mt-8 pt-5 border-t border-gray-200 flex justify-end gap-3">
-             {/* MODIFIED: Added Cancel button */}
-            <button type="button" onClick={onClose} className="px-6 py-3 text-sm font-semibold bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
-                Cancel
-            </button>
+            <button type="button" onClick={onClose} className="px-6 py-3 text-sm font-semibold bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
             <button type="submit" disabled={isSubmitting} className={clsx("flex items-center justify-center w-full sm:w-auto px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md transition-all duration-300", isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 transform hover:-translate-y-0.5")}>
               {isSubmitting ? (<><LoaderCircle className="animate-spin mr-2 h-4 w-4" />Saving...</>) : ('Save Material')}
             </button>
@@ -196,6 +188,7 @@ const AddEditMaterialModal = ({ material, onClose }) => {
   );
 };
 
+// Reusable Searchable Dropdown Component
 const SearchableDropdown = ({ label, items, selectedItem, setSelectedItem, query, setQuery, onAddNew, error, onBlur, icon, allowAddNew = true, isRequired = true }) => {
   const [showAddNew, setShowAddNew] = useState(false);
   const [newItem, setNewItem] = useState('');

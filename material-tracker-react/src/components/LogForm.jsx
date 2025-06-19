@@ -17,83 +17,49 @@ const LogForm = ({ type, log, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [materialQuery, setMaterialQuery] = useState('');
-
-  // NEW: State to control quantity input step (for decimals)
   const [quantityStep, setQuantityStep] = useState(1);
 
   useEffect(() => {
     const materialsRef = collection(db, `materials/${ADMIN_UID}/items`);
-    
     getDocs(materialsRef).then(snapshot => {
-      const materialsList = snapshot.docs.map(doc => ({
-        id: doc.id,
-        label: doc.data().description,
-        ...doc.data()
-      }));
+      const materialsList = snapshot.docs.map(doc => ({ id: doc.id, label: doc.data().description, ...doc.data() }));
       setAllMaterials(materialsList);
-
       if (log) {
         const preselected = materialsList.find(m => m.id === log.materialId);
         setSelectedMaterial(preselected);
       }
     });
   }, [ADMIN_UID, log]);
-
-  // NEW: Effect to update quantity step when material changes
+  
   useEffect(() => {
-    if (selectedMaterial?.category?.toLowerCase() === 'pipes') {
-      setQuantityStep(0.01);
-    } else {
-      setQuantityStep(1);
-    }
+    setQuantityStep(selectedMaterial?.category?.toLowerCase() === 'pipes' ? 0.01 : 1);
   }, [selectedMaterial]);
 
-  const filteredMaterials = materialQuery === ''
-    ? allMaterials
-    : allMaterials.filter(m => m.label.toLowerCase().includes(materialQuery.toLowerCase()));
-  
-  const issuanceOptions = type === 'issuance' 
-    ? filteredMaterials.filter(m => (m.delivered || 0) > (m.issued || 0)) 
-    : filteredMaterials;
+  const filteredMaterials = materialQuery === '' ? allMaterials : allMaterials.filter(m => m.label.toLowerCase().includes(materialQuery.toLowerCase()));
+  const issuanceOptions = type === 'issuance' ? filteredMaterials.filter(m => (m.delivered || 0) > (m.issued || 0)) : filteredMaterials;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedMaterial || !quantity || quantity <= 0) {
-      setError("Please select a material and enter a valid quantity.");
-      return;
-    }
-    setError('');
-    setIsSubmitting(true);
-    const toastId = toast.loading("Saving log...");
-
+  // REFACTORED: Transaction logic moved to a helper function
+  const runLogTransaction = async () => {
     const logCollectionRef = collection(db, `${type}_logs`);
     const materialRef = doc(db, `materials/${ADMIN_UID}/items`, selectedMaterial.id);
     const logRef = log ? doc(logCollectionRef, log.id) : doc(logCollectionRef);
 
-    try {
-      await runTransaction(db, async (transaction) => {
+    await runTransaction(db, async (transaction) => {
         const materialDoc = await transaction.get(materialRef);
         if (!materialDoc.exists()) throw new Error("Material does not exist!");
 
         const materialData = materialDoc.data();
         const oldLogQty = log ? log.quantity : 0;
-        
-        // NEW: Use parseFloat for pipes, otherwise parseInt
         const numQuantity = quantityStep === 1 ? parseInt(quantity, 10) : parseFloat(quantity);
-
         const quantityChange = numQuantity - oldLogQty;
         
         const newDelivered = (materialData.delivered || 0) + (type === 'delivery' ? quantityChange : 0);
         const newIssued = (materialData.issued || 0) + (type === 'issuance' ? quantityChange : 0);
         
-        if (newDelivered < newIssued) {
-          throw new Error("This action would result in a negative stock balance.");
-        }
+        if (newDelivered < newIssued) throw new Error("This action would result in a negative stock balance.");
         if (type === 'issuance' && quantityChange > 0) {
             const currentBalance = (materialData.delivered || 0) - (materialData.issued || 0);
-            if(quantityChange > currentBalance) {
-                throw new Error(`Issuance failed. Only ${currentBalance} items are in stock.`);
-            }
+            if(quantityChange > currentBalance) throw new Error(`Issuance failed. Only ${currentBalance} items are in stock.`);
         }
         
         const logData = {
@@ -113,22 +79,27 @@ const LogForm = ({ type, log, onClose }) => {
         if (log) {
           transaction.update(logRef, logData);
         } else {
-          transaction.set(logRef, {
-            ...logData,
-            createdBy: currentUser.email,
-            createdAt: serverTimestamp(),
-          });
+          transaction.set(logRef, { ...logData, createdBy: currentUser.email, createdAt: serverTimestamp() });
         }
         
-        transaction.update(materialRef, {
-            delivered: newDelivered,
-            issued: newIssued
-        });
+        transaction.update(materialRef, { delivered: newDelivered, issued: newIssued });
       });
+  };
 
-      toast.success(`Log ${log ? 'updated' : 'created'} successfully!`, { id: toastId });
-      onClose();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedMaterial || !quantity || quantity <= 0) {
+      setError("Please select a material and enter a valid quantity.");
+      return;
+    }
+    setError('');
+    setIsSubmitting(true);
+    const toastId = toast.loading("Saving log...");
 
+    try {
+        await runLogTransaction();
+        toast.success(`Log ${log ? 'updated' : 'created'} successfully!`, { id: toastId });
+        onClose();
     } catch (err) {
       console.error("Transaction failed: ", err);
       toast.error(err.message || "An unknown error occurred.", { id: toastId });
@@ -149,20 +120,13 @@ const LogForm = ({ type, log, onClose }) => {
               <Combobox value={selectedMaterial} onChange={setSelectedMaterial} nullable disabled={!!log}>
                 {({ open }) => (
                   <div className="relative">
-                    <Combobox.Input
-                        className="w-full h-11 rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        displayValue={(material) => material?.label || ''}
-                        onChange={(event) => setMaterialQuery(event.target.value)}
-                        placeholder="Select a material..."
-                    />
-                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-                        <ChevronsUpDown className="h-5 w-5 text-gray-400" />
-                    </Combobox.Button>
+                    <Combobox.Input className="w-full h-11 rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500" displayValue={(material) => material?.label || ''} onChange={(event) => setMaterialQuery(event.target.value)} placeholder="Select a material..." />
+                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2"><ChevronsUpDown className="h-5 w-5 text-gray-400" /></Combobox.Button>
                     <Transition as={Fragment} show={open} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
                         <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm z-20">
                             {(type === 'issuance' ? issuanceOptions : filteredMaterials).map((material) => (
                                 <Combobox.Option key={material.id} value={material} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900'}`}>
-                                    {({ selected }) => ( <> <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{material.label}</span> {selected ? <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check/></span> : null} </>)}
+                                    {({ selected, active }) => (<> <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{material.label}</span> {selected ? <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check/></span> : null} </>)}
                                 </Combobox.Option>
                             ))}
                         </Combobox.Options>
@@ -180,8 +144,7 @@ const LogForm = ({ type, log, onClose }) => {
             )}
             <div>
               <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-              {/* NEW: Input step is now dynamic */}
-              <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(e.target.value)} step={quantityStep} className="w-full h-11 px-4 rounded-md border border-gray-300 shadow-sm" min="0.01" />
+              <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(e.target.value)} step={quantityStep} className="w-full h-11 px-4 rounded-md border border-gray-300 shadow-sm" min={quantityStep > 0.01 ? 1 : 0.01} />
             </div>
             <div>
               <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Date</label>
