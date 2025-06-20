@@ -1,83 +1,72 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLayout } from '../context/LayoutContext';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
-import { Box, Building, ChevronDown, ChevronRight, Grip, LayoutDashboard, LogOut, Download, Upload } from 'lucide-react'; // MODIFIED: Added new icons
+import { Box, Building, ChevronDown, ChevronRight, LayoutDashboard, LogOut, Download, Upload, Menu, X, CheckCircle, MinusCircle, AlertCircle, Scale } from 'lucide-react';
 
 const Sidebar = () => {
   const { appMetadata, currentUser } = useAuth();
-  const [categoriesOpen, setCategoriesOpen] = useState(true);
-  const [suppliersOpen, setSuppliersOpen] = useState(false);
-  
-  const baseLinkClass = "w-full flex justify-between items-center p-2 text-gray-300 rounded-md hover:bg-blue-700 hover:text-white transition-colors";
-  const childLinkClass = "flex items-center py-2 px-4 ml-6 text-sm text-gray-400 rounded-md hover:bg-blue-700 hover:text-white transition-colors";
+  const { isSidebarCollapsed, toggleSidebar } = useLayout();
+  const [dashboardOpen, setDashboardOpen] = useState(true);
+
+  const linkClass = "flex items-center p-3 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white transition-colors w-full";
   const activeLinkClass = "bg-blue-700 text-white";
-  
-  const iconMap = {
-      Couplings: <Grip size={16} className="mr-3 flex-shrink-0" />,
-      Flanges: <Grip size={16} className="mr-3 flex-shrink-0" />,
-      Olet: <Grip size={16} className="mr-3 flex-shrink-0" />,
-      Reducers: <Grip size={16} className="mr-3 flex-shrink-0" />,
-      Tees: <Grip size={16} className="mr-3 flex-shrink-0" />
-      // Add other category icons here if desired
-  };
+  const childLinkClass = `flex items-center py-2 px-3 text-sm rounded-md hover:text-white transition-colors ${isSidebarCollapsed ? 'justify-center' : 'ml-6'}`;
 
   return (
-    <div className="flex flex-col w-64 bg-gray-800 text-white h-full">
-      <div className="flex items-center justify-center h-20 border-b border-gray-700 px-4">
-         <img src="/Steve Logo.png" alt="Logo" className="h-10 w-10 mr-3" />
-        <h1 className="text-xl font-bold text-center">Steve Integrated</h1>
+    <div className={`flex flex-col bg-gray-800 text-white h-full transition-all duration-300 overflow-x-hidden ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+      <div className="flex items-center h-20 border-b border-gray-700 px-6 flex-shrink-0">
+         <img src="/Steve Logo.png" alt="Logo" className="h-10 w-10 flex-shrink-0" />
+        <span className={`ml-3 font-bold text-xl whitespace-nowrap transition-opacity duration-200 ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Steve Integrated</span>
       </div>
+      
       <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
         <div>
-          <button onClick={() => setCategoriesOpen(!categoriesOpen)} className={baseLinkClass}>
-            <div className="flex items-center"><LayoutDashboard size={20} className="mr-3" /><span>All Items</span></div>
-            {categoriesOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          <button onClick={() => !isSidebarCollapsed && setDashboardOpen(!dashboardOpen)} className={`${linkClass} ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`} title="Dashboard">
+            <div className="flex items-center"><LayoutDashboard size={20} className="flex-shrink-0" />{!isSidebarCollapsed && <span className="ml-4">Dashboard</span>}</div>
+            {!isSidebarCollapsed && (dashboardOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />)}
           </button>
-          {categoriesOpen && (
-            <div className="mt-1">
-                <NavLink to="/" className={({ isActive }) => `${childLinkClass} ${isActive ? activeLinkClass : ''}`} end>All Categories</NavLink>
+        </div>
+        {!isSidebarCollapsed && dashboardOpen && (
+            <div className="space-y-1">
+                <NavLink to="/" className={({ isActive }) => `${childLinkClass} ${isActive ? 'text-white' : 'text-gray-400'}`} end title="All Materials">All Materials</NavLink>
                 {appMetadata.categories?.sort().map(cat => (
-                    <NavLink key={cat} to={`/category/${encodeURIComponent(cat)}`} className={({ isActive }) => `${childLinkClass} ${isActive ? activeLinkClass : ''}`}>
-                      {iconMap[cat] || <Box size={16} className="mr-3 flex-shrink-0" />}
-                      <span className="truncate">{cat}</span>
+                    <NavLink key={cat} to={`/category/${encodeURIComponent(cat)}`} title={cat} className={({ isActive }) => `${childLinkClass} ${isActive ? 'text-white' : 'text-gray-400'}`}>
+                      <Box size={16} className="mr-3 flex-shrink-0" /><span className="truncate">{cat}</span>
                     </NavLink>
                 ))}
             </div>
-          )}
-        </div>
-        <div>
-            <button onClick={() => setSuppliersOpen(!suppliersOpen)} className={baseLinkClass}>
-                <div className="flex items-center"><Building size={20} className="mr-3" /><span>Suppliers</span></div>
-                {suppliersOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            </button>
-            {suppliersOpen && (
-                 <div className="mt-1">
-                    {appMetadata.suppliers?.sort().map(sup => (
-                        <NavLink key={sup} to={`/supplier/${encodeURIComponent(sup)}`} className={({ isActive }) => `${childLinkClass} ${isActive ? activeLinkClass : ''}`}>
-                             <ChevronRight size={16} className="mr-3 flex-shrink-0" />
-                             <span className="truncate">{sup}</span>
-                        </NavLink>
-                    ))}
-                </div>
-            )}
-        </div>
-        {/* NEW: Added Delivery and Issuance Log links */}
-        <NavLink to="/delivery-log" className={({isActive}) => `flex items-center p-2 text-gray-300 rounded-md hover:bg-blue-700 hover:text-white transition-colors ${isActive ? activeLinkClass : ''}`}>
-            <Download size={20} className="mr-3" />
-            <span>Delivery Log</span>
+        )}
+
+        <NavLink to="/delivery-log" title="Delivery Log" className={({isActive}) => `${linkClass} ${isActive ? activeLinkClass : ''} ${isSidebarCollapsed ? 'justify-center' : ''}`}>
+            <Download size={20} className="flex-shrink-0"/>{!isSidebarCollapsed && <span className="ml-4">Delivery Log</span>}
         </NavLink>
-        <NavLink to="/issuance-log" className={({isActive}) => `flex items-center p-2 text-gray-300 rounded-md hover:bg-blue-700 hover:text-white transition-colors ${isActive ? activeLinkClass : ''}`}>
-            <Upload size={20} className="mr-3" />
-            <span>Issuance Log</span>
+        <NavLink to="/issuance-log" title="Issuance Log" className={({isActive}) => `${linkClass} ${isActive ? activeLinkClass : ''} ${isSidebarCollapsed ? 'justify-center' : ''}`}>
+            <Upload size={20} className="flex-shrink-0"/>{!isSidebarCollapsed && <span className="ml-4">Issuance Log</span>}
         </NavLink>
+
+        {/* MODIFIED: New Inventory Status section */}
+        <div className="pt-2 border-t border-gray-700/50 mt-4">
+            <NavLink to="/balanced-materials" title="Balanced Materials" className={({isActive}) => `${linkClass} ${isActive ? activeLinkClass : ''} ${isSidebarCollapsed ? 'justify-center' : ''}`}>
+                <Scale size={20} className="flex-shrink-0"/>{!isSidebarCollapsed && <span className="ml-4">Balanced Materials</span>}
+            </NavLink>
+            <NavLink to="/status/surplus" title="Surplus Materials" className={({isActive}) => `${linkClass} ${isActive ? activeLinkClass : ''} ${isSidebarCollapsed ? 'justify-center' : ''}`}>
+                <CheckCircle size={20} className="flex-shrink-0 text-green-400"/>{!isSidebarCollapsed && <span className="ml-4">Surplus Materials</span>}
+            </NavLink>
+             <NavLink to="/status/deficit" title="Deficit Materials" className={({isActive}) => `${linkClass} ${isActive ? activeLinkClass : ''} ${isSidebarCollapsed ? 'justify-center' : ''}`}>
+                <AlertCircle size={20} className="flex-shrink-0 text-red-400"/>{!isSidebarCollapsed && <span className="ml-4">Deficit Materials</span>}
+            </NavLink>
+             <NavLink to="/status/exact" title="Exact Materials" className={({isActive}) => `${linkClass} ${isActive ? activeLinkClass : ''} ${isSidebarCollapsed ? 'justify-center' : ''}`}>
+                <MinusCircle size={20} className="flex-shrink-0 text-yellow-400"/>{!isSidebarCollapsed && <span className="ml-4">Exact Materials</span>}
+            </NavLink>
+        </div>
+
       </nav>
-      <div className="p-4 border-t border-gray-700">
-          <p className="text-sm text-gray-400 truncate" title={currentUser?.email}>{currentUser?.email}</p>
-          <button onClick={() => signOut(auth)} className="w-full mt-2 flex items-center justify-center p-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-             <LogOut size={16} className="mr-2"/>
-             Sign Out
+      <div className="p-4 border-t border-gray-700 flex-shrink-0">
+          <button onClick={toggleSidebar} title={isSidebarCollapsed ? 'Expand Menu' : 'Collapse Menu'} className="w-full flex items-center justify-center p-3 text-gray-300 rounded-lg hover:bg-blue-700">
+             {isSidebarCollapsed ? <Menu size={20}/> : <X size={20}/>}
           </button>
       </div>
     </div>
