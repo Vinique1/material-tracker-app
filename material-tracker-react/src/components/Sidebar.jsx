@@ -15,7 +15,11 @@ const Sidebar = () => {
   const activeLinkClass = "bg-blue-700 text-white";
   
   const iconMap = {
-      Pipes: <Grip size={16} className="mr-3 flex-shrink-0" />,
+      Couplings: <Grip size={16} className="mr-3 flex-shrink-0" />,
+      Flanges: <Grip size={16} className="mr-3 flex-shrink-0" />,
+      Olet: <Grip size={16} className="mr-3 flex-shrink-0" />,
+      Reducers: <Grip size={16} className="mr-3 flex-shrink-0" />,
+      Tees: <Grip size={16} className="mr-3 flex-shrink-0" />
       // Add other category icons here if desired
   };
 
