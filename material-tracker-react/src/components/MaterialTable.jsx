@@ -120,8 +120,17 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
         const expected = material.expectedQty || 0;
         const balance = delivered - issued;
         
-        // NEW: Check if the category is 'Pipes' for conditional formatting
         const isPipe = material.category?.toLowerCase() === 'pipes';
+
+        // NEW: Smart number formatting function
+        const formatNumber = (num) => {
+            if (isPipe) {
+                // For pipes, round to max 2 decimal places and let JS remove trailing zeros
+                return Math.round(num * 100) / 100;
+            }
+            // For all others, round to the nearest whole number
+            return Math.round(num);
+        };
 
         const baseCells = (
             <>
@@ -140,18 +149,14 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
                 dynamicCells = (<>
                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td>
-                    <td className="px-6 py-4 text-center text-sm font-bold text-green-600">
-                        {isPipe ? (delivered - expected).toFixed(1) : Math.round(delivered - expected)}
-                    </td>
+                    <td className="px-6 py-4 text-center text-sm font-bold text-green-600">{formatNumber(delivered - expected)}</td>
                 </>);
                 break;
             case 'deficit':
                 dynamicCells = (<>
                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td>
-                    <td className="px-6 py-4 text-center text-sm font-bold text-red-500">
-                         {isPipe ? (expected - delivered).toFixed(1) : Math.round(expected - delivered)}
-                    </td>
+                    <td className="px-6 py-4 text-center text-sm font-bold text-red-500">{formatNumber(expected - delivered)}</td>
                 </>);
                 break;
             case 'exact':
@@ -165,9 +170,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
                     <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">{expected}</td>
                     <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">{delivered}</td>
                     <td className="px-6 py-4 text-center text-sm text-yellow-600 font-semibold">{issued}</td>
-                    <td className={`px-6 py-4 text-center text-sm font-bold ${balance >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
-                        {isPipe ? balance.toFixed(1) : Math.round(balance)}
-                    </td>
+                    <td className={`px-6 py-4 text-center text-sm font-bold ${balance >= 0 ? 'text-blue-500' : 'text-red-500'}`}>{formatNumber(balance)}</td>
                  </>);
         }
 
