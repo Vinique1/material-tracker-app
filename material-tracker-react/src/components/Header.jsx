@@ -1,9 +1,9 @@
-import React from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext'; // MODIFIED: Import useTheme from new context
-import { signOut } from 'firebase/auth';
-import { auth } from '../firebase';
-import { LogOut } from 'lucide-react'; // MODIFIED: Removed Sun, Moon as they're not needed with select
+import React from "react";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext"; // MODIFIED: Import useTheme from new context
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
+import { LogOut } from "lucide-react"; // MODIFIED: Removed Sun, Moon as they're not needed with select
 
 const Header = () => {
   const { currentUser } = useAuth();
@@ -19,7 +19,9 @@ const Header = () => {
       <div className="flex items-center space-x-4">
         {/* NEW: Theme Select Dropdown */}
         <div className="flex items-center space-x-2">
-          <label htmlFor="theme-select" className="sr-only">Select theme</label>
+          <label htmlFor="theme-select" className="sr-only">
+            Select theme
+          </label>
           <select
             id="theme-select"
             value={theme}
@@ -32,14 +34,19 @@ const Header = () => {
           </select>
         </div>
         <div className="text-right hidden sm:block">
-            <p className="text-sm font-medium text-gray-800 dark:text-gray-200" title={currentUser?.email}>{currentUser?.email}</p>
+          <p
+            className="text-sm font-medium text-gray-800 dark:text-gray-200"
+            title={currentUser?.email}
+          >
+            {currentUser?.email}
+          </p>
         </div>
         <button
-            onClick={handleSignOut}
-            className="p-2 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20"
-            title="Sign Out"
+          onClick={handleSignOut}
+          className="p-2 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20"
+          title="Sign Out"
         >
-            <LogOut size={20} />
+          <LogOut size={20} />
         </button>
       </div>
     </header>

@@ -1,16 +1,13 @@
-import React, { createContext, useContext, useState } from 'react'; // MODIFIED: Removed useEffect
+import React, { createContext, useContext, useState } from "react"; // MODIFIED: Removed useEffect
 
 const LayoutContext = createContext();
-
 export const useLayout = () => useContext(LayoutContext);
 
 export const LayoutProvider = ({ children }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   // MODIFIED: Removed theme state and useEffect
 
-  const toggleSidebar = () => {
-    setIsSidebarCollapsed(prevState => !prevState);
-  };
+  const toggleSidebar = () => setIsSidebarCollapsed((prev) => !prev);
 
   const value = {
     isSidebarCollapsed,
@@ -19,8 +16,6 @@ export const LayoutProvider = ({ children }) => {
   };
 
   return (
-    <LayoutContext.Provider value={value}>
-      {children}
-    </LayoutContext.Provider>
+    <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>
   );
 };
