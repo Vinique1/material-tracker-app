@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
-import { Plus, Search, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import StatsCards from './StatsCards';
 import AddEditMaterialModal from './AddEditMaterialModal';
@@ -22,16 +22,17 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
     useEffect(() => {
         const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
         let q;
-        if (filterKey && filterValue && filterKey !== 'status' && filterKey !== 'balanced-materials') {
+        if ((filterKey === 'category' || filterKey === 'supplier') && filterValue) {
             q = query(materialsCollectionRef, where(filterKey, "==", filterValue));
         } else {
             q = query(materialsCollectionRef);
         }
+        
         const unsubscribe = onSnapshot(q, snapshot => {
-            const materialsData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            setMaterials(materialsData);
+            setMaterials(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
             setCurrentPage(1);
         }, (error) => console.error("Error fetching materials: ", error));
+        
         return () => unsubscribe();
     }, [ADMIN_UID, filterKey, filterValue]);
 
@@ -46,7 +47,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
     };
     
     const processedMaterials = useMemo(() => {
-        let filtered = materials;
+        let filtered = [...materials];
         if (statusFilter) {
             filtered = filtered.filter(m => {
                 const delivered = m.delivered || 0;
@@ -54,11 +55,16 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
                 if (statusFilter === 'surplus') return delivered > expected;
                 if (statusFilter === 'deficit') return delivered < expected && delivered > 0;
                 if (statusFilter === 'exact') return delivered === expected && delivered > 0;
-                return true;
+                return false;
             });
         }
+        
         if (searchTerm) {
-            filtered = filtered.filter(m => m.description.toLowerCase().includes(searchTerm.toLowerCase()));
+            const searchKeywords = searchTerm.toLowerCase().split(' ').filter(kw => kw.trim() !== '');
+            filtered = filtered.filter(m => {
+                const descriptionText = m.description.toLowerCase();
+                return searchKeywords.every(kw => descriptionText.includes(kw));
+            });
         }
         return filtered;
     }, [materials, searchTerm, statusFilter]);
@@ -122,13 +128,10 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
         
         const isPipe = material.category?.toLowerCase() === 'pipes';
 
-        // NEW: Smart number formatting function
         const formatNumber = (num) => {
             if (isPipe) {
-                // For pipes, round to max 2 decimal places and let JS remove trailing zeros
                 return Math.round(num * 100) / 100;
             }
-            // For all others, round to the nearest whole number
             return Math.round(num);
         };
 
@@ -168,15 +171,27 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
             default:
                  dynamicCells = (<>
                     <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">{expected}</td>
-                    <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">{delivered}</td>
-                    <td className="px-6 py-4 text-center text-sm text-yellow-600 font-semibold">{issued}</td>
+                    <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">{formatNumber(delivered)}</td>
+                    <td className="px-6 py-4 text-center text-sm text-yellow-600 font-semibold">{formatNumber(issued)}</td>
                     <td className={`px-6 py-4 text-center text-sm font-bold ${balance >= 0 ? 'text-blue-500' : 'text-red-500'}`}>{formatNumber(balance)}</td>
                  </>);
         }
 
-        return <tr key={material.id}>{baseCells}{dynamicCells}<td className="px-6 py-4 text-center text-sm font-medium">{!currentUser.isViewer && <div className="flex items-center justify-center space-x-4"><button onClick={() => {setEditingMaterial(material); setIsMaterialModalOpen(true);}} className="text-blue-600 hover:text-blue-900"><Edit className="h-4 w-4" /></button><button onClick={() => handleDelete(material.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button></div>}</td></tr>;
+        return (
+            <tr key={material.id}>
+                {baseCells}
+                {dynamicCells}
+                <td className="px-6 py-4 text-center text-sm font-medium">
+                    {!currentUser.isViewer && 
+                        <div className="flex items-center justify-center space-x-4">
+                            <button onClick={() => {setEditingMaterial(material); setIsMaterialModalOpen(true);}} className="text-blue-600 hover:text-blue-900"><Edit className="h-4 w-4" /></button>
+                            <button onClick={() => handleDelete(material.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
+                        </div>
+                    }
+                </td>
+            </tr>
+        );
     };
-
 
     return (
         <>
@@ -185,8 +200,19 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
                 <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4">
                     <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 capitalize">{getPageTitle()}</h2>
                     <div className="flex items-center space-x-4">
-                        <div className="relative"><input type="text" value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} placeholder="Search descriptions..." className="pl-10 pr-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" /><div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div></div>
-                        {!currentUser.isViewer && (<div className="flex items-center space-x-2"><ImportCSV /><button onClick={() => {setEditingMaterial(null); setIsMaterialModalOpen(true);}} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"><Plus className="h-5 w-5" /><span>Add</span></button></div>)}
+                        <div className="relative">
+                            <input type="text" value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} placeholder="Search descriptions..." className="pl-10 pr-10 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>
+                            {searchTerm && (<button onClick={() => { setSearchTerm(''); setCurrentPage(1); }} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><X className="h-5 w-5"/></button>)}
+                        </div>
+                        {!statusFilter && viewType !== 'balanced' && !currentUser.isViewer && (
+                            <div className="flex items-center space-x-2">
+                                <ImportCSV />
+                                <button onClick={() => {setEditingMaterial(null); setIsMaterialModalOpen(true);}} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2" title="Add New Material">
+                                    <Plus className="h-5 w-5" /><span>Add</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="table-responsive">

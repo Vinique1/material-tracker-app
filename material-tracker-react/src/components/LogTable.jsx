@@ -5,11 +5,12 @@ import { doc, runTransaction } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { Edit, Trash2 } from 'lucide-react';
 
-const LogTable = ({ logs, type, onEdit }) => {
+// MODIFIED: Added currentPage and itemsPerPage props
+const LogTable = ({ logs, type, onEdit, currentPage, itemsPerPage }) => {
   const { currentUser, ADMIN_UID } = useAuth();
 
   const handleDelete = async (log) => {
-    if (!window.confirm("Are you sure you want to delete this log? This action is permanent and will update the inventory count.")) return;
+    if (!window.confirm("Are you sure you want to delete this log?")) return;
     
     const toastId = toast.loading("Deleting log...");
     const logRef = doc(db, `${type}_logs`, log.id);
@@ -22,23 +23,16 @@ const LogTable = ({ logs, type, onEdit }) => {
         
         const materialData = materialDoc.data();
         const quantityChange = -log.quantity;
-
         const newDelivered = (materialData.delivered || 0) + (type === 'delivery' ? quantityChange : 0);
         const newIssued = (materialData.issued || 0) + (type === 'issuance' ? quantityChange : 0);
 
-        if (newDelivered < newIssued) {
-            throw new Error("Deletion failed: This would result in a negative stock balance.");
-        }
+        if (newDelivered < newIssued) { throw new Error("Deletion failed: Would result in negative stock."); }
 
         transaction.delete(logRef);
-        transaction.update(materialRef, {
-            delivered: newDelivered,
-            issued: newIssued,
-        });
+        transaction.update(materialRef, { delivered: newDelivered, issued: newIssued });
       });
       toast.success("Log deleted successfully.", { id: toastId });
     } catch (err) {
-      console.error("Delete transaction failed:", err);
       toast.error(err.message || "Failed to delete log.", { id: toastId });
     }
   };
@@ -63,8 +57,8 @@ const LogTable = ({ logs, type, onEdit }) => {
           <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
             {logs.length > 0 ? logs.map((log, index) => (
               <tr key={log.id}>
-                {/* MODIFIED: Styling updated for consistency */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{index + 1}</td>
+                {/* MODIFIED: Implemented continuous S/N calculation */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.date}</td>
                 <td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">{log.materialDescription}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.materialGrade || 'N/A'}</td>
