@@ -7,9 +7,9 @@ import { X, LoaderCircle, ChevronsUpDown, Check, Layers, Maximize2 } from 'lucid
 import { Combobox, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 
-const LogForm = ({ type, log, onClose }) => {
+// MODIFIED: Receives allMaterials as a prop now
+const LogForm = ({ type, log, onClose, allMaterials }) => {
   const { currentUser, ADMIN_UID } = useAuth();
-  const [allMaterials, setAllMaterials] = useState([]);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [quantity, setQuantity] = useState(log?.quantity || '');
   const [remarks, setRemarks] = useState(log?.remarks || '');
@@ -19,26 +19,13 @@ const LogForm = ({ type, log, onClose }) => {
   const [materialQuery, setMaterialQuery] = useState('');
   const [quantityStep, setQuantityStep] = useState(1);
 
+    // MODIFIED: useEffect now just sets the initial selected material if editing
   useEffect(() => {
-    const materialsRef = collection(db, `materials/${ADMIN_UID}/items`);
-    getDocs(materialsRef).then(snapshot => {
-      const materialsList = snapshot.docs.map(doc => {
-        const data = doc.data();
-        const delivered = data.delivered || 0;
-        return {
-          id: doc.id,
-          // MODIFIED: Changed label format from Balance (Bal) to Quantity Delivered (QD)
-          label: `${data.description} (QE: ${data.expectedQty}, QD: ${delivered})`,
-          ...data
-        };
-      });
-      setAllMaterials(materialsList);
-      if (log) {
-        const preselected = materialsList.find(m => m.id === log.materialId);
-        setSelectedMaterial(preselected);
-      }
-    });
-  }, [ADMIN_UID, log]);
+    if (log && allMaterials.length > 0) {
+      const preselected = allMaterials.find(m => m.id === log.materialId);
+      setSelectedMaterial(preselected);
+    }
+  }, [log, allMaterials]);
   
   useEffect(() => {
     setQuantityStep(selectedMaterial?.category?.toLowerCase() === 'pipes' ? 0.01 : 1);
@@ -50,7 +37,7 @@ const LogForm = ({ type, log, onClose }) => {
   const runLogTransaction = async () => {
     const logCollectionRef = collection(db, `${type}_logs`);
     const materialRef = doc(db, `materials/${ADMIN_UID}/items`, selectedMaterial.id);
-    const logRef = log ? doc(logCollectionRef, log.id) : doc(logCollectionRef);
+    const logRef = log ? doc(logCollectionRef, log.id) : doc(logRef);
     await runTransaction(db, async (transaction) => {
         const materialDoc = await transaction.get(materialRef);
         if (!materialDoc.exists()) throw new Error("Material does not exist!");
@@ -65,13 +52,22 @@ const LogForm = ({ type, log, onClose }) => {
             const currentBalance = (materialData.delivered || 0) - (materialData.issued || 0);
             if(quantityChange > currentBalance) throw new Error(`Issuance failed. Only ${currentBalance} items are in stock.`);
         }
+        
         const logData = {
-          materialId: selectedMaterial.id, materialDescription: selectedMaterial.description,
-          materialGrade: selectedMaterial.materialGrade, boreSize1: selectedMaterial.boreSize1, boreSize2: selectedMaterial.boreSize2 || null,
-          quantity: numQuantity, remarks, date: logDate,
+          materialId: selectedMaterial.id,
+          materialDescription: selectedMaterial.description,
+          category: selectedMaterial.category, // NEW: Save category with the log
+          materialGrade: selectedMaterial.materialGrade,
+          boreSize1: selectedMaterial.boreSize1,
+          boreSize2: selectedMaterial.boreSize2 || null,
+          quantity: numQuantity,
+          remarks,
+          date: logDate,
           supplier: type === 'delivery' ? selectedMaterial.supplier : null,
-          lastEditedBy: currentUser.email, lastEditedAt: serverTimestamp(),
+          lastEditedBy: currentUser.email,
+          lastEditedAt: serverTimestamp(),
         };
+        
         if (log) { transaction.update(logRef, logData); } 
         else { transaction.set(logRef, { ...logData, createdBy: currentUser.email, createdAt: serverTimestamp() }); }
         transaction.update(materialRef, { delivered: newDelivered, issued: newIssued });
@@ -109,13 +105,13 @@ const LogForm = ({ type, log, onClose }) => {
               <Combobox value={selectedMaterial} onChange={setSelectedMaterial} nullable disabled={!!log}>
                 {({ open }) => (
                   <div className="relative">
-                    <Combobox.Input className="w-full h-11 rounded-md border border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2 pl-3 pr-10 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500" displayValue={(material) => material?.label || ''} onChange={(event) => setMaterialQuery(event.target.value)} placeholder="Select a material..."/>
+                    <Combobox.Input className="w-full h-11 rounded-md border border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2 pl-3 pr-10 text-sm shadow-sm" displayValue={(material) => material?.label || ''} onChange={(event) => setMaterialQuery(event.target.value)} placeholder="Select a material..."/>
                     <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2"><ChevronsUpDown className="h-5 w-5 text-gray-400" /></Combobox.Button>
                     <Transition as={Fragment} show={open} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
-                        <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm z-20">
+                        <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black/5 z-20">
                             {(type === 'issuance' ? issuanceOptions : filteredMaterials).map((material) => (
                                 <Combobox.Option key={material.id} value={material} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900 dark:text-gray-300'}`}>
-                                    {({ selected, active }) => (<> <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{material.label}</span> {selected ? <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check/></span> : null} </>)}
+                                    {({ selected }) => (<> <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{material.label}</span> {selected ? <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check/></span> : null} </>)}
                                 </Combobox.Option>
                             ))}
                         </Combobox.Options>

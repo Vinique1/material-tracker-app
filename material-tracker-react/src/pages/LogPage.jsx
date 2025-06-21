@@ -14,8 +14,9 @@ import { Download, Upload, FileDown, Plus, Search, X } from 'lucide-react';
 const ITEMS_PER_PAGE = 10;
 
 const LogPage = ({ type }) => {
-  const { currentUser } = useAuth();
+  const { currentUser, appMetadata, ADMIN_UID } = useAuth();
   const [allLogs, setAllLogs] = useState([]);
+  const [allMaterials, setAllMaterials] = useState([]); // NEW: State for all materials
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingLog, setEditingLog] = useState(null);
   
@@ -23,6 +24,7 @@ const LogPage = ({ type }) => {
   const [selectedDate, setSelectedDate] = useState('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -32,6 +34,16 @@ const LogPage = ({ type }) => {
   }), []);
   
   const currentConfig = config[type];
+
+  // NEW: Effect to fetch master list of all materials
+  useEffect(() => {
+    const materialsRef = collection(db, `materials/${ADMIN_UID}/items`);
+    const unsubscribe = onSnapshot(materialsRef, (snapshot) => {
+      const materialsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setAllMaterials(materialsList);
+    });
+    return () => unsubscribe();
+  }, [ADMIN_UID]);
 
   useEffect(() => {
     const logCollectionRef = collection(db, currentConfig.collectionName);
@@ -43,27 +55,23 @@ const LogPage = ({ type }) => {
   useEffect(() => {
     if (!currentUser) return;
     const logCollectionRef = collection(db, currentConfig.collectionName);
+    
     let q = query(logCollectionRef, orderBy('date', 'desc'));
-    if (selectedDate === 'custom' && startDate && endDate) {
-        q = query(q, where('date', '>=', startDate), where('date', '<=', endDate));
-    } else if (selectedDate !== 'all' && selectedDate !== 'custom') {
-        q = query(q, where('date', '==', selectedDate));
-    }
+
+    if (selectedCategory !== 'all') { q = query(q, where('category', '==', selectedCategory)); }
+    if (selectedDate === 'custom' && startDate && endDate) { q = query(q, where('date', '>=', startDate), where('date', '<=', endDate)); } 
+    else if (selectedDate !== 'all' && selectedDate !== 'custom') { q = query(q, where('date', '==', selectedDate)); }
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setAllLogs(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       setCurrentPage(1);
     }, (error) => toast.error(`Failed to fetch ${type} logs.`));
-    return () => unsubscribe();
-  }, [currentUser, currentConfig.collectionName, type, selectedDate, startDate, endDate]);
 
-  // MODIFIED: Advanced multi-keyword search
+    return () => unsubscribe();
+  }, [currentUser, currentConfig.collectionName, type, selectedDate, startDate, endDate, selectedCategory]);
+
   const searchedLogs = useMemo(() => {
-    if (!searchTerm) return allLogs;
-    const searchKeywords = searchTerm.toLowerCase().split(' ').filter(kw => kw.trim() !== '');
-    return allLogs.filter(log => {
-        const descriptionText = log.materialDescription.toLowerCase();
-        return searchKeywords.every(kw => descriptionText.includes(kw));
-    });
+    return allLogs.filter(log => log.materialDescription.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [allLogs, searchTerm]);
 
   const paginatedLogs = useMemo(() => {
@@ -86,7 +94,14 @@ const LogPage = ({ type }) => {
       </div>
       
       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Category</label>
+                <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="all">All Categories</option>
+                    {appMetadata.categories?.sort().map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
+            </div>
             <div>
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Date</label>
                 <select value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -96,13 +111,7 @@ const LogPage = ({ type }) => {
                 </select>
             </div>
             {selectedDate === 'custom' && (<><div><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full h-10 px-2 mt-1 border rounded-md dark:bg-gray-700 dark:border-gray-600"/></div><div><label className="text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full h-10 px-2 mt-1 border rounded-md dark:bg-gray-700 dark:border-gray-600"/></div></>)}
-            <div className="md:col-span-2 lg:col-span-1"><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Search Material</label>
-                <div className="relative mt-1">
-                    <input type="text" value={searchTerm} onChange={e => {setSearchTerm(e.target.value); setCurrentPage(1);}} placeholder="Search descriptions..." className="pl-10 pr-10 w-full h-10 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>
-                    {searchTerm && <button onClick={() => setSearchTerm('')} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><X className="h-5 w-5"/></button>}
-                </div>
-            </div>
+            <div className="lg:col-start-4"><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Search Material</label><div className="relative mt-1"><input type="text" value={searchTerm} onChange={e => {setSearchTerm(e.target.value); setCurrentPage(1);}} placeholder="Search descriptions..." className="pl-10 pr-10 w-full h-10 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" /><div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>{searchTerm && <button onClick={() => setSearchTerm('')} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><X className="h-5 w-5"/></button>}</div></div>
         </div>
         <div className="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Export:</span>
@@ -111,9 +120,9 @@ const LogPage = ({ type }) => {
         </div>
       </div>
 
-      <LogTable logs={paginatedLogs} type={type} onEdit={handleOpenForm} currentPage={currentPage} itemsPerPage={ITEMS_PER_PAGE} />
+      <LogTable logs={paginatedLogs} type={type} onEdit={handleOpenForm} currentPage={currentPage} itemsPerPage={ITEMS_PER_PAGE} allMaterials={allMaterials} />
       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-      {isFormOpen && <LogForm type={type} log={editingLog} onClose={handleCloseForm}/>}
+      {isFormOpen && <LogForm type={type} log={editingLog} onClose={handleCloseForm} allMaterials={allMaterials} />}
     </div>
   );
 };
