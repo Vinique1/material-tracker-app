@@ -1,88 +1,119 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Box, Truck, LineChart } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
+import clsx from 'clsx';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      console.error("Login Error:", err.code);
-      // MODIFIED: Switched to specific error handling
-      switch (err.code) {
-        case 'auth/user-not-found':
-        case 'auth/invalid-email':
-          setError('No account found with that email address.');
-          break;
-        case 'auth/wrong-password':
-          setError('Incorrect password. Please try again.');
-          break;
-        case 'auth/invalid-credential':
-            setError('Invalid email or password. Please try again.');
-            break;
-        default:
-          setError('Failed to sign in. Please try again later.');
-          break;
-      }
-    }
-  };
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError('');
+        setIsSubmitting(true);
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (err) {
+            // This error handling is well done, no changes needed here.
+            switch (err.code) {
+                case 'auth/user-not-found':
+                case 'auth/invalid-email':
+                case 'auth/wrong-password':
+                case 'auth/invalid-credential':
+                    setError('Invalid email or password. Please try again.');
+                    break;
+                default:
+                    setError('An unexpected error occurred. Please try again later.');
+                    break;
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
-  const Feature = ({ icon, text }) => (
-    <div className="flex items-center gap-4">
-      <div className="flex-shrink-0 h-10 w-10 bg-white/10 rounded-lg flex items-center justify-center">
-        {icon}
-      </div>
-      <span className="text-sm opacity-90">{text}</span>
-    </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-      <div className="flex w-full max-w-5xl min-h-[600px] rounded-2xl overflow-hidden shadow-2xl">
-        <div className="hidden md:flex flex-1 bg-gradient-to-br from-blue-600 to-blue-800 text-white p-10 flex-col relative">
-          <div className="absolute top-8 left-8 flex items-center gap-3">
-            <div className="h-12 w-12 bg-white rounded-xl p-1 flex items-center justify-center">
-               <img src="/Steve Logo.png" alt="Logo" className="object-contain" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/40x40/ffffff/000000?text=S'; }} />
+    return (
+        // 1. COLOR: Softer, design-accurate background color
+        <div className="min-h-screen w-full text-white font-montserrat relative overflow-hidden bg-[#1E2A5B]">
+            {/* 2. BACKGROUND: Reduced opacity for a more subtle texture */}
+            <div className="absolute inset-0 bg-cover bg-center opacity-10 z-10" style={{ backgroundImage: "url('/Inventory.jpg')" }}></div>
+            
+            {/* Decorative graphics - no changes needed, they are fine */}
+            <div className="absolute inset-0 z-20 pointer-events-none hidden lg:block">
+                <img src="/graphic1.png" alt="" className="absolute opacity-20" style={{ top: '-8%', left: '41.5%', width: '11.8vw' }} />
+                <img src="/graphic1.png" alt="" className="absolute opacity-20" style={{ top: '88%', left: '91.6%', width: '11.8vw' }} />
+                <img src="/graphic2.png" alt="" className="absolute opacity-20" style={{ top: '6.4%', left: '90.6%', width: '4.5vw' }} />
             </div>
-            <span className="text-xl font-bold">Steve Integrated</span>
-          </div>
-          <div className="m-auto z-10">
-            <h1 className="text-4xl font-bold mb-4 leading-tight">Sign in to your<br/>Inventory Tracker</h1>
-            <p className="max-w-md text-white/80 mb-10">Access your inventory management dashboard to track materials, deliveries, and issues in real-time.</p>
-            <div className="space-y-5">
-              <Feature icon={<Box size={20} />} text="Track materials and inventory levels" />
-              <Feature icon={<Truck size={20} />} text="Monitor deliveries and shipments" />
-              <Feature icon={<LineChart size={20} />} text="Real-time analytics and reporting" />
+            
+            <div className="relative z-30 flex items-center justify-center min-h-screen w-full px-6 sm:px-8 lg:px-12">
+                <div className="w-full max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-11 gap-16 items-center">
+                    
+                    {/* --- Left Column (Typography is now final) --- */}
+                    <div className="lg:col-span-6 flex flex-col h-full text-center lg:text-left">
+                        <header className="mb-0 flex items-center gap-4 justify-center lg:justify-start">
+                            <img src="/Steve Logo.png" alt="Steve Integrated Logo" className="h-12 w-12" />
+                            <h1 className="text-2xl font-semibold">Steve Integrated</h1>
+                        </header>
+
+                        <main className="flex-grow flex flex-col justify-center my-10 lg:my-0">
+                            <h2 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold leading-tight text-white">Login</h2>
+                            <p className="text-xl md:text-2xl text-white/70 mt-4 mb-12">Sign in to continue</p>
+                            <p className="text-base max-w-lg text-white/60 mx-auto lg:mx-0">
+                                Access your inventory management dashboard to track materials, deliveries, and issues in real-time.
+                            </p>
+                            <div className="mt-16">
+                                {/* 3. INTERACTION: Softer hover effect on button */}
+                                <button className="bg-[#FDE047] text-[#1E3A8A] font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 hover:bg-[#FACC15]">
+                                    Learn More
+                                </button>
+                            </div>
+                        </main>
+
+                        <footer className="w-full flex justify-center lg:justify-start">
+                            <img src="/graphic3.png" alt="" className="opacity-20" style={{ width: '6.2vw', minWidth: '50px' }}/>
+                        </footer>
+                    </div>
+
+                    {/* --- Right Column (Login Form) --- */}
+                    <div className="lg:col-span-5 flex items-center justify-center w-full">
+                        <div className="w-full max-w-lg p-10 md:p-14 rounded-3xl bg-white/10 shadow-2xl backdrop-blur-lg">
+                            <div className="text-center mb-10">
+                                <h3 className="text-3xl font-bold text-white">Welcome</h3>
+                                <p className="text-white/60 mt-1">Let's get you signed in.</p>
+                            </div>
+                            
+                            <form onSubmit={handleLogin}>
+                                <div className="space-y-7">
+                                    <div>
+                                        <label htmlFor="email" className="block text-xs font-medium text-white/70 mb-2 uppercase tracking-wider">EMAIL</label>
+                                        {/* 4. INTERACTION: Refined input styles */}
+                                        <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" className="w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border border-transparent focus:outline-none focus:border-yellow-400 focus:bg-white/20 transition-all duration-300" required/>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="password" className="block text-xs font-medium text-white/70 mb-2 uppercase tracking-wider">PASSWORD</label>
+                                        <input type="password" id="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••••" className="w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border border-transparent focus:outline-none focus:border-yellow-400 focus:bg-white/20 transition-all duration-300" required/>
+                                    </div>
+                                </div>
+                                {/* 5. COLOR: More harmonious error message color */}
+                                {error && <p className="text-red-400 text-sm mt-6 text-center">{error}</p>}
+                                <div className="mt-10">
+                                    <button type="submit" disabled={isSubmitting} className={clsx(
+                                        "w-full font-bold py-3 rounded-full text-lg transition-all duration-300",
+                                        // 6. COLOR & INTERACTION: Final button styles
+                                        "bg-[#FDE047] text-[#1E3A8A]", 
+                                        isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#FACC15]"
+                                    )}>
+                                        {isSubmitting ? 'Signing In...' : 'Login'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div className="absolute h-64 w-64 bg-white/5 rounded-full -top-20 -right-20"></div>
-          <div className="absolute h-48 w-48 bg-white/5 rounded-full -bottom-24 -left-20"></div>
         </div>
-        <div className="w-full md:w-1/2 bg-white p-10 md:p-14 flex flex-col justify-center">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Sign in to your account</h2>
-            <p className="text-gray-500 mb-8">Welcome back! Please enter your details.</p>
-          </div>
-          <form onSubmit={handleLogin}>
-            <div className="mb-5">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email address</label>
-              <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" /><input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="user@example.com" required /></div>
-            </div>
-            <div className="mb-6"><label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">Password</label><div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" /><input type="password" id="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your password" required /></div></div>
-            {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
-            <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Sign In</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Login;
