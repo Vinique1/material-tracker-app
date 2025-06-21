@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react'; // MODIFIED: Removed useEffect
 
 const LayoutContext = createContext();
 
@@ -6,15 +6,7 @@ export const useLayout = () => useContext(LayoutContext);
 
 export const LayoutProvider = ({ children }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-    const isDark = theme === 'dark';
-    
-    root.classList.toggle('dark', isDark);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  // MODIFIED: Removed theme state and useEffect
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(prevState => !prevState);
@@ -23,8 +15,7 @@ export const LayoutProvider = ({ children }) => {
   const value = {
     isSidebarCollapsed,
     toggleSidebar,
-    theme,
-    setTheme,
+    // MODIFIED: Removed theme and setTheme from value
   };
 
   return (

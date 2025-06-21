@@ -9,7 +9,7 @@ export default defineConfig({
     // MODIFIED: Pass config directly to the plugin
     tailwindcss({
       config: {
-        darkMode: 'class',
+        darkMode: 'class', // Ensure this is set to 'class'
         content: [
           "./index.html",
           "./src/**/*.{js,ts,jsx,tsx}",

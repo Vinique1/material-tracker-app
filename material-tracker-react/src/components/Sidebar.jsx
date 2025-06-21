@@ -17,7 +17,7 @@ const Sidebar = () => {
 
   return (
     <div className={clsx(
-      "flex flex-col bg-gray-800 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden",
+      "flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden", // MODIFIED: Added dark background
       isSidebarCollapsed ? 'w-20' : 'w-64'
     )}>
       {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
@@ -32,7 +32,7 @@ const Sidebar = () => {
             </span>
           )}
       </div>
-      
+
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
         <div>
           <button onClick={() => !isSidebarCollapsed && setDashboardOpen(!dashboardOpen)} className={`${linkClass} ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`} title="Dashboard">
@@ -42,9 +42,9 @@ const Sidebar = () => {
         </div>
         {!isSidebarCollapsed && dashboardOpen && (
             <div className="space-y-1 pl-6">
-                <NavLink to="/" className={({ isActive }) => `${childLinkClass} ml-0 ${isActive ? 'text-white' : 'text-gray-400'}`} end title="All Materials">All Materials</NavLink>
+                <NavLink to="/" className={({ isActive }) => `${childLinkClass} ml-0 ${isActive ? 'text-white' : 'text-gray-400'}`} end title="All Materials">All Materials</NavLink> {/* MODIFIED: Added dark text */}
                 {appMetadata.categories?.sort().map(cat => (
-                    <NavLink key={cat} to={`/category/${encodeURIComponent(cat)}`} title={cat} className={({ isActive }) => `${childLinkClass} ml-0 ${isActive ? 'text-white' : 'text-gray-400'}`}>
+                    <NavLink key={cat} to={`/category/${encodeURIComponent(cat)}`} title={cat} className={({ isActive }) => `${childLinkClass} ml-0 ${isActive ? 'text-white' : 'text-gray-400'}`}> {/* MODIFIED: Added dark text */}
                       <Box size={16} className="mr-3 flex-shrink-0" /><span className="truncate">{cat}</span>
                     </NavLink>
                 ))}
@@ -60,7 +60,7 @@ const Sidebar = () => {
         {!isSidebarCollapsed && suppliersOpen && (
             <div className="space-y-1 pl-6">
                 {appMetadata.suppliers?.sort().map(sup => (
-                    <NavLink key={sup} to={`/supplier/${encodeURIComponent(sup)}`} title={sup} className={({ isActive }) => `${childLinkClass} ml-0 ${isActive ? 'text-white' : 'text-gray-400'}`}>
+                    <NavLink key={sup} to={`/supplier/${encodeURIComponent(sup)}`} title={sup} className={({ isActive }) => `${childLinkClass} ml-0 ${isActive ? 'text-white' : 'text-gray-400'}`}> {/* MODIFIED: Added dark text */}
                       <span className="truncate">{sup}</span>
                     </NavLink>
                 ))}

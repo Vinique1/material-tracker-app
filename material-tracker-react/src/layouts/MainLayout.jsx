@@ -10,7 +10,8 @@ const MainLayout = () => {
   const { isSidebarCollapsed, toggleSidebar } = useLayout();
 
   return (
-    <div className="relative h-screen bg-gray-100 dark:bg-gray-900">
+    // MODIFIED: Updated background to be theme-responsive
+    <div className="relative h-screen bg-white dark:bg-gray-900">
       <div className={`grid h-full transition-all duration-300 ${isSidebarCollapsed ? 'grid-cols-[80px_1fr]' : 'grid-cols-[256px_1fr]'}`}>
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -20,7 +21,7 @@ const MainLayout = () => {
           </main>
         </div>
       </div>
-      
+
       {/* MODIFIED: Added -translate-x-1/2 to perfectly center the button on the border */}
       <div
         className={clsx(
@@ -33,8 +34,8 @@ const MainLayout = () => {
             title={isSidebarCollapsed ? "Expand Menu" : "Collapse Menu"}
             className="w-full h-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-500"
         >
-            <ChevronsLeft 
-                size={20} 
+            <ChevronsLeft
+                size={20}
                 className={clsx(
                 "transition-transform duration-300 ease-in-out",
                 isSidebarCollapsed && "rotate-180"
