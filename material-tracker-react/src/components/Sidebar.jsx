@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLayout } from '../context/LayoutContext';
-import { Box, Building, ChevronDown, ChevronRight, LayoutDashboard, Download, Upload, Menu, CheckCircle, MinusCircle, AlertCircle, Scale } from 'lucide-react';
+import { Box, Building, ChevronDown, ChevronRight, LayoutDashboard, Download, Upload, CheckCircle, MinusCircle, AlertCircle, Scale } from 'lucide-react';
 import clsx from 'clsx';
 
 const Sidebar = () => {
   const { appMetadata } = useAuth();
-  const { isSidebarCollapsed, toggleSidebar } = useLayout();
+  const { isSidebarCollapsed } = useLayout();
   const [dashboardOpen, setDashboardOpen] = useState(true);
-  const [suppliersOpen, setSuppliersOpen] = useState(false); // RESTORED: State for suppliers dropdown
+  const [suppliersOpen, setSuppliersOpen] = useState(false);
 
   const linkClass = "flex items-center p-3 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white transition-colors w-full";
   const activeLinkClass = "bg-blue-700 text-white";
@@ -20,22 +20,17 @@ const Sidebar = () => {
       "flex flex-col bg-gray-800 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden",
       isSidebarCollapsed ? 'w-20' : 'w-64'
     )}>
+      {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
       <div className={clsx(
         "flex items-center h-20 border-b border-gray-700 flex-shrink-0",
-        isSidebarCollapsed ? "justify-center px-2" : "px-4"
+        isSidebarCollapsed ? "justify-center" : "px-4 justify-start"
       )}>
-        <button 
-          onClick={toggleSidebar} 
-          title={isSidebarCollapsed ? "Expand Menu" : "Collapse Menu"} 
-          className="flex items-center p-2 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white"
-        >
-            <img src="/Steve Logo.png" alt="Logo" className="h-10 w-10 flex-shrink-0" />
-            {!isSidebarCollapsed && (
-                <span className="ml-2 font-bold text-xl whitespace-nowrap">
-                    Steve Integrated
-                </span>
-            )}
-        </button>
+          <img src="/Steve Logo.png" alt="Logo" className="h-10 w-10 flex-shrink-0" />
+          {!isSidebarCollapsed && (
+            <span className="ml-2 font-bold text-xl whitespace-nowrap">
+              Steve Integrated
+            </span>
+          )}
       </div>
       
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
@@ -56,7 +51,6 @@ const Sidebar = () => {
             </div>
         )}
 
-        {/* MODIFIED: Re-implemented the suppliers dropdown */}
         <div>
           <button onClick={() => !isSidebarCollapsed && setSuppliersOpen(!suppliersOpen)} className={`${linkClass} ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`} title="Suppliers">
             <div className="flex items-center"><Building size={20} className="flex-shrink-0" />{!isSidebarCollapsed && <span className="ml-4">Suppliers</span>}</div>
