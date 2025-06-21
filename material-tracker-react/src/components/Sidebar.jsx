@@ -33,7 +33,7 @@ const Sidebar = () => {
   return (
     <div
       className={clsx(
-        "flex flex-col bg-white dark:bg-gray-800 text-white h-full overflow-x-hidden",
+        "flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full overflow-x-hidden", // MODIFIED: Added dark background
         isSidebarCollapsed ? "w-20" : "w-64"
       )}
     >
@@ -85,14 +85,15 @@ const Sidebar = () => {
               to="/"
               className={({ isActive }) =>
                 `${childLinkClass} ml-0 ${
-                  isActive ? "text-black dark:text-white" : "text-gray-400"
+                  isActive ? "text-white" : "text-gray-400"
                 }`
               }
               end
               title="All Materials"
             >
               All Materials
-            </NavLink>
+            </NavLink>{" "}
+            {/* MODIFIED: Added dark text */}
             {appMetadata.categories?.sort().map((cat) => (
               <NavLink
                 key={cat}
@@ -100,10 +101,12 @@ const Sidebar = () => {
                 title={cat}
                 className={({ isActive }) =>
                   `${childLinkClass} ml-0 ${
-                    isActive ? "text-black dark:text-white" : "text-gray-400"
+                    isActive ? "text-white" : "text-gray-400"
                   }`
                 }
               >
+                {" "}
+                {/* MODIFIED: Added dark text */}
                 <Box size={16} className="mr-3 flex-shrink-0" />
                 <span className="truncate">{cat}</span>
               </NavLink>
@@ -146,6 +149,8 @@ const Sidebar = () => {
                   }`
                 }
               >
+                {" "}
+                {/* MODIFIED: Added dark text */}
                 <span className="truncate">{sup}</span>
               </NavLink>
             ))}

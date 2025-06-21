@@ -93,7 +93,7 @@ const ImportCSV = () => {
         if (materialData.boreSize1) newMetadata.boreSize1Options.add(materialData.boreSize1);
         if (materialData.boreSize2) newMetadata.boreSize2Options.add(materialData.boreSize2);
       });
-      
+
       // --- Prepare Metadata Update ---
       batch.update(metadataRef, {
         categories: arrayUnion(...Array.from(newMetadata.categories)),
@@ -102,7 +102,7 @@ const ImportCSV = () => {
         boreSize1Options: arrayUnion(...Array.from(newMetadata.boreSize1Options)),
         boreSize2Options: arrayUnion(...Array.from(newMetadata.boreSize2Options)),
       });
-      
+
       toast.loading(`Uploading ${data.length} materials...`, { id: toastId });
       await batch.commit();
 

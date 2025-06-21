@@ -3,10 +3,12 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* NEW: This defines the 'dark' variant to apply when the 'dark' class is present on the html element */
+@custom-variant dark (&:where(.dark, .dark *));
+
 body {
   font-family: "Montserrat", sans-serif;
 }
-
 @keyframes spreadFade {
   0% {
     box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6);
