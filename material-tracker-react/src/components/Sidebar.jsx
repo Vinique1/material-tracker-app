@@ -24,16 +24,16 @@ const Sidebar = () => {
   const [suppliersOpen, setSuppliersOpen] = useState(false);
 
   const linkClass =
-    "flex items-center p-3 rounded-lg text-black font-medium dark:text-gray-300 hover:bg-blue-700 hover:text-white  transition-colors w-full";
-  const activeLinkClass = "bg-blue-700 text-black dark:text-white";
-  const childLinkClass = `flex items-center py-2 px-3 text-sm rounded-md hover:text-[#2b7fff] dark:hover:text-white transition-colors ${
+    "flex items-center p-3 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white transition-colors w-full";
+  const activeLinkClass = "bg-blue-700 text-white";
+  const childLinkClass = `flex items-center py-2 px-3 text-sm rounded-md hover:text-white transition-colors ${
     isSidebarCollapsed ? "justify-center" : "ml-6"
   }`;
 
   return (
     <div
       className={clsx(
-        "flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full overflow-x-hidden", // MODIFIED: Added dark background
+        "flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden", // MODIFIED: Added dark background
         isSidebarCollapsed ? "w-20" : "w-64"
       )}
     >
@@ -50,7 +50,7 @@ const Sidebar = () => {
           className="h-10 w-10 flex-shrink-0"
         />
         {!isSidebarCollapsed && (
-          <span className="ml-2 font-bold text-xl whitespace-nowrap text-[#2b7fff] dark:text-white">
+          <span className="ml-2 font-bold text-xl whitespace-nowrap">
             Steve Integrated
           </span>
         )}
