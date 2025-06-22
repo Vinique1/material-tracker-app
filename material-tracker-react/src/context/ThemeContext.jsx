@@ -11,7 +11,8 @@ export const ThemeProvider = ({ children }) => {
       if (storedTheme) {
         return storedTheme;
       }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'system' : 'light'; // Default to 'system'
+      // MODIFIED: Default to 'system' if no stored theme
+      return 'system';
     }
     return 'light'; // Default to light if no window object (e.g., during SSR)
   });

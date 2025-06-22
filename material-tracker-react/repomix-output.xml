@@ -1,0 +1,2410 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.firebase/hosting.ZGlzdA.cache
+.firebaserc
+.gitignore
+eslint.config.js
+firebase.json
+index.html
+package.json
+public/vite.svg
+README.md
+src/App.css
+src/App.jsx
+src/assets/react.svg
+src/components/AddEditMaterialModal.jsx
+src/components/Dashboard.jsx
+src/components/Header.jsx
+src/components/ImportCSV.jsx
+src/components/Loading.jsx
+src/components/LogForm.jsx
+src/components/Login.jsx
+src/components/LogTable.jsx
+src/components/MaterialTable.jsx
+src/components/Pagination.jsx
+src/components/Sidebar.jsx
+src/components/StatsCards.jsx
+src/context/authContext.jsx
+src/context/LayoutContext.jsx
+src/context/ThemeContext.jsx
+src/firebase.js
+src/index.css
+src/layouts/MainLayout.jsx
+src/main.jsx
+src/pages/LogPage.jsx
+src/pages/MaterialListPage.jsx
+tailwind.config.js
+vite.config.js
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".firebase/hosting.ZGlzdA.cache">
+vite.svg,1749218084870,699a02e0e68a579f687d364bbbe7633161244f35af068220aee37b1b33dfb3c7
+Steve Logo.png,1732629368542,3bfb0bde2112da01a6053f8b3b35bf512eeeb488f58989a2cc4b67e1be58caa1
+index.html,1750414898091,f0e234005a0d3a8e84d132bfc8c356bbea6166731eb524c01aa1fddaf31b27d9
+assets/purify.es-CQJ0hv7W.js,1750414898099,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
+assets/index-D8LJpKvn.css,1750414898091,5c94643e14fcdc9dc51f81662eb4bb9eb42aeb80fa82a3cd3ef5754ebbc45470
+assets/index.es-BitkRbfe.js,1750414898099,76b21ff948e3e0d1b9651247c7fb2f95ab779756ae30193c5c3e053122a4d705
+assets/html2canvas.esm-CBrSDip1.js,1750414898091,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
+assets/index-CYW9hG-w.js,1750414898091,c7beeedfdced20ac03e3a84b10b535c77b2b722f41278d19bce7be8fca356598
+</file>
+
+<file path=".firebaserc">
+{
+  "projects": {
+    "default": "inventory-tracker-e5b38"
+  }
+}
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="eslint.config.js">
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+
+export default [
+  { ignores: ['dist'] },
+  {
+    files: ['**/*.{js,jsx}'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
+      },
+    },
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      ...reactHooks.configs.recommended.rules,
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+    },
+  },
+]
+</file>
+
+<file path="firebase.json">
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+</file>
+
+<file path="index.html">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Material Tracker</title>
+    <link href="/src/index.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="package.json">
+{
+  "name": "material-tracker-react",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.4",
+    "@tailwindcss/vite": "^4.1.10",
+    "clsx": "^2.1.1",
+    "firebase": "^11.9.1",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
+    "lucide-react": "^0.516.0",
+    "papaparse": "^5.5.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hot-toast": "^2.5.2",
+    "react-router-dom": "^7.6.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@tailwindcss/postcss": "^4.1.10",
+    "@tailwindcss/vite": "^4.1.10",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.5.2",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.10",
+    "vite": "^6.3.5"
+  }
+}
+</file>
+
+<file path="public/vite.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 257"><defs><linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%"><stop offset="0%" stop-color="#41D1FF"></stop><stop offset="100%" stop-color="#BD34FE"></stop></linearGradient><linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%"><stop offset="0%" stop-color="#FFEA83"></stop><stop offset="8.333%" stop-color="#FFDD35"></stop><stop offset="100%" stop-color="#FFA800"></stop></linearGradient></defs><path fill="url(#IconifyId1813088fe1fbc01fb466)" d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path><path fill="url(#IconifyId1813088fe1fbc01fb467)" d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path></svg>
+</file>
+
+<file path="README.md">
+# React + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+</file>
+
+<file path="src/App.css">
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+</file>
+
+<file path="src/App.jsx">
+import React, { lazy, Suspense } from 'react'; // MODIFIED: Import lazy and Suspense
+import { Routes, Route } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { LayoutProvider } from './context/LayoutContext';
+import Login from './components/Login';
+import MainLayout from './layouts/MainLayout';
+import Loading from './components/Loading'; // NEW: Import the loading component
+
+// NEW: Convert static imports to dynamic imports for lazy loading
+const MaterialListPage = lazy(() => import('./pages/MaterialListPage'));
+const LogPage = lazy(() => import('./pages/LogPage'));
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <LayoutProvider>
+        <AppRoutes />
+      </LayoutProvider>
+    </AuthProvider>
+  );
+};
+
+const AppRoutes = () => {
+  const { currentUser } = useAuth();
+
+  if (!currentUser) {
+    return <Login />;
+  }
+
+  return (
+    // NEW: Wrap Routes in a Suspense component with a loading fallback
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<MaterialListPage />} />
+          <Route path="category/:filterValue" element={<MaterialListPage />} />
+          <Route path="supplier/:filterValue" element={<MaterialListPage />} />
+          <Route path="status/surplus" element={<MaterialListPage statusFilter="surplus" />} />
+          <Route path="status/deficit" element={<MaterialListPage statusFilter="deficit" />} />
+          <Route path="status/exact" element={<MaterialListPage statusFilter="exact" />} />
+          <Route path="delivery-log" element={<LogPage type="delivery" />} />
+          <Route path="issuance-log" element={<LogPage type="issuance" />} />
+          <Route path="balanced-materials" element={<MaterialListPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
+  );
+};
+
+export default App;
+</file>
+
+<file path="src/assets/react.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+</file>
+
+<file path="src/components/AddEditMaterialModal.jsx">
+import React, { useState, useEffect, useRef, Fragment } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../firebase';
+import { doc, updateDoc, addDoc, collection, arrayUnion, serverTimestamp } from 'firebase/firestore';
+import { Combobox, Transition } from '@headlessui/react';
+import { FileText, Tag, Hash, Plus, Check, ChevronsUpDown, LoaderCircle, Info, Maximize2, Layers, X } from 'lucide-react';
+import clsx from 'clsx';
+
+const AddEditMaterialModal = ({ material, onClose }) => {
+    const { currentUser, ADMIN_UID, appMetadata } = useAuth();
+
+    // Form field states
+    const [description, setDescription] = useState(material?.description || '');
+    const [selectedBoreSize1, setSelectedBoreSize1] = useState(material?.boreSize1 || null);
+    const [selectedBoreSize2, setSelectedBoreSize2] = useState(material?.boreSize2 || null);
+    const [expectedQty, setExpectedQty] = useState(material?.expectedQty || 1);
+    const [selectedCategory, setSelectedCategory] = useState(material?.category || null);
+    const [selectedSupplier, setSelectedSupplier] = useState(material?.supplier || null);
+    const [selectedMaterialGrade, setSelectedMaterialGrade] = useState(material?.materialGrade || null);
+
+    const [categories, setCategories] = useState(appMetadata.categories || []);
+    const [suppliers, setSuppliers] = useState(appMetadata.suppliers || []);
+    const [materialGrades, setMaterialGrades] = useState(appMetadata.materialGrades || []);
+    const [boreSize1Options, setBoreSize1Options] = useState(appMetadata.boreSize1Options || []);
+    const [boreSize2Options, setBoreSize2Options] = useState(appMetadata.boreSize2Options || []);
+
+    const [categoryQuery, setCategoryQuery] = useState('');
+    const [supplierQuery, setSupplierQuery] = useState('');
+    const [materialGradeQuery, setMaterialGradeQuery] = useState('');
+    const [boreSize1Query, setBoreSize1Query] = useState('');
+    const [boreSize2Query, setBoreSize2Query] = useState('');
+
+    const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const descriptionInputRef = useRef(null);
+    useEffect(() => {
+        setCategories(appMetadata.categories || []);
+        setSuppliers(appMetadata.suppliers || []);
+        setMaterialGrades(appMetadata.materialGrades || []);
+        setBoreSize1Options(appMetadata.boreSize1Options || []);
+        setBoreSize2Options(appMetadata.boreSize2Options || []);
+        setTimeout(() => descriptionInputRef.current?.focus(), 100);
+    }, [appMetadata]);
+
+    const filteredCategories = categoryQuery === '' ? categories : categories.filter(cat => cat.toLowerCase().includes(categoryQuery.toLowerCase()));
+    const filteredSuppliers = supplierQuery === '' ? suppliers : suppliers.filter(sup => sup.toLowerCase().includes(supplierQuery.toLowerCase()));
+    const filteredMaterialGrades = materialGradeQuery === '' ? materialGrades : materialGrades.filter(grade => grade.toLowerCase().includes(materialGradeQuery.toLowerCase()));
+    const filteredBoreSize1 = boreSize1Query === '' ? boreSize1Options : boreSize1Options.filter(size => size.includes(boreSize1Query));
+    const filteredBoreSize2 = boreSize2Query === '' ? boreSize2Options : boreSize2Options.filter(size => size.includes(boreSize2Query));
+
+    const handleQtyChange = (amount) => {
+        setExpectedQty(prev => Math.max(0, prev + amount));
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!description) newErrors.description = 'Description is required.';
+        if (!selectedBoreSize1) newErrors.selectedBoreSize1 = 'Bore Size 1 is required.';
+        if (!selectedCategory) newErrors.selectedCategory = 'Category is required.';
+        if (!selectedSupplier) newErrors.selectedSupplier = 'Supplier is required.';
+        if (!selectedMaterialGrade) newErrors.selectedMaterialGrade = 'Material Grade is required.';
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // REFACTORED: Logic for creating a material
+    const createMaterial = async (data) => {
+        const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
+        await addDoc(materialsCollectionRef, {
+            ...data,
+            delivered: 0,
+            issued: 0,
+            createdAt: serverTimestamp(),
+        });
+    };
+
+    // REFACTORED: Logic for updating a material
+    const updateMaterial = async (data) => {
+        const materialRef = doc(db, `materials/${ADMIN_UID}/items`, material.id);
+        await updateDoc(materialRef, data);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (currentUser.isViewer || !validateForm()) return;
+
+        setIsSubmitting(true);
+        const dataToSave = {
+            description,
+            category: selectedCategory,
+            supplier: selectedSupplier,
+            materialGrade: selectedMaterialGrade,
+            boreSize1: selectedBoreSize1,
+            boreSize2: selectedBoreSize2 || null,
+            expectedQty: parseInt(expectedQty, 10),
+            updatedAt: serverTimestamp(),
+        };
+
+        try {
+            if (material) {
+                await updateMaterial(dataToSave);
+            } else {
+                await createMaterial(dataToSave);
+            }
+            onClose();
+        } catch (error) {
+            console.error("Error saving material:", error);
+            alert("Failed to save material.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleAddNewItem = async (type, value) => {
+        if (!value || currentUser.isViewer) return;
+        const normalizedValue = value.trim();
+        const metadataRef = doc(db, 'app_metadata', 'lists');
+
+        const typeMap = {
+            category: { list: categories, setter: setSelectedCategory, field: 'categories' },
+            supplier: { list: suppliers, setter: setSelectedSupplier, field: 'suppliers' },
+            materialGrade: { list: materialGrades, setter: setSelectedMaterialGrade, field: 'materialGrades' },
+            boreSize1: { list: boreSize1Options, setter: setSelectedBoreSize1, field: 'boreSize1Options' },
+            boreSize2: { list: boreSize2Options, setter: setSelectedBoreSize2, field: 'boreSize2Options' }
+        };
+
+        const config = typeMap[type];
+        if (config.list.map(item => item.toLowerCase()).includes(normalizedValue.toLowerCase())) {
+             config.setter(config.list.find(item => item.toLowerCase() === normalizedValue.toLowerCase()));
+             return;
+        }
+
+        try {
+            await updateDoc(metadataRef, { [config.field]: arrayUnion(normalizedValue) });
+            config.setter(normalizedValue);
+        } catch (error) {
+            console.error("Failed to add new item:", error);
+            alert(`Could not add new ${type}.`);
+        }
+    };
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="relative mx-auto p-8 border w-full max-w-2xl shadow-lg rounded-xl bg-white dark:bg-gray-800"> {/* MODIFIED: Added dark background */}
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">{material ? 'Edit Material' : 'Add New Material'}</h2> {/* MODIFIED: Added dark text */}
+        <p className="text-gray-500 dark:text-gray-400 mb-8">Fill out the details below to add an item to the inventory.</p> {/* MODIFIED: Added dark text */}
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"><X /></button> {/* MODIFIED: Added dark hover text */}
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="space-y-6">
+            <div className="space-y-4 p-5 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600"> {/* MODIFIED: Added dark background and border */}
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Item Details</h3> {/* MODIFIED: Added dark text */}
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label> {/* MODIFIED: Added dark text */}
+                <div className="relative">
+                  <FileText className="absolute left-3 top-4 h-5 w-5 text-gray-400" />
+                  <textarea id="description" name="description" ref={descriptionInputRef} rows="3"
+                    className={clsx("w-full rounded-md border py-4 pl-10 pr-4 text-sm shadow-sm transition-colors bg-white dark:bg-gray-700 dark:text-gray-100", errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600')}
+                    value={description} onChange={(e) => setDescription(e.target.value)} onBlur={() => validateForm()} />
+                </div>
+                {errors.description && <p className="mt-1 text-xs text-red-600 flex items-center gap-1"><Info size={14}/>{errors.description}</p>}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 <SearchableDropdown label="Bore Size 1" items={filteredBoreSize1} selectedItem={selectedBoreSize1} setSelectedItem={setSelectedBoreSize1} query={boreSize1Query} setQuery={setBoreSize1Query} onAddNew={(value) => handleAddNewItem('boreSize1', value)} error={errors.selectedBoreSize1} onBlur={() => validateForm()} icon={<Maximize2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} allowAddNew={true} isRequired={true}/>
+                 <SearchableDropdown label="Bore Size 2" items={filteredBoreSize2} selectedItem={selectedBoreSize2} setSelectedItem={setSelectedBoreSize2} query={boreSize2Query} setQuery={setBoreSize2Query} onAddNew={(value) => handleAddNewItem('boreSize2', value)} icon={<Maximize2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} allowAddNew={true} isRequired={false}/>
+              </div>
+              <div>
+                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expected Quantity</label> {/* MODIFIED: Added dark text */}
+                <div className="relative flex items-center"><button type="button" onClick={() => handleQtyChange(-1)} className="h-11 px-3 bg-slate-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-l-md hover:bg-slate-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">-</button><Hash className="absolute left-12 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" /><input type="number" id="quantity" className="w-full h-11 border-y border-gray-300 dark:border-gray-600 text-center pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 z-10 bg-white dark:bg-gray-700 dark:text-gray-100" value={expectedQty} onChange={(e) => setExpectedQty(parseInt(e.target.value, 10) || 0)} /><button type="button" onClick={() => handleQtyChange(1)} className="h-11 px-3 bg-slate-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-r-md hover:bg-slate-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">+</button></div> {/* MODIFIED: Added dark styles */}
+              </div>
+            </div>
+            <div className="space-y-4 p-5 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600"> {/* MODIFIED: Added dark background and border */}
+               <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Classification</h3> {/* MODIFIED: Added dark text */}
+              <SearchableDropdown label="Category" items={filteredCategories} selectedItem={selectedCategory} setSelectedItem={setSelectedCategory} query={categoryQuery} setQuery={setCategoryQuery} onAddNew={(value) => handleAddNewItem('category', value)} error={errors.selectedCategory} onBlur={() => validateForm()} icon={<Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
+              <SearchableDropdown label="Supplier" items={filteredSuppliers} selectedItem={selectedSupplier} setSelectedItem={setSelectedSupplier} query={supplierQuery} setQuery={setSupplierQuery} onAddNew={(value) => handleAddNewItem('supplier', value)} error={errors.selectedSupplier} onBlur={() => validateForm()} icon={<Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
+              <SearchableDropdown label="Material Grade" items={filteredMaterialGrades} selectedItem={selectedMaterialGrade} setSelectedItem={setSelectedMaterialGrade} query={materialGradeQuery} setQuery={setMaterialGradeQuery} onAddNew={(value) => handleAddNewItem('materialGrade', value)} error={errors.selectedMaterialGrade} onBlur={() => validateForm()} icon={<Layers className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
+            </div>
+          </div>
+          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3"> {/* MODIFIED: Added dark border */}
+            <button type="button" onClick={onClose} className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">Cancel</button> {/* MODIFIED: Added dark styles */}
+            <button type="submit" disabled={isSubmitting} className={clsx("flex items-center justify-center w-full sm:w-auto px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md transition-all duration-300", isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 transform hover:-translate-y-0.5")}>
+              {isSubmitting ? (<><LoaderCircle className="animate-spin mr-2 h-4 w-4" />Saving...</>) : ('Save Material')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// Reusable Searchable Dropdown Component
+const SearchableDropdown = ({ label, items, selectedItem, setSelectedItem, query, setQuery, onAddNew, error, onBlur, icon, allowAddNew = true, isRequired = true }) => {
+  const [showAddNew, setShowAddNew] = useState(false);
+  const [newItem, setNewItem] = useState('');
+
+  const handleAddNewKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onAddNew(newItem);
+      setShowAddNew(false);
+      setNewItem('');
+    }
+  };
+
+  return (
+    <div>
+      <Combobox value={selectedItem} onChange={(value) => {
+        if (allowAddNew && value === "add_new") { setShowAddNew(true); }
+        else { setShowAddNew(false); setSelectedItem(value); }
+      }} nullable>
+        {({ open }) => (
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> {/* MODIFIED: Added dark text */}
+                {label} {isRequired ? <span className="text-red-500">*</span> : <span className="text-gray-400 dark:text-gray-500">(Optional)</span>} {/* MODIFIED: Added dark text */}
+            </label>
+            <div className="relative">
+              {icon}
+              <Combobox.Input className={clsx("w-full h-11 rounded-md border bg-white dark:bg-gray-700 py-2 pl-10 pr-10 text-sm shadow-sm transition-colors dark:text-gray-100", error ? 'border-red-500' : 'border-gray-300 dark:border-gray-600')} displayValue={(item) => item || ''} onChange={(event) => setQuery(event.target.value)} placeholder={`Select a ${label.toLowerCase()}`} onBlur={onBlur} autoComplete="off" /> {/* MODIFIED: Added dark styles */}
+              <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2"><ChevronsUpDown className="h-5 w-5 text-gray-400" /></Combobox.Button>
+            </div>
+            <Transition as={Fragment} show={open} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0" afterLeave={() => setQuery('')}>
+              <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm z-20"> {/* MODIFIED: Added dark background */}
+                {items.length === 0 && query !== '' ? (<div className="relative cursor-default select-none py-2 px-4 text-gray-700 dark:text-gray-300">Nothing found.</div>) : /* MODIFIED: Added dark text */
+                (items.map((item) => (
+                    <Combobox.Option key={item} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900 dark:text-gray-300'}`} value={item}> {/* MODIFIED: Added dark text */}
+                        {({ selected, active }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{item}</span>{selected && <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check className="h-5 w-5" /></span>}</>)}
+                    </Combobox.Option>
+                )))}
+                {allowAddNew && (<Combobox.Option className="relative cursor-default select-none py-2 px-4 text-blue-600 font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20" value="add_new">+ Add New {label}</Combobox.Option>)} {/* MODIFIED: Added dark hover background */}
+              </Combobox.Options>
+            </Transition>
+          </div>
+        )}
+      </Combobox>
+      {error && <p className="mt-1 text-xs text-red-600 flex items-center gap-1"><Info size={14}/>{error}</p>}
+      {showAddNew && (
+        <div className="relative mt-2">
+          <Plus className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <input type="text" value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={handleAddNewKeyDown} placeholder={`Type new ${label.toLowerCase()} and press Enter`} className="w-full h-11 rounded-md border bg-white dark:bg-gray-700 py-2 pl-10 pr-4 text-sm shadow-sm border-blue-500 focus:border-blue-500 focus:ring-blue-500 dark:text-gray-100 dark:border-blue-500 dark:focus:border-blue-500 dark:focus:ring-blue-500" autoFocus /> {/* MODIFIED: Added dark styles */}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AddEditMaterialModal;
+</file>
+
+<file path="src/components/Dashboard.jsx">
+import React from 'react';
+import Header from './Header';
+import MaterialTable from './MaterialTable';
+import { useAuth } from './context/authContext';
+
+const Dashboard = () => {
+    const { currentUser } = useAuth(); // Keep useAuth if currentUser is used for logic, not just styling
+    return (
+        // MODIFIED: Removed viewer-mode class as theme is handled globally
+        <div>
+            <Header />
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <MaterialTable />
+            </main>
+        </div>
+    );
+}
+
+export default Dashboard;
+</file>
+
+<file path="src/components/Header.jsx">
+import React from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
+import { LogOut, Sun, Moon, Monitor } from 'lucide-react'; // Import all necessary icons
+
+const Header = () => {
+  const { currentUser } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+
+  const handleSignOut = () => signOut(auth);
+
+  // Determine which icon to show based on the current theme
+  const getNextThemeAndIcon = () => {
+    if (theme === 'light') {
+      return { nextTheme: 'dark', icon: <Moon size={20} />, title: "Switch to Dark Mode" };
+    }
+    if (theme === 'dark') {
+      return { nextTheme: 'system', icon: <Monitor size={20} />, title: "Switch to System Preference" };
+    }
+    // If theme is 'system' or anything else, default to light
+    return { nextTheme: 'light', icon: <Sun size={20} />, title: "Switch to Light Mode" };
+  };
+
+  const { nextTheme, icon: currentIcon, title: iconTitle } = getNextThemeAndIcon();
+
+  const handleThemeToggleClick = () => {
+    toggleTheme(nextTheme);
+  };
+
+  return (
+    <header className="bg-white dark:bg-gray-800 shadow-md h-20 flex items-center justify-between px-6 flex-shrink-0">
+      <h1 className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200">
+        GBARAN GBCD MATERIAL PROCUREMENT TRACKER
+      </h1>
+      <div className="flex items-center space-x-4">
+        {/* MODIFIED: Single dynamic theme toggle button */}
+        <button
+          onClick={handleThemeToggleClick}
+          className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+          title={iconTitle}
+        >
+          {currentIcon}
+        </button>
+        <div className="text-right hidden sm:block">
+            <p className="text-sm font-medium text-gray-800 dark:text-gray-200" title={currentUser?.email}>{currentUser?.email}</p>
+        </div>
+        <button
+            onClick={handleSignOut}
+            className="p-2 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20"
+            title="Sign Out"
+        >
+            <LogOut size={20} />
+        </button>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
+</file>
+
+<file path="src/components/ImportCSV.jsx">
+import React, { useState, useRef } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../firebase';
+import { collection, doc, writeBatch, arrayUnion, serverTimestamp } from 'firebase/firestore';
+import Papa from 'papaparse';
+import toast from 'react-hot-toast';
+import { Upload, LoaderCircle } from 'lucide-react';
+import clsx from 'clsx';
+
+const ImportCSV = () => {
+  const { currentUser, ADMIN_UID } = useAuth();
+  const [isImporting, setIsImporting] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    const toastId = toast.loading('Parsing CSV file...');
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        processAndUpload(results.data, toastId);
+      },
+      error: (error) => {
+        toast.error(`Error parsing file: ${error.message}`, { id: toastId });
+        setIsImporting(false);
+      },
+    });
+
+    // Reset file input to allow re-uploading the same file
+    event.target.value = null;
+  };
+
+  const processAndUpload = async (data, toastId) => {
+    toast.loading('Preparing data for upload...', { id: toastId });
+
+    if (data.length === 0) {
+      toast.error('CSV file is empty or has no data rows.', { id: toastId });
+      setIsImporting(false);
+      return;
+    }
+
+    // --- Validate Headers ---
+    const requiredHeaders = ['Description', 'ExpectedQuantity', 'Category', 'Supplier', 'MaterialGrade', 'BoreSize1'];
+    const fileHeaders = Object.keys(data[0]);
+    const missingHeaders = requiredHeaders.filter(h => !fileHeaders.includes(h));
+
+    if (missingHeaders.length > 0) {
+      toast.error(`Missing required columns: ${missingHeaders.join(', ')}`, { id: toastId });
+      setIsImporting(false);
+      return;
+    }
+
+    try {
+      const batch = writeBatch(db);
+      const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
+      const metadataRef = doc(db, 'app_metadata', 'lists');
+
+      const newMetadata = {
+        categories: new Set(),
+        suppliers: new Set(),
+        materialGrades: new Set(),
+        boreSize1Options: new Set(),
+        boreSize2Options: new Set(),
+      };
+
+      data.forEach(row => {
+        // --- Prepare Material Document ---
+        const newMaterialRef = doc(materialsCollectionRef);
+        const materialData = {
+          description: row.Description || '',
+          expectedQty: Number(row.ExpectedQuantity) || 0,
+          category: row.Category || '',
+          supplier: row.Supplier || '',
+          materialGrade: row.MaterialGrade || '',
+          boreSize1: row.BoreSize1 || '',
+          boreSize2: row.BoreSize2 || null,
+          delivered: 0,
+          issued: 0,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
+        batch.set(newMaterialRef, materialData);
+
+        // --- Collect New Metadata ---
+        if (materialData.category) newMetadata.categories.add(materialData.category);
+        if (materialData.supplier) newMetadata.suppliers.add(materialData.supplier);
+        if (materialData.materialGrade) newMetadata.materialGrades.add(materialData.materialGrade);
+        if (materialData.boreSize1) newMetadata.boreSize1Options.add(materialData.boreSize1);
+        if (materialData.boreSize2) newMetadata.boreSize2Options.add(materialData.boreSize2);
+      });
+
+      // --- Prepare Metadata Update ---
+      batch.update(metadataRef, {
+        categories: arrayUnion(...Array.from(newMetadata.categories)),
+        suppliers: arrayUnion(...Array.from(newMetadata.suppliers)),
+        materialGrades: arrayUnion(...Array.from(newMetadata.materialGrades)),
+        boreSize1Options: arrayUnion(...Array.from(newMetadata.boreSize1Options)),
+        boreSize2Options: arrayUnion(...Array.from(newMetadata.boreSize2Options)),
+      });
+
+      toast.loading(`Uploading ${data.length} materials...`, { id: toastId });
+      await batch.commit();
+
+      toast.success(`Successfully imported ${data.length} materials!`, { id: toastId });
+
+    } catch (error) {
+      console.error("Import failed: ", error);
+      toast.error(`Import failed: ${error.message}`, { id: toastId });
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  if (currentUser.isViewer) return null;
+
+  return (
+    <>
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept=".csv"
+        onChange={handleFileChange}
+      />
+      <button
+        onClick={() => fileInputRef.current.click()}
+        disabled={isImporting}
+        className={clsx(
+            "bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 transition-colors",
+            isImporting && "bg-gray-400 cursor-not-allowed"
+        )}
+      >
+        {isImporting ? (
+            <LoaderCircle className="animate-spin h-5 w-5" />
+        ) : (
+            <Upload className="h-5 w-5" />
+        )}
+        <span>Import CSV</span>
+      </button>
+    </>
+  );
+};
+
+export default ImportCSV;
+</file>
+
+<file path="src/components/Loading.jsx">
+import React from 'react';
+import { LoaderCircle } from 'lucide-react';
+
+const Loading = () => {
+  return (
+    <div className="flex items-center justify-center h-screen w-full bg-gray-100 dark:bg-gray-900"> {/* MODIFIED: Added dark background */}
+      <div className="flex flex-col items-center">
+        <LoaderCircle className="animate-spin h-12 w-12 text-blue-600" />
+        <p className="mt-4 text-lg font-medium text-gray-700 dark:text-gray-300"> {/* MODIFIED: Added dark text */}
+          Loading Page...
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Loading;
+</file>
+
+<file path="src/components/LogForm.jsx">
+import React, { useState, useEffect, Fragment } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../firebase';
+import { collection, doc, runTransaction, serverTimestamp, query, getDocs } from 'firebase/firestore';
+import toast from 'react-hot-toast';
+import { X, LoaderCircle, ChevronsUpDown, Check, Layers, Maximize2 } from 'lucide-react';
+import { Combobox, Transition } from '@headlessui/react';
+import clsx from 'clsx';
+
+// MODIFIED: Receives allMaterials as a prop now
+const LogForm = ({ type, log, onClose, allMaterials }) => {
+  const { currentUser, ADMIN_UID } = useAuth();
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
+  const [quantity, setQuantity] = useState(log?.quantity || '');
+  const [remarks, setRemarks] = useState(log?.remarks || '');
+  const [logDate, setLogDate] = useState(log?.date || new Date().toISOString().split('T')[0]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [materialQuery, setMaterialQuery] = useState('');
+  const [quantityStep, setQuantityStep] = useState(1);
+
+    // MODIFIED: useEffect now just sets the initial selected material if editing
+  useEffect(() => {
+    if (log && allMaterials.length > 0) {
+      const preselected = allMaterials.find(m => m.id === log.materialId);
+      setSelectedMaterial(preselected);
+    }
+  }, [log, allMaterials]);
+
+  useEffect(() => {
+    setQuantityStep(selectedMaterial?.category?.toLowerCase() === 'pipes' ? 0.01 : 1);
+  }, [selectedMaterial]);
+
+  const filteredMaterials = materialQuery === '' ? allMaterials : allMaterials.filter(m => m.label.toLowerCase().includes(materialQuery.toLowerCase()));
+  const issuanceOptions = type === 'issuance' ? filteredMaterials.filter(m => (m.delivered || 0) > (m.issued || 0)) : filteredMaterials;
+
+  const runLogTransaction = async () => {
+    const logCollectionRef = collection(db, `${type}_logs`);
+    const materialRef = doc(db, `materials/${ADMIN_UID}/items`, selectedMaterial.id);
+    const logRef = log ? doc(logCollectionRef, log.id) : doc(logCollectionRef); // Fix: Use logCollectionRef for new doc
+    await runTransaction(db, async (transaction) => {
+        const materialDoc = await transaction.get(materialRef);
+        if (!materialDoc.exists()) throw new Error("Material does not exist!");
+        const materialData = materialDoc.data();
+        const oldLogQty = log ? log.quantity : 0;
+        const numQuantity = quantityStep === 1 ? parseInt(quantity, 10) : parseFloat(quantity);
+        const quantityChange = numQuantity - oldLogQty;
+        const newDelivered = (materialData.delivered || 0) + (type === 'delivery' ? quantityChange : 0);
+        const newIssued = (materialData.issued || 0) + (type === 'issuance' ? quantityChange : 0);
+        if (newDelivered < newIssued) throw new Error("This action would result in a negative stock balance.");
+        if (type === 'issuance' && quantityChange > 0) {
+            const currentBalance = (materialData.delivered || 0) - (materialData.issued || 0);
+            if(quantityChange > currentBalance) throw new Error(`Issuance failed. Only ${currentBalance} items are in stock.`);
+        }
+
+        const logData = {
+          materialId: selectedMaterial.id,
+          materialDescription: selectedMaterial.description,
+          category: selectedMaterial.category, // NEW: Save category with the log
+          materialGrade: selectedMaterial.materialGrade,
+          boreSize1: selectedMaterial.boreSize1,
+          boreSize2: selectedMaterial.boreSize2 || null,
+          quantity: numQuantity,
+          remarks,
+          date: logDate,
+          supplier: type === 'delivery' ? selectedMaterial.supplier : null,
+          lastEditedBy: currentUser.email,
+          lastEditedAt: serverTimestamp(),
+        };
+
+        if (log) { transaction.update(logRef, logData); }
+        else { transaction.set(logRef, { ...logData, createdBy: currentUser.email, createdAt: serverTimestamp() }); }
+        transaction.update(materialRef, { delivered: newDelivered, issued: newIssued });
+      });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedMaterial || !quantity || quantity <= 0) {
+      setError("Please select a material and enter a valid quantity."); return;
+    }
+    setError('');
+    setIsSubmitting(true);
+    const toastId = toast.loading("Saving log...");
+    try {
+        await runLogTransaction();
+        toast.success(`Log ${log ? 'updated' : 'created'} successfully!`, { id: toastId });
+        onClose();
+    } catch (err) {
+      toast.error(err.message || "An unknown error occurred.", { id: toastId });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center p-4 z-50" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="relative mx-auto p-8 w-full max-w-2xl shadow-lg rounded-xl bg-white dark:bg-gray-800"> {/* MODIFIED: Added dark background */}
+        <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 capitalize">{log ? `Edit ${type} Log` : `Add New ${type} Log`}</h3> {/* MODIFIED: Added dark text */}
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white"><X /></button> {/* MODIFIED: Added dark hover text */}
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Material</label> {/* MODIFIED: Added dark text */}
+              <Combobox value={selectedMaterial} onChange={setSelectedMaterial} nullable disabled={!!log}>
+                {({ open }) => (
+                  <div className="relative">
+                    <Combobox.Input className="w-full h-11 rounded-md border border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2 pl-3 pr-10 text-sm shadow-sm" displayValue={(material) => material?.label || ''} onChange={(event) => setMaterialQuery(event.target.value)} placeholder="Select a material..."/> {/* MODIFIED: Added dark styles */}
+                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2"><ChevronsUpDown className="h-5 w-5 text-gray-400" /></Combobox.Button>
+                    <Transition as={Fragment} show={open} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
+                        <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black/5 z-20"> {/* MODIFIED: Added dark background */}
+                            {(type === 'issuance' ? issuanceOptions : filteredMaterials).map((material) => (
+                                <Combobox.Option key={material.id} value={material} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900 dark:text-gray-300'}`}> {/* MODIFIED: Added dark text */}
+                                    {({ selected }) => (<> <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{material.label}</span> {selected ? <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check/></span> : null} </>)}
+                                </Combobox.Option>
+                            ))}
+                        </Combobox.Options>
+                    </Transition>
+                  </div>
+                )}
+              </Combobox>
+            </div>
+            {selectedMaterial && (<div className="grid grid-cols-3 gap-4 p-3 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600 text-sm"><div className="flex items-center gap-2"><Layers size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">Grade: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.materialGrade}</span></div></div><div className="flex items-center gap-2"><Maximize2 size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">Bore 1: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.boreSize1}</span></div></div><div className="flex items-center gap-2"><Maximize2 size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">Bore 2: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.boreSize2 || 'N/A'}</span></div></div></div>)} {/* MODIFIED: Added dark styles */}
+            <div>
+              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity</label> {/* MODIFIED: Added dark text */}
+              <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(e.target.value)} step={quantityStep} className="w-full h-11 px-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm" min={quantityStep > 0.01 ? 1 : 0.01} /> {/* MODIFIED: Added dark styles */}
+            </div>
+            <div>
+              <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label> {/* MODIFIED: Added dark text */}
+              <input type="date" id="date" value={logDate} onChange={e => setLogDate(e.target.value)} className="w-full h-11 px-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm" /> {/* MODIFIED: Added dark styles */}
+            </div>
+            <div>
+              <label htmlFor="remarks" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Remarks (Optional)</label> {/* MODIFIED: Added dark text */}
+              <textarea id="remarks" rows="3" value={remarks} onChange={e => setRemarks(e.target.value)} className="w-full p-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm" /> {/* MODIFIED: Added dark styles */}
+            </div>
+            {error && <p className="text-sm text-red-500">{error}</p>}
+          </div>
+          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3"> {/* MODIFIED: Added dark border */}
+            <button type="button" onClick={onClose} className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500">Cancel</button> {/* MODIFIED: Added dark styles */}
+            <button type="submit" disabled={isSubmitting} className={clsx("flex items-center justify-center w-32 px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md", isSubmitting ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700")}>
+              {isSubmitting ? <LoaderCircle className="animate-spin h-5 w-5" /> : 'Save Log'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default LogForm;
+</file>
+
+<file path="src/components/Login.jsx">
+import React, { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+import clsx from "clsx";
+
+const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      // This error handling is well done, no changes needed here.
+      switch (err.code) {
+        case "auth/user-not-found":
+        case "auth/invalid-email":
+        case "auth/wrong-password":
+        case "auth/invalid-credential":
+          setError("Invalid email or password. Please try again.");
+          break;
+        default:
+          setError("An unexpected error occurred. Please try again later.");
+          break;
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    // 1. COLOR: Softer, design-accurate background color
+    <div className="min-h-screen w-full text-white font-montserrat relative overflow-hidden bg-[#1E2A5B]">
+      {/* 2. BACKGROUND: Reduced opacity for a more subtle texture */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-10 z-10"
+        style={{ backgroundImage: "url('/Inventory.jpg')" }}
+      ></div>
+
+      {/* Decorative graphics - no changes needed, they are fine */}
+      <div className="absolute inset-0 z-20 pointer-events-none hidden lg:block">
+        <img
+          src="/graphic1.png"
+          alt=""
+          className="absolute opacity-20"
+          style={{ top: "-8%", left: "41.5%", width: "11.8vw" }}
+        />
+        <img
+          src="/graphic1.png"
+          alt=""
+          className="absolute opacity-20"
+          style={{ top: "88%", left: "91.6%", width: "11.8vw" }}
+        />
+        <img
+          src="/graphic2.png"
+          alt=""
+          className="absolute opacity-20"
+          style={{ top: "6.4%", left: "90.6%", width: "4.5vw" }}
+        />
+      </div>
+
+      <div className="relative z-30 flex items-center justify-center min-h-screen w-full px-6 sm:px-8 lg:px-12">
+        <div className="w-full max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-11 gap-16 items-center">
+          {/* --- Left Column (Typography is now final) --- */}
+          <div className="lg:col-span-6 flex flex-col h-full text-center lg:text-left">
+            <header className="mb-0 flex items-center gap-4 justify-center lg:justify-start">
+              <img
+                src="/Steve Logo.png"
+                alt="Steve Integrated Logo"
+                className="h-12 w-12"
+              />
+              <h1 className="text-2xl font-semibold">Steve Integrated</h1>
+            </header>
+
+            <main className="flex-grow flex flex-col justify-center my-10 lg:my-0">
+              <h2 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold leading-tight text-white">
+                Login
+              </h2>
+              <p className="text-xl md:text-2xl text-white/70 mt-4 mb-12">
+                Sign in to continue
+              </p>
+              <p className="text-base max-w-lg text-white/60 mx-auto lg:mx-0">
+                Access your inventory management dashboard to track materials,
+                deliveries, and issues in real-time.
+              </p>
+              <div className="mt-16">
+                {/* 3. INTERACTION: Softer hover effect on button */}
+                <button className="bg-[#FDE047] text-[#1E3A8A] font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 hover:bg-[#FACC15]">
+                  Learn More
+                </button>
+              </div>
+            </main>
+
+            <footer className="w-full flex justify-center lg:justify-start">
+              <img
+                src="/graphic3.png"
+                alt=""
+                className="opacity-20"
+                style={{ width: "6.2vw", minWidth: "50px" }}
+              />
+            </footer>
+          </div>
+
+          {/* --- Right Column (Login Form) --- */}
+          <div className="lg:col-span-5 flex items-center justify-center w-full">
+            <div className="w-full max-w-lg p-10 md:p-14 rounded-3xl bg-white/10 shadow-2xl backdrop-blur-lg">
+              <div className="text-center mb-10">
+                <h3 className="text-3xl font-bold text-white">Welcome</h3>
+                <p className="text-white/60 mt-1">Let's get you signed in.</p>
+              </div>
+
+              <form onSubmit={handleLogin}>
+                <div className="space-y-7">
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-xs font-medium text-white/70 mb-2 uppercase tracking-wider"
+                    >
+                      EMAIL
+                    </label>
+                    {/* 4. INTERACTION: Refined input styles */}
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@company.com"
+                      className="w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border border-transparent focus:outline-none focus:border-yellow-400 focus:bg-white/20 transition-all duration-300"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="password"
+                      className="block text-xs font-medium text-white/70 mb-2 uppercase tracking-wider"
+                    >
+                      PASSWORD
+                    </label>
+                    <input
+                      type="password"
+                      id="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••••"
+                      className="w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border border-transparent focus:outline-none focus:border-yellow-400 focus:bg-white/20 transition-all duration-300"
+                      required
+                    />
+                  </div>
+                </div>
+                {/* 5. COLOR: More harmonious error message color */}
+                {error && (
+                  <p className="text-red-400 text-sm mt-6 text-center">
+                    {error}
+                  </p>
+                )}
+                <div className="mt-10">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={clsx(
+                      "w-full font-bold py-3 rounded-full text-lg transition-all duration-300",
+                      // 6. COLOR & INTERACTION: Final button styles
+                      "bg-[#FDE047] text-[#1E3A8A]",
+                      isSubmitting
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-[#FACC15]"
+                    )}
+                  >
+                    {isSubmitting ? "Signing In..." : "Login"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
+</file>
+
+<file path="src/components/LogTable.jsx">
+import React, { useMemo } from 'react'; // MODIFIED: Imported useMemo
+import { useAuth } from '../context/AuthContext';
+import { db } from '../firebase';
+import { doc, runTransaction } from 'firebase/firestore';
+import toast from 'react-hot-toast';
+import { Edit, Trash2 } from 'lucide-react';
+
+const LogTable = ({ logs, type, onEdit, currentPage, itemsPerPage, allMaterials }) => {
+  const { currentUser, ADMIN_UID } = useAuth();
+
+  const materialsMap = useMemo(() => {
+    return new Map(allMaterials.map(m => [m.id, m]));
+  }, [allMaterials]);
+
+  const handleDelete = async (log) => {
+    if (!window.confirm("Are you sure you want to delete this log? This action is permanent and will update the inventory count.")) return;
+
+    const toastId = toast.loading("Deleting log...");
+    const logRef = doc(db, `${type}_logs`, log.id);
+    const materialRef = doc(db, `materials/${ADMIN_UID}/items`, log.materialId);
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const materialDoc = await transaction.get(materialRef);
+        if (!materialDoc.exists()) throw new Error("Associated material not found!");
+
+        const materialData = materialDoc.data();
+        const quantityChange = -log.quantity;
+
+        const newDelivered = (materialData.delivered || 0) + (type === 'delivery' ? quantityChange : 0);
+        const newIssued = (materialData.issued || 0) + (type === 'issuance' ? quantityChange : 0);
+
+        if (newDelivered < newIssued) {
+            throw new Error("Deletion failed: This would result in a negative stock balance.");
+        }
+
+        transaction.delete(logRef);
+        transaction.update(materialRef, {
+            delivered: newDelivered,
+            issued: newIssued,
+        });
+      });
+      toast.success("Log deleted successfully.", { id: toastId });
+    } catch (err) {
+      console.error("Delete transaction failed:", err);
+      toast.error(err.message || "Failed to delete log.", { id: toastId });
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md dark:bg-gray-800"> {/* MODIFIED: Added dark background */}
+      <div className="table-responsive">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700"> {/* MODIFIED: Added dark divide color */}
+          <thead className="bg-gray-50 dark:bg-gray-700"> {/* MODIFIED: Added dark background */}
+            <tr>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">S/N</th> {/* MODIFIED: Added dark text */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th> {/* MODIFIED: Added dark text */}
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Material</th> {/* MODIFIED: Added dark text */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th> {/* MODIFIED: Added dark text */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Grade</th> {/* MODIFIED: Added dark text */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 1</th> {/* MODIFIED: Added dark text */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 2</th> {/* MODIFIED: Added dark text */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantity</th> {/* MODIFIED: Added dark text */}
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Remarks</th> {/* MODIFIED: Added dark text */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th> {/* MODIFIED: Added dark text */}
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"> {/* MODIFIED: Added dark background and divide color */}
+            {logs.length > 0 ? logs.map((log, index) => {
+              const category = log.category || materialsMap.get(log.materialId)?.category || 'N/A';
+
+              return (
+              <tr key={log.id}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.date}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">{log.materialDescription}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{category}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.materialGrade || 'N/A'}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize1 || 'N/A'}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize2 || 'N/A'}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-200 text-center">{log.quantity}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400">{log.remarks || 'N/A'}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                  {!currentUser.isViewer && (
+                    <div className="flex items-center justify-center space-x-4">
+                      <button onClick={() => onEdit(log)} className="text-blue-600 hover:text-blue-900" title="Edit Log"><Edit size={16} /></button>
+                      <button onClick={() => handleDelete(log)} className="text-red-600 hover:text-red-900" title="Delete Log"><Trash2 size={16} /></button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            )}) : (
+              <tr><td colSpan="10" className="text-center py-10 text-gray-500 dark:text-gray-400">No logs found.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default LogTable;
+</file>
+
+<file path="src/components/MaterialTable.jsx">
+import React, { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../firebase';
+import { collection, query, where, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
+import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
+import { toast } from 'react-hot-toast';
+import StatsCards from './StatsCards';
+import AddEditMaterialModal from './AddEditMaterialModal';
+import ImportCSV from './ImportCSV';
+import Pagination from './Pagination';
+
+const ITEMS_PER_PAGE = 10;
+
+const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
+    const { currentUser, ADMIN_UID } = useAuth();
+    const [materials, setMaterials] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
+    const [editingMaterial, setEditingMaterial] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    useEffect(() => {
+        const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
+        let q;
+        if ((filterKey === 'category' || filterKey === 'supplier') && filterValue) {
+            q = query(materialsCollectionRef, where(filterKey, "==", filterValue));
+        } else {
+            q = query(materialsCollectionRef);
+        }
+
+        const unsubscribe = onSnapshot(q, snapshot => {
+            setMaterials(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+            setCurrentPage(1);
+        }, (error) => console.error("Error fetching materials: ", error));
+
+        return () => unsubscribe();
+    }, [ADMIN_UID, filterKey, filterValue]);
+
+    const handleDelete = async (id) => {
+      if(currentUser.isViewer) return;
+      if (window.confirm('Are you sure? This will also delete associated logs.')) {
+        try {
+          await deleteDoc(doc(db, `materials/${ADMIN_UID}/items`, id));
+          toast.success("Material deleted.");
+        } catch (error) { toast.error("Failed to delete material."); }
+      }
+    };
+
+    const processedMaterials = useMemo(() => {
+        let filtered = [...materials];
+        if (statusFilter) {
+            filtered = filtered.filter(m => {
+                const delivered = m.delivered || 0;
+                const expected = m.expectedQty || 0;
+                if (statusFilter === 'surplus') return delivered > expected;
+                if (statusFilter === 'deficit') return delivered < expected && delivered > 0;
+                if (statusFilter === 'exact') return delivered === expected && delivered > 0;
+                return false;
+            });
+        }
+
+        if (searchTerm) {
+            const searchKeywords = searchTerm.toLowerCase().split(' ').filter(kw => kw.trim() !== '');
+            filtered = filtered.filter(m => {
+                const descriptionText = m.description.toLowerCase();
+                return searchKeywords.every(kw => descriptionText.includes(kw));
+            });
+        }
+        return filtered;
+    }, [materials, searchTerm, statusFilter]);
+
+    const paginatedMaterials = useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        return processedMaterials.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    }, [processedMaterials, currentPage]);
+
+    const totalPages = Math.ceil(processedMaterials.length / ITEMS_PER_PAGE);
+
+    const getPageTitle = () => {
+        if(statusFilter) return `${statusFilter} Materials`;
+        if(viewType === 'balanced') return 'Balanced Materials';
+        if(filterValue) return `${filterValue} List`;
+        return 'All Materials';
+    }
+
+    const dashboardStats = {
+        totalMaterials: materials.length,
+        totalDelivered: materials.reduce((sum, m) => sum + (m.delivered || 0), 0),
+        totalIssued: materials.reduce((sum, m) => sum + (m.issued || 0), 0),
+    };
+
+    const renderTableHeaders = () => {
+        const baseHeaders = [ "S/N", "Description", "Cat.", "Grade", "Bore 1", "Bore 2"];
+        const actionHeader = ["Actions"];
+        let dynamicHeaders = [];
+
+        switch(viewType) {
+            case 'surplus':
+                dynamicHeaders = ["Expected", "Delivered", "Surplus"];
+                break;
+            case 'deficit':
+                dynamicHeaders = ["Expected", "Delivered", "Deficit"];
+                break;
+            case 'exact':
+                dynamicHeaders = ["Expected", "Delivered"];
+                break;
+            default:
+                dynamicHeaders = ["Expected", "Delivered", "Issued", "Balance"];
+        }
+
+        const allHeaders = [...baseHeaders, ...dynamicHeaders, ...actionHeader];
+        return (
+            <tr>
+                {allHeaders.map((header, index) => (
+                    <th key={index} className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${header === 'Description' ? 'text-left' : 'text-center'}`}> {/* MODIFIED: Added dark text */}
+                        {header}
+                    </th>
+                ))}
+            </tr>
+        );
+    };
+
+    const renderTableBody = (material, index) => {
+        const delivered = material.delivered || 0;
+        const issued = material.issued || 0;
+        const expected = material.expectedQty || 0;
+        const balance = delivered - issued;
+
+        const isPipe = material.category?.toLowerCase() === 'pipes';
+
+        const formatNumber = (num) => {
+            if (isPipe) {
+                return Math.round(num * 100) / 100;
+            }
+            return Math.round(num);
+        };
+
+        const baseCells = (
+            <>
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 max-w-sm"><div className="text-sm font-medium text-gray-900 dark:text-white">{material.description}</div></td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.category}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.materialGrade}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize1}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize2 || 'N/A'}</td> {/* MODIFIED: Added dark text */}
+            </>
+        );
+
+        let dynamicCells;
+        switch(viewType) {
+            case 'surplus':
+                dynamicCells = (<>
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm font-bold text-green-600 dark:text-green-400">{formatNumber(delivered - expected)}</td> {/* MODIFIED: Added dark text */}
+                </>);
+                break;
+            case 'deficit':
+                dynamicCells = (<>
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm font-bold text-red-500 dark:text-red-400">{formatNumber(expected - delivered)}</td> {/* MODIFIED: Added dark text */}
+                </>);
+                break;
+            case 'exact':
+                 dynamicCells = (<>
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm font-bold text-blue-500 dark:text-blue-400">{delivered}</td> {/* MODIFIED: Added dark text */}
+                </>);
+                break;
+            default:
+                 dynamicCells = (<>
+                    <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">{expected}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-green-600 dark:text-green-400 font-semibold">{formatNumber(delivered)}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{formatNumber(issued)}</td> {/* MODIFIED: Added dark text */}
+                    <td className={`px-6 py-4 text-center text-sm font-bold ${balance >= 0 ? 'text-blue-500 dark:text-blue-400' : 'text-red-500 dark:text-red-400'}`}>{formatNumber(balance)}</td> {/* MODIFIED: Added dark text */}
+                 </>);
+        }
+
+        return (
+            <tr key={material.id}>
+                {baseCells}
+                {dynamicCells}
+                <td className="px-6 py-4 text-center text-sm font-medium">
+                    {!currentUser.isViewer &&
+                        <div className="flex items-center justify-center space-x-4">
+                            <button onClick={() => {setEditingMaterial(material); setIsMaterialModalOpen(true);}} className="text-blue-600 hover:text-blue-900"><Edit className="h-4 w-4" /></button>
+                            <button onClick={() => handleDelete(material.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
+                        </div>
+                    }
+                </td>
+            </tr>
+        );
+    };
+
+    return (
+        <>
+            <StatsCards stats={dashboardStats} />
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8"> {/* MODIFIED: Added dark background */}
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4"> {/* MODIFIED: Added dark border */}
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 capitalize">{getPageTitle()}</h2> {/* MODIFIED: Added dark text */}
+                    <div className="flex items-center space-x-4">
+                        <div className="relative">
+                            <input type="text" value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} placeholder="Search descriptions..." className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white" /> {/* MODIFIED: Added dark styles */}
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>
+                            {searchTerm && (<button onClick={() => { setSearchTerm(''); setCurrentPage(1); }} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><X className="h-5 w-5"/></button>)}
+                        </div>
+                        {!statusFilter && viewType !== 'balanced' && !currentUser.isViewer && (
+                            <div className="flex items-center space-x-2">
+                                <ImportCSV />
+                                <button onClick={() => {setEditingMaterial(null); setIsMaterialModalOpen(true);}} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2" title="Add New Material">
+                                    <Plus className="h-5 w-5" /><span>Add</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <div className="table-responsive">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700"> {/* MODIFIED: Added dark divide color */}
+                        <thead className="bg-gray-50 dark:bg-gray-700">{renderTableHeaders()}</thead> {/* MODIFIED: Added dark background */}
+                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"> {/* MODIFIED: Added dark background and divide color */}
+                            {paginatedMaterials.length > 0 ? paginatedMaterials.map((material, index) => renderTableBody(material, index)) : (
+                                <tr><td colSpan="11" className="text-center py-10 text-gray-500 dark:text-gray-400">No materials found.</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+                <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            </div>
+            {isMaterialModalOpen && <AddEditMaterialModal material={editingMaterial} onClose={() => {setIsMaterialModalOpen(false); setEditingMaterial(null);}} />}
+        </>
+    );
+};
+
+export default MaterialTable;
+</file>
+
+<file path="src/components/Pagination.jsx">
+import React from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  if (totalPages <= 1) {
+    return null;
+  }
+
+  return (
+    <div className="flex items-center justify-between mt-4 px-6 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"> {/* MODIFIED: Added dark background and border */}
+      <p className="text-sm text-gray-700 dark:text-gray-300"> {/* MODIFIED: Added dark text */}
+        Page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
+      </p>
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        > {/* MODIFIED: Added dark styles */}
+          <ChevronLeft size={16} className="mr-2" />
+          Previous
+        </button>
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        > {/* MODIFIED: Added dark styles */}
+          Next
+          <ChevronRight size={16} className="ml-2" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Pagination;
+</file>
+
+<file path="src/components/Sidebar.jsx">
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useLayout } from "../context/LayoutContext";
+import {
+  Box,
+  Building,
+  ChevronDown,
+  ChevronRight,
+  LayoutDashboard,
+  Download,
+  Upload,
+  CheckCircle,
+  MinusCircle,
+  AlertCircle,
+  Scale,
+} from "lucide-react";
+import clsx from "clsx";
+
+const Sidebar = () => {
+  const { appMetadata } = useAuth();
+  const { isSidebarCollapsed } = useLayout();
+  const [dashboardOpen, setDashboardOpen] = useState(true);
+  const [suppliersOpen, setSuppliersOpen] = useState(false);
+
+  const linkClass =
+    "flex items-center p-3 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white transition-colors w-full";
+  const activeLinkClass = "bg-blue-700 text-white";
+  const childLinkClass = `flex items-center py-2 px-3 text-sm rounded-md hover:text-white transition-colors ${
+    isSidebarCollapsed ? "justify-center" : "ml-6"
+  }`;
+
+  return (
+    <div
+      className={clsx(
+        "flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden", // MODIFIED: Added dark background
+        isSidebarCollapsed ? "w-20" : "w-64"
+      )}
+    >
+      {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
+      <div
+        className={clsx(
+          "flex items-center h-20 border-b border-gray-700 flex-shrink-0",
+          isSidebarCollapsed ? "justify-center" : "px-4 justify-start"
+        )}
+      >
+        <img
+          src="/Steve Logo.png"
+          alt="Logo"
+          className="h-10 w-10 flex-shrink-0"
+        />
+        {!isSidebarCollapsed && (
+          <span className="ml-2 font-bold text-xl whitespace-nowrap">
+            Steve Integrated
+          </span>
+        )}
+      </div>
+
+      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+        <div>
+          <button
+            onClick={() =>
+              !isSidebarCollapsed && setDashboardOpen(!dashboardOpen)
+            }
+            className={`${linkClass} ${
+              isSidebarCollapsed ? "justify-center" : "justify-between"
+            }`}
+            title="Dashboard"
+          >
+            <div className="flex items-center">
+              <LayoutDashboard size={20} className="flex-shrink-0" />
+              {!isSidebarCollapsed && <span className="ml-4">Dashboard</span>}
+            </div>
+            {!isSidebarCollapsed &&
+              (dashboardOpen ? (
+                <ChevronDown size={16} />
+              ) : (
+                <ChevronRight size={16} />
+              ))}
+          </button>
+        </div>
+        {!isSidebarCollapsed && dashboardOpen && (
+          <div className="space-y-1 pl-6">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `${childLinkClass} ml-0 ${
+                  isActive ? "text-white" : "text-gray-400"
+                }`
+              }
+              end
+              title="All Materials"
+            >
+              All Materials
+            </NavLink>{" "}
+            {/* MODIFIED: Added dark text */}
+            {appMetadata.categories?.sort().map((cat) => (
+              <NavLink
+                key={cat}
+                to={`/category/${encodeURIComponent(cat)}`}
+                title={cat}
+                className={({ isActive }) =>
+                  `${childLinkClass} ml-0 ${
+                    isActive ? "text-white" : "text-gray-400"
+                  }`
+                }
+              >
+                {" "}
+                {/* MODIFIED: Added dark text */}
+                <Box size={16} className="mr-3 flex-shrink-0" />
+                <span className="truncate">{cat}</span>
+              </NavLink>
+            ))}
+          </div>
+        )}
+
+        <div>
+          <button
+            onClick={() =>
+              !isSidebarCollapsed && setSuppliersOpen(!suppliersOpen)
+            }
+            className={`${linkClass} ${
+              isSidebarCollapsed ? "justify-center" : "justify-between"
+            }`}
+            title="Suppliers"
+          >
+            <div className="flex items-center">
+              <Building size={20} className="flex-shrink-0" />
+              {!isSidebarCollapsed && <span className="ml-4">Suppliers</span>}
+            </div>
+            {!isSidebarCollapsed &&
+              (suppliersOpen ? (
+                <ChevronDown size={16} />
+              ) : (
+                <ChevronRight size={16} />
+              ))}
+          </button>
+        </div>
+        {!isSidebarCollapsed && suppliersOpen && (
+          <div className="space-y-1 pl-6">
+            {appMetadata.suppliers?.sort().map((sup) => (
+              <NavLink
+                key={sup}
+                to={`/supplier/${encodeURIComponent(sup)}`}
+                title={sup}
+                className={({ isActive }) =>
+                  `${childLinkClass} ml-0 ${
+                    isActive ? "text-white" : "text-gray-400"
+                  }`
+                }
+              >
+                {" "}
+                {/* MODIFIED: Added dark text */}
+                <span className="truncate">{sup}</span>
+              </NavLink>
+            ))}
+          </div>
+        )}
+
+        <div className="pt-2 border-t border-gray-700/50 mt-2 space-y-1">
+          <NavLink
+            to="/delivery-log"
+            title="Delivery Log"
+            className={({ isActive }) =>
+              `${linkClass} ${isActive ? activeLinkClass : ""} ${
+                isSidebarCollapsed ? "justify-center" : ""
+              }`
+            }
+          >
+            <Download size={20} className="flex-shrink-0" />
+            {!isSidebarCollapsed && <span className="ml-4">Delivery Log</span>}
+          </NavLink>
+          <NavLink
+            to="/issuance-log"
+            title="Issuance Log"
+            className={({ isActive }) =>
+              `${linkClass} ${isActive ? activeLinkClass : ""} ${
+                isSidebarCollapsed ? "justify-center" : ""
+              }`
+            }
+          >
+            <Upload size={20} className="flex-shrink-0" />
+            {!isSidebarCollapsed && <span className="ml-4">Issuance Log</span>}
+          </NavLink>
+        </div>
+
+        <div className="pt-2 border-t border-gray-700/50 mt-2 space-y-1">
+          <NavLink
+            to="/balanced-materials"
+            title="Balanced Materials"
+            className={({ isActive }) =>
+              `${linkClass} ${isActive ? activeLinkClass : ""} ${
+                isSidebarCollapsed ? "justify-center" : ""
+              }`
+            }
+          >
+            <Scale size={20} className="flex-shrink-0" />
+            {!isSidebarCollapsed && (
+              <span className="ml-4">Balanced Materials</span>
+            )}
+          </NavLink>
+          <NavLink
+            to="/status/surplus"
+            title="Surplus Materials"
+            className={({ isActive }) =>
+              `${linkClass} ${isActive ? activeLinkClass : ""} ${
+                isSidebarCollapsed ? "justify-center" : ""
+              }`
+            }
+          >
+            <CheckCircle size={20} className="flex-shrink-0 text-green-400" />
+            {!isSidebarCollapsed && (
+              <span className="ml-4">Surplus Materials</span>
+            )}
+          </NavLink>
+          <NavLink
+            to="/status/deficit"
+            title="Deficit Materials"
+            className={({ isActive }) =>
+              `${linkClass} ${isActive ? activeLinkClass : ""} ${
+                isSidebarCollapsed ? "justify-center" : ""
+              }`
+            }
+          >
+            <AlertCircle size={20} className="flex-shrink-0 text-red-400" />
+            {!isSidebarCollapsed && (
+              <span className="ml-4">Deficit Materials</span>
+            )}
+          </NavLink>
+          <NavLink
+            to="/status/exact"
+            title="Exact Materials"
+            className={({ isActive }) =>
+              `${linkClass} ${isActive ? activeLinkClass : ""} ${
+                isSidebarCollapsed ? "justify-center" : ""
+              }`
+            }
+          >
+            <MinusCircle size={20} className="flex-shrink-0 text-yellow-400" />
+            {!isSidebarCollapsed && (
+              <span className="ml-4">Exact Materials</span>
+            )}
+          </NavLink>
+        </div>
+      </nav>
+    </div>
+  );
+};
+
+export default Sidebar;
+</file>
+
+<file path="src/components/StatsCards.jsx">
+import React from 'react';
+import { Package, Truck, Send } from 'lucide-react';
+
+// NEW: Helper function to format numbers to 2 decimal places if they are not whole numbers
+const formatNumber = (num) => {
+  if (num % 1 !== 0) { // Check if the number has a decimal part
+    return num.toFixed(2);
+  }
+  return num;
+};
+
+const StatCard = ({ title, value, icon, color }) => {
+    // MODIFIED: Updated color classes to include dark mode variants
+    const colors = {
+        blue: 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
+        green: 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400',
+        yellow: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400',
+    };
+    return (
+        // MODIFIED: Added dark mode classes for background and text
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center justify-between">
+            <div>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
+                {/* MODIFIED: Applied the number formatting function to the value */}
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{formatNumber(value)}</p>
+            </div>
+            <div className={`${colors[color]} p-3 rounded-full`}>
+                {icon}
+            </div>
+        </div>
+    );
+};
+
+const StatsCards = ({ stats }) => (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatCard title="Total Materials" value={stats?.totalMaterials || 0} icon={<Package />} color="blue" />
+        <StatCard title="Total Delivered" value={stats?.totalDelivered || 0} icon={<Truck />} color="green" />
+        <StatCard title="Total Issued" value={stats?.totalIssued || 0} icon={<Send />} color="yellow" />
+    </div>
+);
+
+export default StatsCards;
+</file>
+
+<file path="src/context/authContext.jsx">
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { auth, db } from '../firebase';
+
+const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
+
+export const AuthProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState(null);
+  // MODIFIED: Added new empty arrays to the initial state for the new fields.
+  const [appMetadata, setAppMetadata] = useState({ 
+    categories: [], 
+    suppliers: [], 
+    materialGrades: [],
+    boreSize1Options: [],
+    boreSize2Options: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  const ADMIN_UID = "V8zL2oH8b1ZSmG1tdp11gmdtylM2";
+  const VIEWER_UID = "Z35t7DqNx5OJktX39895BK2MS773";
+  const authorizedUIDs = [ADMIN_UID, VIEWER_UID];
+
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, user => {
+      if (user && authorizedUIDs.includes(user.uid)) {
+        const isViewer = user.uid === VIEWER_UID;
+        setCurrentUser({ ...user, isViewer, isAdmin: !isViewer });
+      } else {
+        if (user) signOut(auth);
+        setCurrentUser(null);
+      }
+      setLoading(false);
+    });
+
+    const metadataRef = doc(db, 'app_metadata', 'lists');
+    const unsubscribeMetadata = onSnapshot(metadataRef, (docSnap) => {
+      if (docSnap.exists()) {
+        // MODIFIED: The entire metadata document is now fetched and set.
+        setAppMetadata(docSnap.data());
+      } else {
+        console.log("Metadata document does not exist! Please create it in Firestore.");
+      }
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeMetadata();
+    };
+  }, []);
+
+  const value = {
+    currentUser,
+    ADMIN_UID,
+    appMetadata,
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+};
+</file>
+
+<file path="src/context/LayoutContext.jsx">
+import React, { createContext, useContext, useState } from "react"; // MODIFIED: Removed useEffect
+
+const LayoutContext = createContext();
+export const useLayout = () => useContext(LayoutContext);
+
+export const LayoutProvider = ({ children }) => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  // MODIFIED: Removed theme state and useEffect
+
+  const toggleSidebar = () => setIsSidebarCollapsed((prev) => !prev);
+
+  const value = {
+    isSidebarCollapsed,
+    toggleSidebar,
+    // MODIFIED: Removed theme and setTheme from value
+  };
+
+  return (
+    <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>
+  );
+};
+</file>
+
+<file path="src/context/ThemeContext.jsx">
+// src/contexts/ThemeContext.jsx
+import React, { createContext, useContext, useEffect, useState } from 'react';
+
+const ThemeContext = createContext();
+
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState(() => {
+    // Initialize theme from localStorage or system preference
+    if (typeof window !== 'undefined') {
+      const storedTheme = localStorage.getItem('theme');
+      if (storedTheme) {
+        return storedTheme;
+      }
+      // MODIFIED: Default to 'system' if no stored theme
+      return 'system';
+    }
+    return 'light'; // Default to light if no window object (e.g., during SSR)
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    // Remove existing theme classes to avoid conflicts
+    root.classList.remove('light', 'dark');
+
+    if (theme === 'system') {
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.classList.add(prefersDarkMode ? 'dark' : 'light');
+    } else {
+      root.classList.add(theme);
+    }
+
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  // Handle system theme changes if the current theme is 'system'
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      if (theme === 'system') {
+        document.documentElement.classList.remove('light', 'dark'); // Ensure clean state
+        document.documentElement.classList.add(e.matches ? 'dark' : 'light');
+      }
+    };
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [theme]);
+
+  const toggleTheme = (newTheme) => {
+    setTheme(newTheme);
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export const useTheme = () => useContext(ThemeContext);
+</file>
+
+<file path="src/firebase.js">
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBMA6HduuXEM-OF953tDiaXG3a8zYXnlEk",
+  authDomain: "inventory-tracker-e5b38.firebaseapp.com",
+  projectId: "inventory-tracker-e5b38",
+  storageBucket: "inventory-tracker-e5b38.appspot.com",
+  messagingSenderId: "486657758459",
+  appId: "1:486657758459:web:ba935a81c82aa5c8394c5e"
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+</file>
+
+<file path="src/index.css">
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* NEW: This defines the 'dark' variant to apply when the 'dark' class is present on the html element */
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  font-family: "Montserrat", sans-serif;
+}
+@keyframes spreadFade {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 20px 15px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.glow {
+  animation: spreadFade 2s infinite ease-out;
+}
+</file>
+
+<file path="src/layouts/MainLayout.jsx">
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
+import { useLayout } from "../context/LayoutContext";
+import { ChevronsLeft } from "lucide-react";
+import clsx from "clsx";
+
+const MainLayout = () => {
+  const { isSidebarCollapsed, toggleSidebar } = useLayout();
+
+  return (
+    // MODIFIED: Updated background to be theme-responsive
+    <div className="relative h-screen bg-white dark:bg-gray-900">
+      <div
+        className={`grid h-full transition-all duration-300 ${
+          isSidebarCollapsed ? "grid-cols-[80px_1fr]" : "grid-cols-[256px_1fr]"
+        }`}
+      >
+        <Sidebar />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header />
+          <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8">
+            <Outlet />
+          </main>
+        </div>
+      </div>
+
+      {/* MODIFIED: Added -translate-x-1/2 to perfectly center the button on the border */}
+      <div
+        className={clsx(
+          "absolute top-[15%] -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out z-30 -translate-x-1/2 bg-white dark:bg-gray-800 opacity-90",
+          isSidebarCollapsed ? "left-[80px]" : "left-[256px]",
+          "glow"
+        )}
+      >
+        <button
+          onClick={toggleSidebar}
+          title={isSidebarCollapsed ? "Expand Menu" : "Collapse Menu"}
+          className="w-full h-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-500 "
+        >
+          <ChevronsLeft
+            size={20}
+            className={clsx(
+              "transition-transform duration-300 ease-in-out",
+              isSidebarCollapsed && "rotate-180"
+            )}
+          />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default MainLayout;
+</file>
+
+<file path="src/main.jsx">
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast' // NEW: Import Toaster
+import App from './App.jsx'
+import './index.css'
+import { ThemeProvider } from './context/ThemeContext.jsx' // NEW: Import ThemeProvider
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <ThemeProvider> {/* NEW: Wrap App with ThemeProvider */}
+        <App />
+      </ThemeProvider>
+      <Toaster position="top-right" reverseOrder={false} /> {/* NEW: Add Toaster component */}
+    </BrowserRouter>
+  </React.StrictMode>,
+)
+</file>
+
+<file path="src/pages/LogPage.jsx">
+import React, { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../firebase';
+import { collection, query, onSnapshot, orderBy, where, getDocs } from 'firebase/firestore';
+import toast from 'react-hot-toast';
+import Papa from 'papaparse';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import LogForm from '../components/LogForm';
+import LogTable from '../components/LogTable';
+import Pagination from '../components/Pagination';
+import { Download, Upload, FileDown, Plus, Search, X } from 'lucide-react';
+
+const ITEMS_PER_PAGE = 10;
+
+const LogPage = ({ type }) => {
+  const { currentUser, appMetadata, ADMIN_UID } = useAuth();
+  const [allLogs, setAllLogs] = useState([]);
+  const [allMaterials, setAllMaterials] = useState([]); // NEW: State for all materials
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingLog, setEditingLog] = useState(null);
+
+  const [uniqueDates, setUniqueDates] = useState([]);
+  const [selectedDate, setSelectedDate] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const config = useMemo(() => ({
+    delivery: { title: "Delivery Log", collectionName: "delivery_logs", icon: <Download className="h-8 w-8 text-blue-600" /> },
+    issuance: { title: "Issuance Log", collectionName: "issuance_logs", icon: <Upload className="h-8 w-8 text-red-600" /> }
+  }), []);
+
+  const currentConfig = config[type];
+
+  // NEW: Effect to fetch master list of all materials
+  useEffect(() => {
+    const materialsRef = collection(db, `materials/${ADMIN_UID}/items`);
+    const unsubscribe = onSnapshot(materialsRef, (snapshot) => {
+      const materialsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setAllMaterials(materialsList);
+    });
+    return () => unsubscribe();
+  }, [ADMIN_UID]);
+
+  useEffect(() => {
+    const logCollectionRef = collection(db, currentConfig.collectionName);
+    getDocs(query(logCollectionRef)).then(snapshot => {
+        setUniqueDates(Array.from(new Set(snapshot.docs.map(doc => doc.data().date))).sort((a,b) => new Date(b) - new Date(a)));
+    });
+  }, [currentConfig.collectionName]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const logCollectionRef = collection(db, currentConfig.collectionName);
+
+    let q = query(logCollectionRef, orderBy('date', 'desc'));
+
+    if (selectedCategory !== 'all') { q = query(q, where('category', '==', selectedCategory)); }
+    if (selectedDate === 'custom' && startDate && endDate) { q = query(q, where('date', '>=', startDate), where('date', '<=', endDate)); }
+    else if (selectedDate !== 'all' && selectedDate !== 'custom') { q = query(q, where('date', '==', selectedDate)); }
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setAllLogs(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setCurrentPage(1);
+    }, (error) => toast.error(`Failed to fetch ${type} logs.`));
+
+    return () => unsubscribe();
+  }, [currentUser, currentConfig.collectionName, type, selectedDate, startDate, endDate, selectedCategory]);
+
+  const searchedLogs = useMemo(() => {
+    return allLogs.filter(log => log.materialDescription.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [allLogs, searchTerm]);
+
+  const paginatedLogs = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return searchedLogs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [searchedLogs, currentPage]);
+
+  const totalPages = Math.ceil(searchedLogs.length / ITEMS_PER_PAGE);
+
+  const handleOpenForm = (log = null) => { setEditingLog(log); setIsFormOpen(true); };
+  const handleCloseForm = () => { setEditingLog(null); setIsFormOpen(false); };
+
+  const handleExport = (format) => {
+    if (searchedLogs.length === 0) { toast.error("No logs to export."); return; }
+    const dataToExport = searchedLogs.map(log => ({ Date: log.date, Material: log.materialDescription, Grade: log.materialGrade, 'Bore 1': log.boreSize1, 'Bore 2': log.boreSize2 || 'N/A', Quantity: log.quantity, Remarks: log.remarks || 'N/A' }));
+    const filename = `${type}_log_${new Date().toISOString().split('T')[0]}`;
+    if (format === 'csv') {
+      const csv = Papa.unparse(dataToExport);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', `${filename}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (format === 'pdf') {
+      const doc = new jsPDF();
+      doc.text(`${currentConfig.title} Report`, 14, 16);
+      doc.autoTable({ head: [Object.keys(dataToExport[0])], body: dataToExport.map(row => Object.values(row)), startY: 25, styles: { fontSize: 8 } });
+      doc.save(`${filename}.pdf`);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center flex-wrap gap-4">
+        <div className="flex items-center gap-4"><div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow">{currentConfig.icon}</div><h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">{currentConfig.title}</h1></div> {/* MODIFIED: Added dark background and text */}
+        {!currentUser.isViewer && (<button onClick={() => handleOpenForm()} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"><Plus size={16}/><span>Add New {type}</span></button>)}
+      </div>
+
+      <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md space-y-4"> {/* MODIFIED: Added dark background */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Category</label> {/* MODIFIED: Added dark text */}
+                <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"> {/* MODIFIED: Added dark styles */}
+                    <option value="all">All Categories</option>
+                    {appMetadata.categories?.sort().map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
+            </div>
+            <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Date</label> {/* MODIFIED: Added dark text */}
+                <select value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"> {/* MODIFIED: Added dark styles */}
+                    <option value="all">All Dates</option>
+                    <option value="custom">Custom Range</option>
+                    {uniqueDates.map(date => <option key={date} value={date}>{date}</option>)}
+                </select>
+            </div>
+            {selectedDate === 'custom' && (<><div><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"/></div><div><label className="text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"/></div></>)} {/* MODIFIED: Added dark styles */}
+            <div className="lg:col-start-4"><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Search Material</label><div className="relative mt-1"><input type="text" value={searchTerm} onChange={e => {setSearchTerm(e.target.value); setCurrentPage(1);}} placeholder="Search descriptions..." className="pl-10 pr-10 w-full h-10 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white" /><div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>{searchTerm && <button onClick={() => setSearchTerm('')} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><X className="h-5 w-5"/></button>}</div></div> {/* MODIFIED: Added dark styles */}
+        </div>
+        <div className="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700"> {/* MODIFIED: Added dark border */}
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Export:</span> {/* MODIFIED: Added dark text */}
+            <button onClick={() => handleExport('csv')} disabled={searchedLogs.length === 0} className="flex items-center gap-2 px-4 py-2 text-sm bg-green-100 text-green-800 rounded-md hover:bg-green-200 disabled:opacity-50" title="Export current view to CSV"><FileDown size={16}/> CSV</button>
+            <button onClick={() => handleExport('pdf')} disabled={searchedLogs.length === 0} className="flex items-center gap-2 px-4 py-2 text-sm bg-red-100 text-red-800 rounded-md hover:bg-red-200 disabled:opacity-50" title="Export current view to PDF"><FileDown size={16}/> PDF</button>
+        </div>
+      </div>
+
+      <LogTable logs={paginatedLogs} type={type} onEdit={handleOpenForm} currentPage={currentPage} itemsPerPage={ITEMS_PER_PAGE} allMaterials={allMaterials} />
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+      {isFormOpen && <LogForm type={type} log={editingLog} onClose={handleCloseForm} allMaterials={allMaterials} />}
+    </div>
+  );
+};
+
+export default LogPage;
+</file>
+
+<file path="src/pages/MaterialListPage.jsx">
+import React from 'react';
+import { useParams, useLocation } from 'react-router-dom';
+import MaterialTable from '../components/MaterialTable';
+
+const MaterialListPage = ({ statusFilter }) => {
+  const params = useParams();
+  const location = useLocation();
+  
+  const filterKey = location.pathname.split('/')[1] || null;
+  const filterValue = params.filterValue ? decodeURIComponent(params.filterValue) : null;
+  
+  // MODIFIED: Determine the viewType to pass to the table
+  const viewType = statusFilter || (location.pathname === '/balanced-materials' ? 'balanced' : 'default');
+
+  return (
+    <div>
+      <MaterialTable 
+        filterKey={filterKey} 
+        filterValue={filterValue} 
+        statusFilter={statusFilter}
+        viewType={viewType}
+      />
+    </div>
+  );
+};
+
+export default MaterialListPage;
+</file>
+
+<file path="tailwind.config.js">
+// tailwind.config.js
+export default {
+  darkMode: "selector", // <--- THIS IS THE KEY
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      fontFamily: {
+        montserrat: ["Montserrat", "sans-serif"],
+      },
+      colors: {
+        "brand-blue": "#004aad",
+        "brand-yellow": "#fdfe13",
+      },
+    },
+  },
+  plugins: [],
+};
+</file>
+
+<file path="vite.config.js">
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+
+export default defineConfig({
+  plugins: [
+    react(),
+    // MODIFIED: Pass config directly to the plugin
+    tailwindcss({
+      config: {
+        darkMode: "class", // Ensure this is set to 'class'
+        content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+        theme: {
+          extend: {
+            fontFamily: {
+              montserrat: ["Montserrat", "sans-serif"],
+            },
+            colors: {
+              "brand-blue": "#004aad",
+              "brand-yellow": "#fdfe13",
+            },
+          },
+        },
+        plugins: [],
+      },
+    }),
+  ],
+});
+</file>
+
+</files>
