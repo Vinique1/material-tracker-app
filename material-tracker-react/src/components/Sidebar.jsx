@@ -33,14 +33,14 @@ const Sidebar = () => {
   return (
     <div
       className={clsx(
-        "flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden", // MODIFIED: Added dark background
+        "flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden dark:border-r dark:border-r-gray-800", // MODIFIED: Added dark background
         isSidebarCollapsed ? "w-20" : "w-64"
       )}
     >
       {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
       <div
         className={clsx(
-          "flex items-center h-20 border-b border-gray-700 flex-shrink-0",
+          "flex items-center h-20 border-b border-gray-800 flex-shrink-0",
           isSidebarCollapsed ? "justify-center" : "px-4 justify-start"
         )}
       >
@@ -56,7 +56,7 @@ const Sidebar = () => {
         )}
       </div>
 
-      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto ">
         <div>
           <button
             onClick={() =>
