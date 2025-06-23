@@ -1,28 +1,13 @@
+// vite.config.js
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
+// This is the entire corrected file content.
 export default defineConfig({
   plugins: [
     react(),
-    // MODIFIED: Pass config directly to the plugin
-    tailwindcss({
-      config: {
-        darkMode: "class", // Ensure this is set to 'class'
-        content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-        theme: {
-          extend: {
-            fontFamily: {
-              montserrat: ["Montserrat", "sans-serif"],
-            },
-            colors: {
-              "brand-blue": "#004aad",
-              "brand-yellow": "#fdfe13",
-            },
-          },
-        },
-        plugins: [],
-      },
-    }),
+    // The plugin will now automatically find and use your tailwind.config.js
+    tailwindcss(),
   ],
 });
