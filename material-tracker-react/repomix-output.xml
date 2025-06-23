@@ -373,6 +373,7 @@ export default App;
 </file>
 
 <file path="src/components/AddEditMaterialModal.jsx">
+// src/components/AddEditMaterialModal.jsx
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
@@ -393,12 +394,6 @@ const AddEditMaterialModal = ({ material, onClose }) => {
     const [selectedSupplier, setSelectedSupplier] = useState(material?.supplier || null);
     const [selectedMaterialGrade, setSelectedMaterialGrade] = useState(material?.materialGrade || null);
 
-    const [categories, setCategories] = useState(appMetadata.categories || []);
-    const [suppliers, setSuppliers] = useState(appMetadata.suppliers || []);
-    const [materialGrades, setMaterialGrades] = useState(appMetadata.materialGrades || []);
-    const [boreSize1Options, setBoreSize1Options] = useState(appMetadata.boreSize1Options || []);
-    const [boreSize2Options, setBoreSize2Options] = useState(appMetadata.boreSize2Options || []);
-
     const [categoryQuery, setCategoryQuery] = useState('');
     const [supplierQuery, setSupplierQuery] = useState('');
     const [materialGradeQuery, setMaterialGradeQuery] = useState('');
@@ -408,15 +403,18 @@ const AddEditMaterialModal = ({ material, onClose }) => {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Use data directly from the context. No local copies needed.
+    const categories = appMetadata.categories || [];
+    const suppliers = appMetadata.suppliers || [];
+    const materialGrades = appMetadata.materialGrades || [];
+    const boreSize1Options = appMetadata.boreSize1Options || [];
+    const boreSize2Options = appMetadata.boreSize2Options || [];
+
     const descriptionInputRef = useRef(null);
     useEffect(() => {
-        setCategories(appMetadata.categories || []);
-        setSuppliers(appMetadata.suppliers || []);
-        setMaterialGrades(appMetadata.materialGrades || []);
-        setBoreSize1Options(appMetadata.boreSize1Options || []);
-        setBoreSize2Options(appMetadata.boreSize2Options || []);
+        // The only thing needed in this effect now is the focus action.
         setTimeout(() => descriptionInputRef.current?.focus(), 100);
-    }, [appMetadata]);
+    }, []); // Dependency array can now be empty.
 
     const filteredCategories = categoryQuery === '' ? categories : categories.filter(cat => cat.toLowerCase().includes(categoryQuery.toLowerCase()));
     const filteredSuppliers = supplierQuery === '' ? suppliers : suppliers.filter(sup => sup.toLowerCase().includes(supplierQuery.toLowerCase()));
@@ -439,7 +437,6 @@ const AddEditMaterialModal = ({ material, onClose }) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // REFACTORED: Logic for creating a material
     const createMaterial = async (data) => {
         const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
         await addDoc(materialsCollectionRef, {
@@ -450,7 +447,6 @@ const AddEditMaterialModal = ({ material, onClose }) => {
         });
     };
 
-    // REFACTORED: Logic for updating a material
     const updateMaterial = async (data) => {
         const materialRef = doc(db, `materials/${ADMIN_UID}/items`, material.id);
         await updateDoc(materialRef, data);
@@ -517,16 +513,16 @@ const AddEditMaterialModal = ({ material, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="relative mx-auto p-8 border w-full max-w-2xl shadow-lg rounded-xl bg-white dark:bg-gray-800"> {/* MODIFIED: Added dark background */}
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">{material ? 'Edit Material' : 'Add New Material'}</h2> {/* MODIFIED: Added dark text */}
-        <p className="text-gray-500 dark:text-gray-400 mb-8">Fill out the details below to add an item to the inventory.</p> {/* MODIFIED: Added dark text */}
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"><X /></button> {/* MODIFIED: Added dark hover text */}
+      <div className="relative mx-auto p-8 border w-full max-w-2xl shadow-lg rounded-xl bg-white dark:bg-gray-800">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">{material ? 'Edit Material' : 'Add New Material'}</h2>
+        <p className="text-gray-500 dark:text-gray-400 mb-8">Fill out the details below to add an item to the inventory.</p>
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"><X /></button>
         <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-6">
-            <div className="space-y-4 p-5 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600"> {/* MODIFIED: Added dark background and border */}
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Item Details</h3> {/* MODIFIED: Added dark text */}
+            <div className="space-y-4 p-5 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600">
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Item Details</h3>
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label> {/* MODIFIED: Added dark text */}
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                 <div className="relative">
                   <FileText className="absolute left-3 top-4 h-5 w-5 text-gray-400" />
                   <textarea id="description" name="description" ref={descriptionInputRef} rows="3"
@@ -540,19 +536,19 @@ const AddEditMaterialModal = ({ material, onClose }) => {
                  <SearchableDropdown label="Bore Size 2" items={filteredBoreSize2} selectedItem={selectedBoreSize2} setSelectedItem={setSelectedBoreSize2} query={boreSize2Query} setQuery={setBoreSize2Query} onAddNew={(value) => handleAddNewItem('boreSize2', value)} icon={<Maximize2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} allowAddNew={true} isRequired={false}/>
               </div>
               <div>
-                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expected Quantity</label> {/* MODIFIED: Added dark text */}
-                <div className="relative flex items-center"><button type="button" onClick={() => handleQtyChange(-1)} className="h-11 px-3 bg-slate-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-l-md hover:bg-slate-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">-</button><Hash className="absolute left-12 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" /><input type="number" id="quantity" className="w-full h-11 border-y border-gray-300 dark:border-gray-600 text-center pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 z-10 bg-white dark:bg-gray-700 dark:text-gray-100" value={expectedQty} onChange={(e) => setExpectedQty(parseInt(e.target.value, 10) || 0)} /><button type="button" onClick={() => handleQtyChange(1)} className="h-11 px-3 bg-slate-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-r-md hover:bg-slate-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">+</button></div> {/* MODIFIED: Added dark styles */}
+                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expected Quantity</label>
+                <div className="relative flex items-center"><button type="button" onClick={() => handleQtyChange(-1)} className="h-11 px-3 bg-slate-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-l-md hover:bg-slate-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">-</button><Hash className="absolute left-12 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" /><input type="number" id="quantity" className="w-full h-11 border-y border-gray-300 dark:border-gray-600 text-center pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 z-10 bg-white dark:bg-gray-700 dark:text-gray-100" value={expectedQty} onChange={(e) => setExpectedQty(parseInt(e.target.value, 10) || 0)} /><button type="button" onClick={() => handleQtyChange(1)} className="h-11 px-3 bg-slate-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-r-md hover:bg-slate-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">+</button></div>
               </div>
             </div>
-            <div className="space-y-4 p-5 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600"> {/* MODIFIED: Added dark background and border */}
-               <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Classification</h3> {/* MODIFIED: Added dark text */}
+            <div className="space-y-4 p-5 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600">
+               <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Classification</h3>
               <SearchableDropdown label="Category" items={filteredCategories} selectedItem={selectedCategory} setSelectedItem={setSelectedCategory} query={categoryQuery} setQuery={setCategoryQuery} onAddNew={(value) => handleAddNewItem('category', value)} error={errors.selectedCategory} onBlur={() => validateForm()} icon={<Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
               <SearchableDropdown label="Supplier" items={filteredSuppliers} selectedItem={selectedSupplier} setSelectedItem={setSelectedSupplier} query={supplierQuery} setQuery={setSupplierQuery} onAddNew={(value) => handleAddNewItem('supplier', value)} error={errors.selectedSupplier} onBlur={() => validateForm()} icon={<Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
               <SearchableDropdown label="Material Grade" items={filteredMaterialGrades} selectedItem={selectedMaterialGrade} setSelectedItem={setSelectedMaterialGrade} query={materialGradeQuery} setQuery={setMaterialGradeQuery} onAddNew={(value) => handleAddNewItem('materialGrade', value)} error={errors.selectedMaterialGrade} onBlur={() => validateForm()} icon={<Layers className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
             </div>
           </div>
-          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3"> {/* MODIFIED: Added dark border */}
-            <button type="button" onClick={onClose} className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">Cancel</button> {/* MODIFIED: Added dark styles */}
+          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+            <button type="button" onClick={onClose} className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">Cancel</button>
             <button type="submit" disabled={isSubmitting} className={clsx("flex items-center justify-center w-full sm:w-auto px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md transition-all duration-300", isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 transform hover:-translate-y-0.5")}>
               {isSubmitting ? (<><LoaderCircle className="animate-spin mr-2 h-4 w-4" />Saving...</>) : ('Save Material')}
             </button>
@@ -563,7 +559,6 @@ const AddEditMaterialModal = ({ material, onClose }) => {
   );
 };
 
-// Reusable Searchable Dropdown Component
 const SearchableDropdown = ({ label, items, selectedItem, setSelectedItem, query, setQuery, onAddNew, error, onBlur, icon, allowAddNew = true, isRequired = true }) => {
   const [showAddNew, setShowAddNew] = useState(false);
   const [newItem, setNewItem] = useState('');
@@ -585,23 +580,23 @@ const SearchableDropdown = ({ label, items, selectedItem, setSelectedItem, query
       }} nullable>
         {({ open }) => (
           <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> {/* MODIFIED: Added dark text */}
-                {label} {isRequired ? <span className="text-red-500">*</span> : <span className="text-gray-400 dark:text-gray-500">(Optional)</span>} {/* MODIFIED: Added dark text */}
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {label} {isRequired ? <span className="text-red-500">*</span> : <span className="text-gray-400 dark:text-gray-500">(Optional)</span>}
             </label>
             <div className="relative">
               {icon}
-              <Combobox.Input className={clsx("w-full h-11 rounded-md border bg-white dark:bg-gray-700 py-2 pl-10 pr-10 text-sm shadow-sm transition-colors dark:text-gray-100", error ? 'border-red-500' : 'border-gray-300 dark:border-gray-600')} displayValue={(item) => item || ''} onChange={(event) => setQuery(event.target.value)} placeholder={`Select a ${label.toLowerCase()}`} onBlur={onBlur} autoComplete="off" /> {/* MODIFIED: Added dark styles */}
+              <Combobox.Input className={clsx("w-full h-11 rounded-md border bg-white dark:bg-gray-700 py-2 pl-10 pr-10 text-sm shadow-sm transition-colors dark:text-gray-100", error ? 'border-red-500' : 'border-gray-300 dark:border-gray-600')} displayValue={(item) => item || ''} onChange={(event) => setQuery(event.target.value)} placeholder={`Select a ${label.toLowerCase()}`} onBlur={onBlur} autoComplete="off" />
               <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2"><ChevronsUpDown className="h-5 w-5 text-gray-400" /></Combobox.Button>
             </div>
             <Transition as={Fragment} show={open} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0" afterLeave={() => setQuery('')}>
-              <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm z-20"> {/* MODIFIED: Added dark background */}
-                {items.length === 0 && query !== '' ? (<div className="relative cursor-default select-none py-2 px-4 text-gray-700 dark:text-gray-300">Nothing found.</div>) : /* MODIFIED: Added dark text */
+              <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm z-20">
+                {items.length === 0 && query !== '' ? (<div className="relative cursor-default select-none py-2 px-4 text-gray-700 dark:text-gray-300">Nothing found.</div>) : 
                 (items.map((item) => (
-                    <Combobox.Option key={item} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900 dark:text-gray-300'}`} value={item}> {/* MODIFIED: Added dark text */}
+                    <Combobox.Option key={item} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900 dark:text-gray-300'}`} value={item}>
                         {({ selected, active }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{item}</span>{selected && <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check className="h-5 w-5" /></span>}</>)}
                     </Combobox.Option>
                 )))}
-                {allowAddNew && (<Combobox.Option className="relative cursor-default select-none py-2 px-4 text-blue-600 font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20" value="add_new">+ Add New {label}</Combobox.Option>)} {/* MODIFIED: Added dark hover background */}
+                {allowAddNew && (<Combobox.Option className="relative cursor-default select-none py-2 px-4 text-blue-600 font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20" value="add_new">+ Add New {label}</Combobox.Option>)}
               </Combobox.Options>
             </Transition>
           </div>
@@ -611,7 +606,7 @@ const SearchableDropdown = ({ label, items, selectedItem, setSelectedItem, query
       {showAddNew && (
         <div className="relative mt-2">
           <Plus className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <input type="text" value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={handleAddNewKeyDown} placeholder={`Type new ${label.toLowerCase()} and press Enter`} className="w-full h-11 rounded-md border bg-white dark:bg-gray-700 py-2 pl-10 pr-4 text-sm shadow-sm border-blue-500 focus:border-blue-500 focus:ring-blue-500 dark:text-gray-100 dark:border-blue-500 dark:focus:border-blue-500 dark:focus:ring-blue-500" autoFocus /> {/* MODIFIED: Added dark styles */}
+          <input type="text" value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={handleAddNewKeyDown} placeholder={`Type new ${label.toLowerCase()} and press Enter`} className="w-full h-11 rounded-md border bg-white dark:bg-gray-700 py-2 pl-10 pr-4 text-sm shadow-sm border-blue-500 focus:border-blue-500 focus:ring-blue-500 dark:text-gray-100 dark:border-blue-500 dark:focus:border-blue-500 dark:focus:ring-blue-500" autoFocus />
         </div>
       )}
     </div>
@@ -1222,7 +1217,8 @@ export default Login;
 </file>
 
 <file path="src/components/LogTable.jsx">
-import React, { useMemo } from 'react'; // MODIFIED: Imported useMemo
+// src/components/LogTable.jsx
+import React, { useMemo } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { doc, runTransaction } from 'firebase/firestore';
@@ -1272,52 +1268,52 @@ const LogTable = ({ logs, type, onEdit, currentPage, itemsPerPage, allMaterials 
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md dark:bg-gray-800"> {/* MODIFIED: Added dark background */}
+    <div className="bg-white rounded-lg shadow-md dark:bg-gray-800">
       <div className="table-responsive">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700"> {/* MODIFIED: Added dark divide color */}
-          <thead className="bg-gray-50 dark:bg-gray-700"> {/* MODIFIED: Added dark background */}
-            <tr>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">S/N</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Material</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Grade</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 1</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 2</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantity</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Remarks</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th> {/* MODIFIED: Added dark text */}
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"> {/* MODIFIED: Added dark background and divide color */}
-            {logs.length > 0 ? logs.map((log, index) => {
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">{/*
+          */}<thead className="bg-gray-50 dark:bg-gray-700">{/*
+            */}<tr>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">S/N</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>{/*
+              */}<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Material</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Grade</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 1</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 2</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantity</th>{/*
+              */}<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Remarks</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>{/*
+            */}</tr>{/*
+          */}</thead>{/*
+          */}<tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">{/*
+            */}{logs.length > 0 ? logs.map((log, index) => {
               const category = log.category || materialsMap.get(log.materialId)?.category || 'N/A';
 
               return (
-              <tr key={log.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.date}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">{log.materialDescription}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{category}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.materialGrade || 'N/A'}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize1 || 'N/A'}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize2 || 'N/A'}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-200 text-center">{log.quantity}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400">{log.remarks || 'N/A'}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+              <tr key={log.id}>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.date}</td>{/*
+                */}<td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">{log.materialDescription}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{category}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.materialGrade || 'N/A'}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize1 || 'N/A'}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize2 || 'N/A'}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-200 text-center">{log.quantity}</td>{/*
+                */}<td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400">{log.remarks || 'N/A'}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                   {!currentUser.isViewer && (
                     <div className="flex items-center justify-center space-x-4">
                       <button onClick={() => onEdit(log)} className="text-blue-600 hover:text-blue-900" title="Edit Log"><Edit size={16} /></button>
                       <button onClick={() => handleDelete(log)} className="text-red-600 hover:text-red-900" title="Delete Log"><Trash2 size={16} /></button>
                     </div>
                   )}
-                </td>
-              </tr>
+                </td>{/*
+              */}</tr>
             )}) : (
               <tr><td colSpan="10" className="text-center py-10 text-gray-500 dark:text-gray-400">No logs found.</td></tr>
-            )}
-          </tbody>
-        </table>
+            )}{/*
+          */}</tbody>{/*
+        */}</table>
       </div>
     </div>
   );
@@ -1327,6 +1323,7 @@ export default LogTable;
 </file>
 
 <file path="src/components/MaterialTable.jsx">
+// src/components/MaterialTable.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
@@ -1439,13 +1436,13 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
 
         const allHeaders = [...baseHeaders, ...dynamicHeaders, ...actionHeader];
         return (
-            <tr>
-                {allHeaders.map((header, index) => (
-                    <th key={index} className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${header === 'Description' ? 'text-left' : 'text-center'}`}> {/* MODIFIED: Added dark text */}
+            <tr>{/*
+                */}{allHeaders.map((header, index) => (
+                    <th key={index} className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${header === 'Description' ? 'text-left' : 'text-center'}`}>
                         {header}
                     </th>
-                ))}
-            </tr>
+                ))}{/*
+            */}</tr>
         );
     };
 
@@ -1466,12 +1463,12 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
 
         const baseCells = (
             <>
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 max-w-sm"><div className="text-sm font-medium text-gray-900 dark:text-white">{material.description}</div></td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.category}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.materialGrade}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize1}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize2 || 'N/A'}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
+                <td className="px-6 py-4 max-w-sm"><div className="text-sm font-medium text-gray-900 dark:text-white">{material.description}</div></td>
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.category}</td>
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.materialGrade}</td>
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize1}</td>
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize2 || 'N/A'}</td>
             </>
         );
 
@@ -1479,58 +1476,58 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
         switch(viewType) {
             case 'surplus':
                 dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm font-bold text-green-600 dark:text-green-400">{formatNumber(delivered - expected)}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td>
+                    <td className="px-6 py-4 text-center text-sm font-bold text-green-600 dark:text-green-400">{formatNumber(delivered - expected)}</td>
                 </>);
                 break;
             case 'deficit':
                 dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm font-bold text-red-500 dark:text-red-400">{formatNumber(expected - delivered)}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td>
+                    <td className="px-6 py-4 text-center text-sm font-bold text-red-500 dark:text-red-400">{formatNumber(expected - delivered)}</td>
                 </>);
                 break;
             case 'exact':
                  dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm font-bold text-blue-500 dark:text-blue-400">{delivered}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
+                    <td className="px-6 py-4 text-center text-sm font-bold text-blue-500 dark:text-blue-400">{delivered}</td>
                 </>);
                 break;
             default:
                  dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">{expected}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm text-green-600 dark:text-green-400 font-semibold">{formatNumber(delivered)}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{formatNumber(issued)}</td> {/* MODIFIED: Added dark text */}
-                    <td className={`px-6 py-4 text-center text-sm font-bold ${balance >= 0 ? 'text-blue-500 dark:text-blue-400' : 'text-red-500 dark:text-red-400'}`}>{formatNumber(balance)}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">{expected}</td>
+                    <td className="px-6 py-4 text-center text-sm text-green-600 dark:text-green-400 font-semibold">{formatNumber(delivered)}</td>
+                    <td className="px-6 py-4 text-center text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{formatNumber(issued)}</td>
+                    <td className={`px-6 py-4 text-center text-sm font-bold ${balance >= 0 ? 'text-blue-500 dark:text-blue-400' : 'text-red-500 dark:text-red-400'}`}>{formatNumber(balance)}</td>
                  </>);
         }
 
         return (
-            <tr key={material.id}>
-                {baseCells}
-                {dynamicCells}
-                <td className="px-6 py-4 text-center text-sm font-medium">
+            <tr key={material.id}>{/*
+                */}{baseCells}{/*
+                */}{dynamicCells}{/*
+                */}<td className="px-6 py-4 text-center text-sm font-medium">
                     {!currentUser.isViewer &&
                         <div className="flex items-center justify-center space-x-4">
                             <button onClick={() => {setEditingMaterial(material); setIsMaterialModalOpen(true);}} className="text-blue-600 hover:text-blue-900"><Edit className="h-4 w-4" /></button>
                             <button onClick={() => handleDelete(material.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
                         </div>
                     }
-                </td>
-            </tr>
+                </td>{/*
+            */}</tr>
         );
     };
 
     return (
         <>
             <StatsCards stats={dashboardStats} />
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8"> {/* MODIFIED: Added dark background */}
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4"> {/* MODIFIED: Added dark border */}
-                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 capitalize">{getPageTitle()}</h2> {/* MODIFIED: Added dark text */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 capitalize">{getPageTitle()}</h2>
                     <div className="flex items-center space-x-4">
                         <div className="relative">
-                            <input type="text" value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} placeholder="Search descriptions..." className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white" /> {/* MODIFIED: Added dark styles */}
+                            <input type="text" value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} placeholder="Search descriptions..." className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>
                             {searchTerm && (<button onClick={() => { setSearchTerm(''); setCurrentPage(1); }} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><X className="h-5 w-5"/></button>)}
                         </div>
@@ -1545,14 +1542,14 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
                     </div>
                 </div>
                 <div className="table-responsive">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700"> {/* MODIFIED: Added dark divide color */}
-                        <thead className="bg-gray-50 dark:bg-gray-700">{renderTableHeaders()}</thead> {/* MODIFIED: Added dark background */}
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"> {/* MODIFIED: Added dark background and divide color */}
-                            {paginatedMaterials.length > 0 ? paginatedMaterials.map((material, index) => renderTableBody(material, index)) : (
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">{/*
+                        */}<thead className="bg-gray-50 dark:bg-gray-700">{renderTableHeaders()}</thead>{/*
+                        */}<tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">{/*
+                            */}{paginatedMaterials.length > 0 ? paginatedMaterials.map((material, index) => renderTableBody(material, index)) : (
                                 <tr><td colSpan="11" className="text-center py-10 text-gray-500 dark:text-gray-400">No materials found.</td></tr>
-                            )}
-                        </tbody>
-                    </table>
+                            )}{/*
+                        */}</tbody>{/*
+                    */}</table>
                 </div>
                 <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </div>
@@ -2385,32 +2382,17 @@ export default {
 </file>
 
 <file path="vite.config.js">
+// vite.config.js
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
+// This is the entire corrected file content.
 export default defineConfig({
   plugins: [
     react(),
-    // MODIFIED: Pass config directly to the plugin
-    tailwindcss({
-      config: {
-        darkMode: "class", // Ensure this is set to 'class'
-        content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-        theme: {
-          extend: {
-            fontFamily: {
-              montserrat: ["Montserrat", "sans-serif"],
-            },
-            colors: {
-              "brand-blue": "#004aad",
-              "brand-yellow": "#fdfe13",
-            },
-          },
-        },
-        plugins: [],
-      },
-    }),
+    // The plugin will now automatically find and use your tailwind.config.js
+    tailwindcss(),
   ],
 });
 </file>

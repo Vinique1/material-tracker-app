@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react'; // MODIFIED: Imported useMemo
+// src/components/LogTable.jsx
+import React, { useMemo } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { doc, runTransaction } from 'firebase/firestore';
@@ -48,52 +49,52 @@ const LogTable = ({ logs, type, onEdit, currentPage, itemsPerPage, allMaterials 
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md dark:bg-gray-800"> {/* MODIFIED: Added dark background */}
+    <div className="bg-white rounded-lg shadow-md dark:bg-gray-800">
       <div className="table-responsive">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700"> {/* MODIFIED: Added dark divide color */}
-          <thead className="bg-gray-50 dark:bg-gray-700"> {/* MODIFIED: Added dark background */}
-            <tr>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">S/N</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Material</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Grade</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 1</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 2</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantity</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Remarks</th> {/* MODIFIED: Added dark text */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th> {/* MODIFIED: Added dark text */}
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"> {/* MODIFIED: Added dark background and divide color */}
-            {logs.length > 0 ? logs.map((log, index) => {
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">{/*
+          */}<thead className="bg-gray-50 dark:bg-gray-700">{/*
+            */}<tr>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">S/N</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>{/*
+              */}<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Material</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Grade</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 1</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 2</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantity</th>{/*
+              */}<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Remarks</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>{/*
+            */}</tr>{/*
+          */}</thead>{/*
+          */}<tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">{/*
+            */}{logs.length > 0 ? logs.map((log, index) => {
               const category = log.category || materialsMap.get(log.materialId)?.category || 'N/A';
 
               return (
-              <tr key={log.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.date}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">{log.materialDescription}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{category}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.materialGrade || 'N/A'}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize1 || 'N/A'}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize2 || 'N/A'}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-200 text-center">{log.quantity}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400">{log.remarks || 'N/A'}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+              <tr key={log.id}>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.date}</td>{/*
+                */}<td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">{log.materialDescription}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{category}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.materialGrade || 'N/A'}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize1 || 'N/A'}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize2 || 'N/A'}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-200 text-center">{log.quantity}</td>{/*
+                */}<td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400">{log.remarks || 'N/A'}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                   {!currentUser.isViewer && (
                     <div className="flex items-center justify-center space-x-4">
                       <button onClick={() => onEdit(log)} className="text-blue-600 hover:text-blue-900" title="Edit Log"><Edit size={16} /></button>
                       <button onClick={() => handleDelete(log)} className="text-red-600 hover:text-red-900" title="Delete Log"><Trash2 size={16} /></button>
                     </div>
                   )}
-                </td>
-              </tr>
+                </td>{/*
+              */}</tr>
             )}) : (
               <tr><td colSpan="10" className="text-center py-10 text-gray-500 dark:text-gray-400">No logs found.</td></tr>
-            )}
-          </tbody>
-        </table>
+            )}{/*
+          */}</tbody>{/*
+        */}</table>
       </div>
     </div>
   );

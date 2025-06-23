@@ -1,3 +1,4 @@
+// src/components/MaterialTable.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
@@ -110,13 +111,13 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
 
         const allHeaders = [...baseHeaders, ...dynamicHeaders, ...actionHeader];
         return (
-            <tr>
-                {allHeaders.map((header, index) => (
-                    <th key={index} className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${header === 'Description' ? 'text-left' : 'text-center'}`}> {/* MODIFIED: Added dark text */}
+            <tr>{/*
+                */}{allHeaders.map((header, index) => (
+                    <th key={index} className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${header === 'Description' ? 'text-left' : 'text-center'}`}>
                         {header}
                     </th>
-                ))}
-            </tr>
+                ))}{/*
+            */}</tr>
         );
     };
 
@@ -137,12 +138,12 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
 
         const baseCells = (
             <>
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 max-w-sm"><div className="text-sm font-medium text-gray-900 dark:text-white">{material.description}</div></td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.category}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.materialGrade}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize1}</td> {/* MODIFIED: Added dark text */}
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize2 || 'N/A'}</td> {/* MODIFIED: Added dark text */}
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
+                <td className="px-6 py-4 max-w-sm"><div className="text-sm font-medium text-gray-900 dark:text-white">{material.description}</div></td>
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.category}</td>
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.materialGrade}</td>
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize1}</td>
+                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize2 || 'N/A'}</td>
             </>
         );
 
@@ -150,58 +151,58 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
         switch(viewType) {
             case 'surplus':
                 dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm font-bold text-green-600 dark:text-green-400">{formatNumber(delivered - expected)}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td>
+                    <td className="px-6 py-4 text-center text-sm font-bold text-green-600 dark:text-green-400">{formatNumber(delivered - expected)}</td>
                 </>);
                 break;
             case 'deficit':
                 dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm font-bold text-red-500 dark:text-red-400">{formatNumber(expected - delivered)}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td>
+                    <td className="px-6 py-4 text-center text-sm font-bold text-red-500 dark:text-red-400">{formatNumber(expected - delivered)}</td>
                 </>);
                 break;
             case 'exact':
                  dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm font-bold text-blue-500 dark:text-blue-400">{delivered}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
+                    <td className="px-6 py-4 text-center text-sm font-bold text-blue-500 dark:text-blue-400">{delivered}</td>
                 </>);
                 break;
             default:
                  dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">{expected}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm text-green-600 dark:text-green-400 font-semibold">{formatNumber(delivered)}</td> {/* MODIFIED: Added dark text */}
-                    <td className="px-6 py-4 text-center text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{formatNumber(issued)}</td> {/* MODIFIED: Added dark text */}
-                    <td className={`px-6 py-4 text-center text-sm font-bold ${balance >= 0 ? 'text-blue-500 dark:text-blue-400' : 'text-red-500 dark:text-red-400'}`}>{formatNumber(balance)}</td> {/* MODIFIED: Added dark text */}
+                    <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">{expected}</td>
+                    <td className="px-6 py-4 text-center text-sm text-green-600 dark:text-green-400 font-semibold">{formatNumber(delivered)}</td>
+                    <td className="px-6 py-4 text-center text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{formatNumber(issued)}</td>
+                    <td className={`px-6 py-4 text-center text-sm font-bold ${balance >= 0 ? 'text-blue-500 dark:text-blue-400' : 'text-red-500 dark:text-red-400'}`}>{formatNumber(balance)}</td>
                  </>);
         }
 
         return (
-            <tr key={material.id}>
-                {baseCells}
-                {dynamicCells}
-                <td className="px-6 py-4 text-center text-sm font-medium">
+            <tr key={material.id}>{/*
+                */}{baseCells}{/*
+                */}{dynamicCells}{/*
+                */}<td className="px-6 py-4 text-center text-sm font-medium">
                     {!currentUser.isViewer &&
                         <div className="flex items-center justify-center space-x-4">
                             <button onClick={() => {setEditingMaterial(material); setIsMaterialModalOpen(true);}} className="text-blue-600 hover:text-blue-900"><Edit className="h-4 w-4" /></button>
                             <button onClick={() => handleDelete(material.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
                         </div>
                     }
-                </td>
-            </tr>
+                </td>{/*
+            */}</tr>
         );
     };
 
     return (
         <>
             <StatsCards stats={dashboardStats} />
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8"> {/* MODIFIED: Added dark background */}
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4"> {/* MODIFIED: Added dark border */}
-                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 capitalize">{getPageTitle()}</h2> {/* MODIFIED: Added dark text */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 capitalize">{getPageTitle()}</h2>
                     <div className="flex items-center space-x-4">
                         <div className="relative">
-                            <input type="text" value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} placeholder="Search descriptions..." className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white" /> {/* MODIFIED: Added dark styles */}
+                            <input type="text" value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} placeholder="Search descriptions..." className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>
                             {searchTerm && (<button onClick={() => { setSearchTerm(''); setCurrentPage(1); }} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><X className="h-5 w-5"/></button>)}
                         </div>
@@ -216,14 +217,14 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
                     </div>
                 </div>
                 <div className="table-responsive">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700"> {/* MODIFIED: Added dark divide color */}
-                        <thead className="bg-gray-50 dark:bg-gray-700">{renderTableHeaders()}</thead> {/* MODIFIED: Added dark background */}
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"> {/* MODIFIED: Added dark background and divide color */}
-                            {paginatedMaterials.length > 0 ? paginatedMaterials.map((material, index) => renderTableBody(material, index)) : (
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">{/*
+                        */}<thead className="bg-gray-50 dark:bg-gray-700">{renderTableHeaders()}</thead>{/*
+                        */}<tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">{/*
+                            */}{paginatedMaterials.length > 0 ? paginatedMaterials.map((material, index) => renderTableBody(material, index)) : (
                                 <tr><td colSpan="11" className="text-center py-10 text-gray-500 dark:text-gray-400">No materials found.</td></tr>
-                            )}
-                        </tbody>
-                    </table>
+                            )}{/*
+                        */}</tbody>{/*
+                    */}</table>
                 </div>
                 <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </div>
