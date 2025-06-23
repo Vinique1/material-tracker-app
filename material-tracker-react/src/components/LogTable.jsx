@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'; // MODIFIED: Imported useMemo
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { doc, runTransaction } from 'firebase/firestore';
 import toast from 'react-hot-toast';

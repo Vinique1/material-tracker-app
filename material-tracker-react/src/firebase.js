@@ -3,12 +3,12 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBMA6HduuXEM-OF953tDiaXG3a8zYXnlEk",
-  authDomain: "inventory-tracker-e5b38.firebaseapp.com",
-  projectId: "inventory-tracker-e5b38",
-  storageBucket: "inventory-tracker-e5b38.appspot.com",
-  messagingSenderId: "486657758459",
-  appId: "1:486657758459:web:ba935a81c82aa5c8394c5e"
+  apiKey: "AIzaSyBNZgou-GZMD-ajy_HywunRD3-JdntRv1I",
+  authDomain: "sitsl-inventory-tracker.firebaseapp.com",
+  projectId: "sitsl-inventory-tracker",
+  storageBucket: "sitsl-inventory-tracker.firebasestorage.app",
+  messagingSenderId: "238816182378",
+  appId: "1:238816182378:web:7070e7eadb9b4ee7b3ca13"
 };
 
 const app = initializeApp(firebaseConfig);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { useTheme } from '../context/ThemeContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { collection, query, onSnapshot, orderBy, where, getDocs } from 'firebase/firestore';
 import toast from 'react-hot-toast';

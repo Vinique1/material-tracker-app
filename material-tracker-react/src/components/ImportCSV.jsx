@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { collection, doc, writeBatch, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import Papa from 'papaparse';

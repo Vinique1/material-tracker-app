@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react'; // MODIFIED: Import lazy and Suspense
 import { Routes, Route } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/authContext';
 import { LayoutProvider } from './context/LayoutContext';
 import Login from './components/Login';
 import MainLayout from './layouts/MainLayout';

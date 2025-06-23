@@ -3,9 +3,9 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
-const AuthContext = createContext();
+const authContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(authContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -19,8 +19,8 @@ export const AuthProvider = ({ children }) => {
   });
   const [loading, setLoading] = useState(true);
 
-  const ADMIN_UID = "V8zL2oH8b1ZSmG1tdp11gmdtylM2";
-  const VIEWER_UID = "Z35t7DqNx5OJktX39895BK2MS773";
+  const ADMIN_UID = "liClr3tmuecp40P96GCXoHmzc6x1";
+  const VIEWER_UID = "DY1kwGWNwET1VauTFlNN0xxtH9O2";
   const authorizedUIDs = [ADMIN_UID, VIEWER_UID];
 
   useEffect(() => {
@@ -58,8 +58,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <authContext.Provider value={value}>
       {!loading && children}
-    </AuthContext.Provider>
+    </authContext.Provider>
   );
 };

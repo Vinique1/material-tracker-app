@@ -81,20 +81,28 @@ vite.config.js
 This section contains the contents of the repository's files.
 
 <file path=".firebase/hosting.ZGlzdA.cache">
-vite.svg,1749218084870,699a02e0e68a579f687d364bbbe7633161244f35af068220aee37b1b33dfb3c7
-Steve Logo.png,1732629368542,3bfb0bde2112da01a6053f8b3b35bf512eeeb488f58989a2cc4b67e1be58caa1
-index.html,1750414898091,f0e234005a0d3a8e84d132bfc8c356bbea6166731eb524c01aa1fddaf31b27d9
-assets/purify.es-CQJ0hv7W.js,1750414898099,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
-assets/index-D8LJpKvn.css,1750414898091,5c94643e14fcdc9dc51f81662eb4bb9eb42aeb80fa82a3cd3ef5754ebbc45470
-assets/index.es-BitkRbfe.js,1750414898099,76b21ff948e3e0d1b9651247c7fb2f95ab779756ae30193c5c3e053122a4d705
-assets/html2canvas.esm-CBrSDip1.js,1750414898091,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
-assets/index-CYW9hG-w.js,1750414898091,c7beeedfdced20ac03e3a84b10b535c77b2b722f41278d19bce7be8fca356598
+vite.svg,1750541927755,699a02e0e68a579f687d364bbbe7633161244f35af068220aee37b1b33dfb3c7
+Steve Logo.png,1750541927739,3bfb0bde2112da01a6053f8b3b35bf512eeeb488f58989a2cc4b67e1be58caa1
+Inventory.jpg,1750541927739,419098857f54e1c53882395067382d0a470a8704b322b07587842a4f58eb03ef
+graphic3.png,1750541927755,94a6d89d84f47305d00403a201cd43a36389c760412bc32e6deff8ef576823d0
+graphic2.png,1750541927755,2e512b34db88ed39c52d00eed81ce5e2cfc134e8ce7e38761b2d9afe4b8dc17e
+graphic1.png,1750541927739,4f9ebcb3e5cee6bd416f6cd64305fb7b32f89a62190289c522e0fb7b17a77f7f
+Background (2).jpg,1750541927666,48ac255e04d9e26bca0ecdfb0f45c811dad88aa42d88989b7ce8923e74a46cec
+index.html,1750652665688,ee80aa6fa81c9a587763777e0770256fb9370644c9c2d217c2ec3e9ee4bc0aa5
+assets/purify.es-CQJ0hv7W.js,1750652665688,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
+assets/MaterialListPage-e_bkEeYW.js,1750652665687,8eaaa080ac6edde97cee84992c1f95c168b3f1367dff8144a3faeb9e25f7d1c3
+assets/index-KCEzy0ck.css,1750652665686,7d818098e79be5f183374e3e6b92cd04f7cbb5d2310d0f586a8db8cbc95edae8
+assets/Pagination-Dk6kR334.js,1750652665688,71db4420221bcac1711ddb92827767d4a862897c85f74df34e5d56440ec9fb3d
+assets/index.es-DZHuAiBk.js,1750652665692,bb0764aa656bfc70e48a089be06619d21b8c13ffd5014a3b91a29529876b732a
+assets/html2canvas.esm-CBrSDip1.js,1750652665688,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
+assets/LogPage-CKjQ7kdN.js,1750652665688,a97a19effd26f390f7e03098238b484cb9fcf0fd823ae5af4f948512c5a61992
+assets/index-C-JY9W0z.js,1750652665698,313e35474ce8876bb80fe49f27e16cce95f7fa6c2180b9316ed414421f00998c
 </file>
 
 <file path=".firebaserc">
 {
   "projects": {
-    "default": "inventory-tracker-e5b38"
+    "default": "sitsl-inventory-tracker"
   }
 }
 </file>
@@ -310,7 +318,7 @@ If you are developing a production application, we recommend using TypeScript wi
 <file path="src/App.jsx">
 import React, { lazy, Suspense } from 'react'; // MODIFIED: Import lazy and Suspense
 import { Routes, Route } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/authContext';
 import { LayoutProvider } from './context/LayoutContext';
 import Login from './components/Login';
 import MainLayout from './layouts/MainLayout';
@@ -366,7 +374,7 @@ export default App;
 
 <file path="src/components/AddEditMaterialModal.jsx">
 import React, { useState, useEffect, useRef, Fragment } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { doc, updateDoc, addDoc, collection, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import { Combobox, Transition } from '@headlessui/react';
@@ -637,7 +645,7 @@ export default Dashboard;
 
 <file path="src/components/Header.jsx">
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { useTheme } from '../context/ThemeContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -701,7 +709,7 @@ export default Header;
 
 <file path="src/components/ImportCSV.jsx">
 import React, { useState, useRef } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { collection, doc, writeBatch, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import Papa from 'papaparse';
@@ -873,7 +881,7 @@ export default Loading;
 
 <file path="src/components/LogForm.jsx">
 import React, { useState, useEffect, Fragment } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { collection, doc, runTransaction, serverTimestamp, query, getDocs } from 'firebase/firestore';
 import toast from 'react-hot-toast';
@@ -1215,7 +1223,7 @@ export default Login;
 
 <file path="src/components/LogTable.jsx">
 import React, { useMemo } from 'react'; // MODIFIED: Imported useMemo
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { doc, runTransaction } from 'firebase/firestore';
 import toast from 'react-hot-toast';
@@ -1320,7 +1328,7 @@ export default LogTable;
 
 <file path="src/components/MaterialTable.jsx">
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
@@ -1598,7 +1606,7 @@ export default Pagination;
 <file path="src/components/Sidebar.jsx">
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 import { useLayout } from "../context/LayoutContext";
 import {
   Box,
@@ -1899,9 +1907,9 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
-const AuthContext = createContext();
+const authContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(authContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -1915,8 +1923,8 @@ export const AuthProvider = ({ children }) => {
   });
   const [loading, setLoading] = useState(true);
 
-  const ADMIN_UID = "V8zL2oH8b1ZSmG1tdp11gmdtylM2";
-  const VIEWER_UID = "Z35t7DqNx5OJktX39895BK2MS773";
+  const ADMIN_UID = "liClr3tmuecp40P96GCXoHmzc6x1";
+  const VIEWER_UID = "DY1kwGWNwET1VauTFlNN0xxtH9O2";
   const authorizedUIDs = [ADMIN_UID, VIEWER_UID];
 
   useEffect(() => {
@@ -1954,9 +1962,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <authContext.Provider value={value}>
       {!loading && children}
-    </AuthContext.Provider>
+    </authContext.Provider>
   );
 };
 </file>
@@ -2053,12 +2061,12 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBMA6HduuXEM-OF953tDiaXG3a8zYXnlEk",
-  authDomain: "inventory-tracker-e5b38.firebaseapp.com",
-  projectId: "inventory-tracker-e5b38",
-  storageBucket: "inventory-tracker-e5b38.appspot.com",
-  messagingSenderId: "486657758459",
-  appId: "1:486657758459:web:ba935a81c82aa5c8394c5e"
+  apiKey: "AIzaSyBNZgou-GZMD-ajy_HywunRD3-JdntRv1I",
+  authDomain: "sitsl-inventory-tracker.firebaseapp.com",
+  projectId: "sitsl-inventory-tracker",
+  storageBucket: "sitsl-inventory-tracker.firebasestorage.app",
+  messagingSenderId: "238816182378",
+  appId: "1:238816182378:web:7070e7eadb9b4ee7b3ca13"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -2176,7 +2184,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 <file path="src/pages/LogPage.jsx">
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { collection, query, onSnapshot, orderBy, where, getDocs } from 'firebase/firestore';
 import toast from 'react-hot-toast';
