@@ -43,6 +43,7 @@ The content is organized as follows:
 .firebase/hosting.ZGlzdA.cache
 .firebaserc
 .gitignore
+.prettierrc.json
 eslint.config.js
 firebase.json
 index.html
@@ -137,11 +138,24 @@ dist-ssr
 src/firebase-config.local.js
 </file>
 
+<file path=".prettierrc.json">
+{
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "jsxSingleQuote": false,
+  "bracketSpacing": true
+}
+</file>
+
 <file path="eslint.config.js">
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import prettierConfig from 'eslint-config-prettier'; // NEW: Import prettier config
 
 export default [
   { ignores: ['dist'] },
@@ -170,7 +184,8 @@ export default [
       ],
     },
   },
-]
+  prettierConfig, // NEW: Add Prettier config last to override styling rules
+];
 </file>
 
 <file path="firebase.json">
@@ -219,6 +234,7 @@ export default [
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "format": "prettier --write \"**/*.{js,jsx,json,md,css}\"",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -245,10 +261,13 @@ export default [
     "@vitejs/plugin-react": "^4.5.2",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.25.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "postcss": "^8.5.6",
+    "prettier": "^3.3.2",
     "tailwindcss": "^4.1.10",
     "vite": "^6.3.5"
   }
@@ -740,10 +759,10 @@ const ImportCSV = () => {
       },
     });
 
-    // Reset file input to allow re-uploading the same file
     event.target.value = null;
   };
 
+  // MODIFIED: Rearchitected to handle batching and large datasets
   const processAndUpload = async (data, toastId) => {
     toast.loading('Preparing data for upload...', { id: toastId });
 
@@ -753,7 +772,6 @@ const ImportCSV = () => {
       return;
     }
 
-    // --- Validate Headers ---
     const requiredHeaders = ['Description', 'ExpectedQuantity', 'Category', 'Supplier', 'MaterialGrade', 'BoreSize1'];
     const fileHeaders = Object.keys(data[0]);
     const missingHeaders = requiredHeaders.filter(h => !fileHeaders.includes(h));
@@ -765,10 +783,8 @@ const ImportCSV = () => {
     }
 
     try {
-      const batch = writeBatch(db);
       const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
       const metadataRef = doc(db, 'app_metadata', 'lists');
-
       const newMetadata = {
         categories: new Set(),
         suppliers: new Set(),
@@ -777,43 +793,58 @@ const ImportCSV = () => {
         boreSize2Options: new Set(),
       };
 
+      // First, parse all data to collect metadata
       data.forEach(row => {
-        // --- Prepare Material Document ---
-        const newMaterialRef = doc(materialsCollectionRef);
-        const materialData = {
-          description: row.Description || '',
-          expectedQty: Number(row.ExpectedQuantity) || 0,
-          category: row.Category || '',
-          supplier: row.Supplier || '',
-          materialGrade: row.MaterialGrade || '',
-          boreSize1: row.BoreSize1 || '',
-          boreSize2: row.BoreSize2 || null,
-          delivered: 0,
-          issued: 0,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        };
-        batch.set(newMaterialRef, materialData);
-
-        // --- Collect New Metadata ---
-        if (materialData.category) newMetadata.categories.add(materialData.category);
-        if (materialData.supplier) newMetadata.suppliers.add(materialData.supplier);
-        if (materialData.materialGrade) newMetadata.materialGrades.add(materialData.materialGrade);
-        if (materialData.boreSize1) newMetadata.boreSize1Options.add(materialData.boreSize1);
-        if (materialData.boreSize2) newMetadata.boreSize2Options.add(materialData.boreSize2);
+        if (row.Category) newMetadata.categories.add(row.Category);
+        if (row.Supplier) newMetadata.suppliers.add(row.Supplier);
+        if (row.MaterialGrade) newMetadata.materialGrades.add(row.MaterialGrade);
+        if (row.BoreSize1) newMetadata.boreSize1Options.add(row.BoreSize1);
+        if (row.BoreSize2) newMetadata.boreSize2Options.add(row.BoreSize2);
       });
 
-      // --- Prepare Metadata Update ---
-      batch.update(metadataRef, {
-        categories: arrayUnion(...Array.from(newMetadata.categories)),
-        suppliers: arrayUnion(...Array.from(newMetadata.suppliers)),
-        materialGrades: arrayUnion(...Array.from(newMetadata.materialGrades)),
-        boreSize1Options: arrayUnion(...Array.from(newMetadata.boreSize1Options)),
-        boreSize2Options: arrayUnion(...Array.from(newMetadata.boreSize2Options)),
-      });
+      // Update metadata in a single operation
+      await writeBatch(db)
+        .update(metadataRef, {
+            categories: arrayUnion(...Array.from(newMetadata.categories)),
+            suppliers: arrayUnion(...Array.from(newMetadata.suppliers)),
+            materialGrades: arrayUnion(...Array.from(newMetadata.materialGrades)),
+            boreSize1Options: arrayUnion(...Array.from(newMetadata.boreSize1Options)),
+            boreSize2Options: arrayUnion(...Array.from(newMetadata.boreSize2Options)),
+        })
+        .commit();
+      
+      toast.loading('Metadata updated. Now uploading materials...', { id: toastId });
 
-      toast.loading(`Uploading ${data.length} materials...`, { id: toastId });
-      await batch.commit();
+      // NEW: Chunking logic for materials
+      const BATCH_SIZE = 499; // Firestore limit is 500 writes per batch
+      const batchPromises = [];
+
+      for (let i = 0; i < data.length; i += BATCH_SIZE) {
+        const chunk = data.slice(i, i + BATCH_SIZE);
+        const batch = writeBatch(db);
+
+        chunk.forEach(row => {
+          const newMaterialRef = doc(materialsCollectionRef);
+          const materialData = {
+            description: row.Description || '',
+            expectedQty: Number(row.ExpectedQuantity) || 0,
+            category: row.Category || '',
+            supplier: row.Supplier || '',
+            materialGrade: row.MaterialGrade || '',
+            boreSize1: row.BoreSize1 || '',
+            boreSize2: row.BoreSize2 || null,
+            delivered: 0,
+            issued: 0,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          };
+          batch.set(newMaterialRef, materialData);
+        });
+        
+        batchPromises.push(batch.commit());
+      }
+
+      await Promise.all(batchPromises);
 
       toast.success(`Successfully imported ${data.length} materials!`, { id: toastId });
 
@@ -1072,15 +1103,35 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({}); // NEW: State for inline errors
+
+  // NEW: Client-side validation function
+  const validateForm = () => {
+    const newErrors = {};
+    if (!email) {
+      newErrors.email = "Email is required.";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Email address is invalid.";
+    }
+    if (!password) {
+      newErrors.password = "Password is required.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setErrors({});
+    // MODIFIED: Validate form before submitting
+    if (!validateForm()) {
+      return;
+    }
     setIsSubmitting(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
-      // This error handling is well done, no changes needed here.
       switch (err.code) {
         case "auth/user-not-found":
         case "auth/invalid-email":
@@ -1098,15 +1149,11 @@ const Login = () => {
   };
 
   return (
-    // 1. COLOR: Softer, design-accurate background color
     <div className="min-h-screen w-full text-white font-montserrat relative overflow-hidden bg-[#1E2A5B]">
-      {/* 2. BACKGROUND: Reduced opacity for a more subtle texture */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-10 z-10"
         style={{ backgroundImage: "url('/Inventory.jpg')" }}
       ></div>
-
-      {/* Decorative graphics - no changes needed, they are fine */}
       <div className="absolute inset-0 z-20 pointer-events-none hidden lg:block">
         <img
           src="/graphic1.png"
@@ -1127,10 +1174,8 @@ const Login = () => {
           style={{ top: "6.4%", left: "90.6%", width: "4.5vw" }}
         />
       </div>
-
       <div className="relative z-30 flex items-center justify-center min-h-screen w-full px-6 sm:px-8 lg:px-12">
         <div className="w-full max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-11 gap-16 items-center">
-          {/* --- Left Column (Typography is now final) --- */}
           <div className="lg:col-span-6 flex flex-col h-full text-center lg:text-left">
             <header className="mb-0 flex items-center gap-4 justify-center lg:justify-start">
               <img
@@ -1140,7 +1185,6 @@ const Login = () => {
               />
               <h1 className="text-2xl font-semibold">Steve Integrated</h1>
             </header>
-
             <main className="flex-grow flex flex-col justify-center my-10 lg:my-0">
               <h2 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold leading-tight text-white">
                 Login
@@ -1153,13 +1197,11 @@ const Login = () => {
                 deliveries, and issues in real-time.
               </p>
               <div className="mt-16">
-                {/* 3. INTERACTION: Softer hover effect on button */}
                 <button className="bg-[#FDE047] text-[#1E3A8A] font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 hover:bg-[#FACC15]">
                   Learn More
                 </button>
               </div>
             </main>
-
             <footer className="w-full flex justify-center lg:justify-start">
               <img
                 src="/graphic3.png"
@@ -1169,16 +1211,13 @@ const Login = () => {
               />
             </footer>
           </div>
-
-          {/* --- Right Column (Login Form) --- */}
           <div className="lg:col-span-5 flex items-center justify-center w-full">
             <div className="w-full max-w-lg p-10 md:p-14 rounded-3xl bg-white/10 shadow-2xl backdrop-blur-lg">
               <div className="text-center mb-10">
                 <h3 className="text-3xl font-bold text-white">Welcome</h3>
                 <p className="text-white/60 mt-1">Let's get you signed in.</p>
               </div>
-
-              <form onSubmit={handleLogin}>
+              <form onSubmit={handleLogin} noValidate> {/* MODIFIED: Added noValidate */}
                 <div className="space-y-7">
                   <div>
                     <label
@@ -1187,16 +1226,21 @@ const Login = () => {
                     >
                       EMAIL
                     </label>
-                    {/* 4. INTERACTION: Refined input styles */}
                     <input
                       type="email"
                       id="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@company.com"
-                      className="w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border border-transparent focus:outline-none focus:border-yellow-400 focus:bg-white/20 transition-all duration-300"
-                      required
+                      className={clsx(
+                        "w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300",
+                        // MODIFIED: Add red border on error
+                        errors.email ? "border-red-400" : "border-transparent",
+                        "focus:outline-none focus:border-yellow-400 focus:bg-white/20"
+                      )}
                     />
+                    {/* NEW: Display inline error */}
+                    {errors.email && <p className="text-red-400 text-sm mt-2">{errors.email}</p>}
                   </div>
                   <div>
                     <label
@@ -1211,12 +1255,17 @@ const Login = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••"
-                      className="w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border border-transparent focus:outline-none focus:border-yellow-400 focus:bg-white/20 transition-all duration-300"
-                      required
+                       className={clsx(
+                        "w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300",
+                        // MODIFIED: Add red border on error
+                        errors.password ? "border-red-400" : "border-transparent",
+                        "focus:outline-none focus:border-yellow-400 focus:bg-white/20"
+                      )}
                     />
+                     {/* NEW: Display inline error */}
+                    {errors.password && <p className="text-red-400 text-sm mt-2">{errors.password}</p>}
                   </div>
                 </div>
-                {/* 5. COLOR: More harmonious error message color */}
                 {error && (
                   <p className="text-red-400 text-sm mt-6 text-center">
                     {error}
@@ -1228,7 +1277,6 @@ const Login = () => {
                     disabled={isSubmitting}
                     className={clsx(
                       "w-full font-bold py-3 rounded-full text-lg transition-all duration-300",
-                      // 6. COLOR & INTERACTION: Final button styles
                       "bg-[#FDE047] text-[#1E3A8A]",
                       isSubmitting
                         ? "opacity-50 cursor-not-allowed"

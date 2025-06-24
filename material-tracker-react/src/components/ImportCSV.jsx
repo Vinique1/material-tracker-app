@@ -31,10 +31,10 @@ const ImportCSV = () => {
       },
     });
 
-    // Reset file input to allow re-uploading the same file
     event.target.value = null;
   };
 
+  // MODIFIED: Rearchitected to handle batching and large datasets
   const processAndUpload = async (data, toastId) => {
     toast.loading('Preparing data for upload...', { id: toastId });
 
@@ -44,7 +44,6 @@ const ImportCSV = () => {
       return;
     }
 
-    // --- Validate Headers ---
     const requiredHeaders = ['Description', 'ExpectedQuantity', 'Category', 'Supplier', 'MaterialGrade', 'BoreSize1'];
     const fileHeaders = Object.keys(data[0]);
     const missingHeaders = requiredHeaders.filter(h => !fileHeaders.includes(h));
@@ -56,10 +55,8 @@ const ImportCSV = () => {
     }
 
     try {
-      const batch = writeBatch(db);
       const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
       const metadataRef = doc(db, 'app_metadata', 'lists');
-
       const newMetadata = {
         categories: new Set(),
         suppliers: new Set(),
@@ -68,43 +65,58 @@ const ImportCSV = () => {
         boreSize2Options: new Set(),
       };
 
+      // First, parse all data to collect metadata
       data.forEach(row => {
-        // --- Prepare Material Document ---
-        const newMaterialRef = doc(materialsCollectionRef);
-        const materialData = {
-          description: row.Description || '',
-          expectedQty: Number(row.ExpectedQuantity) || 0,
-          category: row.Category || '',
-          supplier: row.Supplier || '',
-          materialGrade: row.MaterialGrade || '',
-          boreSize1: row.BoreSize1 || '',
-          boreSize2: row.BoreSize2 || null,
-          delivered: 0,
-          issued: 0,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        };
-        batch.set(newMaterialRef, materialData);
-
-        // --- Collect New Metadata ---
-        if (materialData.category) newMetadata.categories.add(materialData.category);
-        if (materialData.supplier) newMetadata.suppliers.add(materialData.supplier);
-        if (materialData.materialGrade) newMetadata.materialGrades.add(materialData.materialGrade);
-        if (materialData.boreSize1) newMetadata.boreSize1Options.add(materialData.boreSize1);
-        if (materialData.boreSize2) newMetadata.boreSize2Options.add(materialData.boreSize2);
+        if (row.Category) newMetadata.categories.add(row.Category);
+        if (row.Supplier) newMetadata.suppliers.add(row.Supplier);
+        if (row.MaterialGrade) newMetadata.materialGrades.add(row.MaterialGrade);
+        if (row.BoreSize1) newMetadata.boreSize1Options.add(row.BoreSize1);
+        if (row.BoreSize2) newMetadata.boreSize2Options.add(row.BoreSize2);
       });
 
-      // --- Prepare Metadata Update ---
-      batch.update(metadataRef, {
-        categories: arrayUnion(...Array.from(newMetadata.categories)),
-        suppliers: arrayUnion(...Array.from(newMetadata.suppliers)),
-        materialGrades: arrayUnion(...Array.from(newMetadata.materialGrades)),
-        boreSize1Options: arrayUnion(...Array.from(newMetadata.boreSize1Options)),
-        boreSize2Options: arrayUnion(...Array.from(newMetadata.boreSize2Options)),
-      });
+      // Update metadata in a single operation
+      await writeBatch(db)
+        .update(metadataRef, {
+            categories: arrayUnion(...Array.from(newMetadata.categories)),
+            suppliers: arrayUnion(...Array.from(newMetadata.suppliers)),
+            materialGrades: arrayUnion(...Array.from(newMetadata.materialGrades)),
+            boreSize1Options: arrayUnion(...Array.from(newMetadata.boreSize1Options)),
+            boreSize2Options: arrayUnion(...Array.from(newMetadata.boreSize2Options)),
+        })
+        .commit();
+      
+      toast.loading('Metadata updated. Now uploading materials...', { id: toastId });
 
-      toast.loading(`Uploading ${data.length} materials...`, { id: toastId });
-      await batch.commit();
+      // NEW: Chunking logic for materials
+      const BATCH_SIZE = 499; // Firestore limit is 500 writes per batch
+      const batchPromises = [];
+
+      for (let i = 0; i < data.length; i += BATCH_SIZE) {
+        const chunk = data.slice(i, i + BATCH_SIZE);
+        const batch = writeBatch(db);
+
+        chunk.forEach(row => {
+          const newMaterialRef = doc(materialsCollectionRef);
+          const materialData = {
+            description: row.Description || '',
+            expectedQty: Number(row.ExpectedQuantity) || 0,
+            category: row.Category || '',
+            supplier: row.Supplier || '',
+            materialGrade: row.MaterialGrade || '',
+            boreSize1: row.BoreSize1 || '',
+            boreSize2: row.BoreSize2 || null,
+            delivered: 0,
+            issued: 0,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          };
+          batch.set(newMaterialRef, materialData);
+        });
+        
+        batchPromises.push(batch.commit());
+      }
+
+      await Promise.all(batchPromises);
 
       toast.success(`Successfully imported ${data.length} materials!`, { id: toastId });
 
