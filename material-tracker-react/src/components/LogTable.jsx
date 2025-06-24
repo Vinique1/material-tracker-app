@@ -50,14 +50,15 @@ const LogTable = ({ logs, type, onEdit, currentPage, itemsPerPage, allMaterials 
 
   return (
     <div className="bg-white rounded-lg shadow-md dark:bg-gray-800">
-      <div className="table-responsive">
+      <div className="overflow-x-auto overflow-y-auto max-h-[65vh]">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">{/*
           */}<thead className="bg-gray-50 dark:bg-gray-700">{/*
-            */}<tr>{/*
+            */}<tr className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">{/*
               */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">S/N</th>{/*
               */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>{/*
               */}<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Material</th>{/*
               */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>{/*
+              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supplier</th>{/*
               */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Grade</th>{/*
               */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 1</th>{/*
               */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 2</th>{/*
@@ -69,13 +70,15 @@ const LogTable = ({ logs, type, onEdit, currentPage, itemsPerPage, allMaterials 
           */}<tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">{/*
             */}{logs.length > 0 ? logs.map((log, index) => {
               const category = log.category || materialsMap.get(log.materialId)?.category || 'N/A';
+              const displayDate = log.date?.toDate ? log.date.toDate().toLocaleDateString() : log.date;
 
               return (
               <tr key={log.id}>{/*
                 */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td>{/*
-                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.date}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{displayDate}</td>{/*
                 */}<td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">{log.materialDescription}</td>{/*
                 */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{category}</td>{/*
+                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.supplier || 'N/A'}</td>{/*
                 */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.materialGrade || 'N/A'}</td>{/*
                 */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize1 || 'N/A'}</td>{/*
                 */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize2 || 'N/A'}</td>{/*
@@ -91,7 +94,7 @@ const LogTable = ({ logs, type, onEdit, currentPage, itemsPerPage, allMaterials 
                 </td>{/*
               */}</tr>
             )}) : (
-              <tr><td colSpan="10" className="text-center py-10 text-gray-500 dark:text-gray-400">No logs found.</td></tr>
+              <tr><td colSpan="11" className="text-center py-10 text-gray-500 dark:text-gray-400">No logs found.</td></tr>
             )}{/*
           */}</tbody>{/*
         */}</table>

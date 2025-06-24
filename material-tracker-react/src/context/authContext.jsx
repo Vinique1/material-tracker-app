@@ -1,3 +1,4 @@
+// src/context/authContext.jsx
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -9,7 +10,6 @@ export const useAuth = () => useContext(authContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  // MODIFIED: Added new empty arrays to the initial state for the new fields.
   const [appMetadata, setAppMetadata] = useState({ 
     categories: [], 
     suppliers: [], 
@@ -17,7 +17,8 @@ export const AuthProvider = ({ children }) => {
     boreSize1Options: [],
     boreSize2Options: []
   });
-  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [metadataLoaded, setMetadataLoaded] = useState(false); // New state for metadata status
 
   const ADMIN_UID = "liClr3tmuecp40P96GCXoHmzc6x1";
   const VIEWER_UID = "DY1kwGWNwET1VauTFlNN0xxtH9O2";
@@ -32,17 +33,20 @@ export const AuthProvider = ({ children }) => {
         if (user) signOut(auth);
         setCurrentUser(null);
       }
-      setLoading(false);
+      setAuthLoading(false);
     });
 
     const metadataRef = doc(db, 'app_metadata', 'lists');
     const unsubscribeMetadata = onSnapshot(metadataRef, (docSnap) => {
       if (docSnap.exists()) {
-        // MODIFIED: The entire metadata document is now fetched and set.
         setAppMetadata(docSnap.data());
       } else {
         console.log("Metadata document does not exist! Please create it in Firestore.");
       }
+      setMetadataLoaded(true); // Mark metadata as loaded
+    }, (error) => {
+      console.error("AuthContext: Error fetching metadata! Check Firestore Rules.", error);
+      setMetadataLoaded(true); // Mark as loaded even on error to prevent infinite loading
     });
 
     return () => {
@@ -57,9 +61,12 @@ export const AuthProvider = ({ children }) => {
     appMetadata,
   };
 
+  // The application is considered loading until both auth and metadata are ready
+  const isLoading = authLoading || !metadataLoaded;
+
   return (
     <authContext.Provider value={value}>
-      {!loading && children}
+      {!isLoading && children}
     </authContext.Provider>
   );
 };

@@ -111,7 +111,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
 
         const allHeaders = [...baseHeaders, ...dynamicHeaders, ...actionHeader];
         return (
-            <tr>{/*
+            <tr className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">{/*
                 */}{allHeaders.map((header, index) => (
                     <th key={index} className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${header === 'Description' ? 'text-left' : 'text-center'}`}>
                         {header}
@@ -216,7 +216,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
                         )}
                     </div>
                 </div>
-                <div className="table-responsive">
+                <div className="overflow-x-auto overflow-y-auto max-h-[65vh]">
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">{/*
                         */}<thead className="bg-gray-50 dark:bg-gray-700">{renderTableHeaders()}</thead>{/*
                         */}<tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">{/*
