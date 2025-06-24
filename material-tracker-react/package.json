@@ -13,6 +13,7 @@
     "@headlessui/react": "^2.2.4",
     "@tailwindcss/vite": "^4.1.10",
     "clsx": "^2.1.1",
+    "dotenv": "^16.5.0",
     "firebase": "^11.9.1",
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
