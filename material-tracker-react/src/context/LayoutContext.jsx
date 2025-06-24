@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react"; // MODIFIED: Removed useEffect
+import React, { createContext, useContext, useState } from 'react'; // MODIFIED: Removed useEffect
 
 const LayoutContext = createContext();
 export const useLayout = () => useContext(LayoutContext);

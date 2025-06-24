@@ -14,16 +14,32 @@ const Header = () => {
   // Determine which icon to show based on the current theme
   const getNextThemeAndIcon = () => {
     if (theme === 'light') {
-      return { nextTheme: 'dark', icon: <Moon size={20} />, title: "Switch to Dark Mode" };
+      return {
+        nextTheme: 'dark',
+        icon: <Moon size={20} />,
+        title: 'Switch to Dark Mode',
+      };
     }
     if (theme === 'dark') {
-      return { nextTheme: 'system', icon: <Monitor size={20} />, title: "Switch to System Preference" };
+      return {
+        nextTheme: 'system',
+        icon: <Monitor size={20} />,
+        title: 'Switch to System Preference',
+      };
     }
     // If theme is 'system' or anything else, default to light
-    return { nextTheme: 'light', icon: <Sun size={20} />, title: "Switch to Light Mode" };
+    return {
+      nextTheme: 'light',
+      icon: <Sun size={20} />,
+      title: 'Switch to Light Mode',
+    };
   };
 
-  const { nextTheme, icon: currentIcon, title: iconTitle } = getNextThemeAndIcon();
+  const {
+    nextTheme,
+    icon: currentIcon,
+    title: iconTitle,
+  } = getNextThemeAndIcon();
 
   const handleThemeToggleClick = () => {
     toggleTheme(nextTheme);
@@ -44,14 +60,19 @@ const Header = () => {
           {currentIcon}
         </button>
         <div className="text-right hidden sm:block">
-            <p className="text-sm font-medium text-gray-800 dark:text-gray-200" title={currentUser?.email}>{currentUser?.email}</p>
+          <p
+            className="text-sm font-medium text-gray-800 dark:text-gray-200"
+            title={currentUser?.email}
+          >
+            {currentUser?.email}
+          </p>
         </div>
         <button
-            onClick={handleSignOut}
-            className="p-2 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20"
-            title="Sign Out"
+          onClick={handleSignOut}
+          className="p-2 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20"
+          title="Sign Out"
         >
-            <LogOut size={20} />
+          <LogOut size={20} />
         </button>
       </div>
     </header>

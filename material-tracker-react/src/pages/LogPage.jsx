@@ -2,7 +2,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
-import { collection, query, onSnapshot, orderBy, where, getDocs, Timestamp } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  onSnapshot,
+  orderBy,
+  where,
+  getDocs,
+  Timestamp,
+} from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import Papa from 'papaparse';
 import jsPDF from 'jspdf';
@@ -30,17 +38,31 @@ const LogPage = ({ type }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const config = useMemo(() => ({
-    delivery: { title: "Delivery Log", collectionName: "delivery_logs", icon: <Download className="h-8 w-8 text-blue-600" /> },
-    issuance: { title: "Issuance Log", collectionName: "issuance_logs", icon: <Upload className="h-8 w-8 text-red-600" /> }
-  }), []);
+  const config = useMemo(
+    () => ({
+      delivery: {
+        title: 'Delivery Log',
+        collectionName: 'delivery_logs',
+        icon: <Download className="h-8 w-8 text-blue-600" />,
+      },
+      issuance: {
+        title: 'Issuance Log',
+        collectionName: 'issuance_logs',
+        icon: <Upload className="h-8 w-8 text-red-600" />,
+      },
+    }),
+    [],
+  );
 
   const currentConfig = config[type];
 
   useEffect(() => {
     const materialsRef = collection(db, `materials/${ADMIN_UID}/items`);
     const unsubscribe = onSnapshot(materialsRef, (snapshot) => {
-      const materialsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const materialsList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setAllMaterials(materialsList);
     });
     return () => unsubscribe();
@@ -48,15 +70,17 @@ const LogPage = ({ type }) => {
 
   useEffect(() => {
     const logCollectionRef = collection(db, currentConfig.collectionName);
-    getDocs(query(logCollectionRef)).then(snapshot => {
-        const dates = snapshot.docs.map(doc => {
-            const data = doc.data();
-            if (data.date?.toDate) {
-                return data.date.toDate().toISOString().split('T')[0];
-            }
-            return data.date;
-        });
-        setUniqueDates(Array.from(new Set(dates)).sort((a,b) => new Date(b) - new Date(a)));
+    getDocs(query(logCollectionRef)).then((snapshot) => {
+      const dates = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        if (data.date?.toDate) {
+          return data.date.toDate().toISOString().split('T')[0];
+        }
+        return data.date;
+      });
+      setUniqueDates(
+        Array.from(new Set(dates)).sort((a, b) => new Date(b) - new Date(a)),
+      );
     });
   }, [currentConfig.collectionName]);
 
@@ -76,37 +100,59 @@ const LogPage = ({ type }) => {
     } else if (selectedDate !== 'all' && selectedDate !== 'custom') {
       const startOfDay = Timestamp.fromDate(new Date(selectedDate));
       const endOfDay = Timestamp.fromDate(new Date(selectedDate + 'T23:59:59'));
-      q = query(q, where('date', '>=', startOfDay), where('date', '<=', endOfDay));
+      q = query(
+        q,
+        where('date', '>=', startOfDay),
+        where('date', '<=', endOfDay),
+      );
     }
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setAllLogs(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setCurrentPage(1);
-    }, (error) => {
-      console.error("Firestore Query Error:", error);
-      toast.error(`Failed to fetch ${type} logs. Check console for details.`);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        setAllLogs(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        setCurrentPage(1);
+      },
+      (error) => {
+        console.error('Firestore Query Error:', error);
+        toast.error(`Failed to fetch ${type} logs. Check console for details.`);
+      },
+    );
 
     return () => unsubscribe();
-  }, [currentUser, currentConfig.collectionName, type, selectedDate, startDate, endDate]);
+  }, [
+    currentUser,
+    currentConfig.collectionName,
+    type,
+    selectedDate,
+    startDate,
+    endDate,
+  ]);
 
   // Client-side filtering for category and supplier
   const filteredLogs = useMemo(() => {
-    return allLogs.filter(log => {
-      const categoryMatch = selectedCategory === 'all' || 
-        (log.category || '').toLowerCase().trim() === selectedCategory.toLowerCase().trim();
-      const supplierMatch = selectedSupplier === 'all' || 
-        (log.supplier || '').toLowerCase().trim() === selectedSupplier.toLowerCase().trim();
+    return allLogs.filter((log) => {
+      const categoryMatch =
+        selectedCategory === 'all' ||
+        (log.category || '').toLowerCase().trim() ===
+          selectedCategory.toLowerCase().trim();
+      const supplierMatch =
+        selectedSupplier === 'all' ||
+        (log.supplier || '').toLowerCase().trim() ===
+          selectedSupplier.toLowerCase().trim();
       return categoryMatch && supplierMatch;
     });
   }, [allLogs, selectedCategory, selectedSupplier]);
 
   const searchedLogs = useMemo(() => {
     if (!searchTerm) return filteredLogs;
-    const searchKeywords = searchTerm.toLowerCase().split(' ').filter(kw => kw.trim() !== '');
-    return filteredLogs.filter(log => {
+    const searchKeywords = searchTerm
+      .toLowerCase()
+      .split(' ')
+      .filter((kw) => kw.trim() !== '');
+    return filteredLogs.filter((log) => {
       const descriptionText = (log.materialDescription || '').toLowerCase();
-      return searchKeywords.every(kw => descriptionText.includes(kw));
+      return searchKeywords.every((kw) => descriptionText.includes(kw));
     });
   }, [filteredLogs, searchTerm]);
 
@@ -117,14 +163,34 @@ const LogPage = ({ type }) => {
 
   const totalPages = Math.ceil(searchedLogs.length / ITEMS_PER_PAGE);
 
-  const handleOpenForm = (log = null) => { setEditingLog(log); setIsFormOpen(true); };
-  const handleCloseForm = () => { setEditingLog(null); setIsFormOpen(false); };
+  const handleOpenForm = (log = null) => {
+    setEditingLog(log);
+    setIsFormOpen(true);
+  };
+  const handleCloseForm = () => {
+    setEditingLog(null);
+    setIsFormOpen(false);
+  };
 
   const handleExport = (format) => {
-    if (searchedLogs.length === 0) { toast.error("No logs to export."); return; }
-    const dataToExport = searchedLogs.map(log => {
-        const date = log.date?.toDate ? log.date.toDate().toLocaleDateString() : log.date;
-        return { Date: date, Material: log.materialDescription, Supplier: log.supplier || 'N/A', Grade: log.materialGrade, 'Bore 1': log.boreSize1, 'Bore 2': log.boreSize2 || 'N/A', Quantity: log.quantity, Remarks: log.remarks || 'N/A' };
+    if (searchedLogs.length === 0) {
+      toast.error('No logs to export.');
+      return;
+    }
+    const dataToExport = searchedLogs.map((log) => {
+      const date = log.date?.toDate
+        ? log.date.toDate().toLocaleDateString()
+        : log.date;
+      return {
+        Date: date,
+        Material: log.materialDescription,
+        Supplier: log.supplier || 'N/A',
+        Grade: log.materialGrade,
+        'Bore 1': log.boreSize1,
+        'Bore 2': log.boreSize2 || 'N/A',
+        Quantity: log.quantity,
+        Remarks: log.remarks || 'N/A',
+      };
     });
     const filename = `${type}_log_${new Date().toISOString().split('T')[0]}`;
     if (format === 'csv') {
@@ -139,7 +205,12 @@ const LogPage = ({ type }) => {
     } else if (format === 'pdf') {
       const doc = new jsPDF();
       doc.text(`${currentConfig.title} Report`, 14, 16);
-      doc.autoTable({ head: [Object.keys(dataToExport[0])], body: dataToExport.map(row => Object.values(row)), startY: 25, styles: { fontSize: 8 } });
+      doc.autoTable({
+        head: [Object.keys(dataToExport[0])],
+        body: dataToExport.map((row) => Object.values(row)),
+        startY: 25,
+        styles: { fontSize: 8 },
+      });
       doc.save(`${filename}.pdf`);
     }
   };
@@ -147,47 +218,178 @@ const LogPage = ({ type }) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center flex-wrap gap-4">
-        <div className="flex items-center gap-4"><div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow">{currentConfig.icon}</div><h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">{currentConfig.title}</h1></div>
-        {!currentUser.isViewer && (<button onClick={() => handleOpenForm()} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"><Plus size={16}/><span>Add New {type}</span></button>)}
+        <div className="flex items-center gap-4">
+          <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow">
+            {currentConfig.icon}
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+            {currentConfig.title}
+          </h1>
+        </div>
+        {!currentUser.isViewer && (
+          <button
+            onClick={() => handleOpenForm()}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+          >
+            <Plus size={16} />
+            <span>Add New {type}</span>
+          </button>
+        )}
       </div>
 
       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Category</label>
-                <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="all">All Categories</option>
-                    {appMetadata.categories?.sort().map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                </select>
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Filter by Category
+            </label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="all">All Categories</option>
+              {appMetadata.categories?.sort().map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Filter by Supplier
+            </label>
+            <select
+              value={selectedSupplier}
+              onChange={(e) => setSelectedSupplier(e.target.value)}
+              className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="all">All Suppliers</option>
+              {appMetadata.suppliers?.sort().map((sup) => (
+                <option key={sup} value={sup}>
+                  {sup}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Filter by Date
+            </label>
+            <select
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="all">All Dates</option>
+              <option value="custom">Custom Range</option>
+              {uniqueDates.map((date, index) => (
+                <option key={`${date}-${index}`} value={date}>
+                  {date}
+                </option>
+              ))}
+            </select>
+          </div>
+          {selectedDate === 'custom' && (
+            <>
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+            </>
+          )}
+          <div className="lg:col-start-4">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Search Material
+            </label>
+            <div className="relative mt-1">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="Search descriptions..."
+                className="pl-10 pr-10 w-full h-10 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
             </div>
-            <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Supplier</label>
-                <select value={selectedSupplier} onChange={e => setSelectedSupplier(e.target.value)} className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="all">All Suppliers</option>
-                    {appMetadata.suppliers?.sort().map(sup => <option key={sup} value={sup}>{sup}</option>)}
-                </select>
-            </div>
-            <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Date</label>
-                <select value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="all">All Dates</option>
-                    <option value="custom">Custom Range</option>
-                    {uniqueDates.map((date, index) => <option key={`${date}-${index}`} value={date}>{date}</option>)}
-                </select>
-            </div>
-            {selectedDate === 'custom' && (<><div><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"/></div><div><label className="text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"/></div></>)}
-            <div className="lg:col-start-4"><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Search Material</label><div className="relative mt-1"><input type="text" value={searchTerm} onChange={e => {setSearchTerm(e.target.value); setCurrentPage(1);}} placeholder="Search descriptions..." className="pl-10 pr-10 w-full h-10 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white" /><div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>{searchTerm && <button onClick={() => setSearchTerm('')} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><X className="h-5 w-5"/></button>}</div></div>
+          </div>
         </div>
         <div className="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Export:</span>
-            <button onClick={() => handleExport('csv')} disabled={searchedLogs.length === 0} className="flex items-center gap-2 px-4 py-2 text-sm bg-green-100 text-green-800 rounded-md hover:bg-green-200 disabled:opacity-50" title="Export current view to CSV"><FileDown size={16}/> CSV</button>
-            <button onClick={() => handleExport('pdf')} disabled={searchedLogs.length === 0} className="flex items-center gap-2 px-4 py-2 text-sm bg-red-100 text-red-800 rounded-md hover:bg-red-200 disabled:opacity-50" title="Export current view to PDF"><FileDown size={16}/> PDF</button>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Export:
+          </span>
+          <button
+            onClick={() => handleExport('csv')}
+            disabled={searchedLogs.length === 0}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-green-100 text-green-800 rounded-md hover:bg-green-200 disabled:opacity-50"
+            title="Export current view to CSV"
+          >
+            <FileDown size={16} /> CSV
+          </button>
+          <button
+            onClick={() => handleExport('pdf')}
+            disabled={searchedLogs.length === 0}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-red-100 text-red-800 rounded-md hover:bg-red-200 disabled:opacity-50"
+            title="Export current view to PDF"
+          >
+            <FileDown size={16} /> PDF
+          </button>
         </div>
       </div>
 
-      <LogTable logs={paginatedLogs} type={type} onEdit={handleOpenForm} currentPage={currentPage} itemsPerPage={ITEMS_PER_PAGE} allMaterials={allMaterials} />
-      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-      {isFormOpen && <LogForm type={type} log={editingLog} onClose={handleCloseForm} allMaterials={allMaterials} />}
+      <LogTable
+        logs={paginatedLogs}
+        type={type}
+        onEdit={handleOpenForm}
+        currentPage={currentPage}
+        itemsPerPage={ITEMS_PER_PAGE}
+        allMaterials={allMaterials}
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+      {isFormOpen && (
+        <LogForm
+          type={type}
+          log={editingLog}
+          onClose={handleCloseForm}
+          allMaterials={allMaterials}
+        />
+      )}
     </div>
   );
 };

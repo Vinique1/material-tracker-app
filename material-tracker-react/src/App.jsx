@@ -35,9 +35,18 @@ const AppRoutes = () => {
           <Route index element={<MaterialListPage />} />
           <Route path="category/:filterValue" element={<MaterialListPage />} />
           <Route path="supplier/:filterValue" element={<MaterialListPage />} />
-          <Route path="status/surplus" element={<MaterialListPage statusFilter="surplus" />} />
-          <Route path="status/deficit" element={<MaterialListPage statusFilter="deficit" />} />
-          <Route path="status/exact" element={<MaterialListPage statusFilter="exact" />} />
+          <Route
+            path="status/surplus"
+            element={<MaterialListPage statusFilter="surplus" />}
+          />
+          <Route
+            path="status/deficit"
+            element={<MaterialListPage statusFilter="deficit" />}
+          />
+          <Route
+            path="status/exact"
+            element={<MaterialListPage statusFilter="exact" />}
+          />
           <Route path="delivery-log" element={<LogPage type="delivery" />} />
           <Route path="issuance-log" element={<LogPage type="issuance" />} />
           <Route path="balanced-materials" element={<MaterialListPage />} />

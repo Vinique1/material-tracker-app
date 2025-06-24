@@ -89,15 +89,15 @@ graphic3.png,1750541927755,94a6d89d84f47305d00403a201cd43a36389c760412bc32e6deff
 graphic2.png,1750541927755,2e512b34db88ed39c52d00eed81ce5e2cfc134e8ce7e38761b2d9afe4b8dc17e
 graphic1.png,1750541927739,4f9ebcb3e5cee6bd416f6cd64305fb7b32f89a62190289c522e0fb7b17a77f7f
 Background (2).jpg,1750541927666,48ac255e04d9e26bca0ecdfb0f45c811dad88aa42d88989b7ce8923e74a46cec
-index.html,1750735737919,c0d628860a15b4baf15bca3a5b9c8285cbb8e3a582df7ee896ae54cfd81bcc08
-assets/purify.es-CQJ0hv7W.js,1750735737920,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
-assets/MaterialListPage-8E5ZEZvQ.js,1750735737911,b22907ea22eb44aebf1bd8ff45e91b5195f5af883d8830e120bdd609449b0ae3
-assets/index-DlKTqPIq.css,1750735737911,4af96309699718f30aad025c2c8bae2608a5c0f1856541d8bef85be174999567
-assets/Pagination-CWi4zdDy.js,1750735737918,d68680553f7287e1288b570808f4cb2e7235038f48892ee231ddadff1007fd21
-assets/html2canvas.esm-CBrSDip1.js,1750735737918,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
-assets/index.es-CCKcWt5a.js,1750735737926,109d85b7c01cd0c9495ea03e499248ccada9363fa9c1c05fa340503b54c22d05
-assets/LogPage-DKQoknSi.js,1750735737918,998bf1436828dc85ecb9154cf73322d5d1629a8ffa78eb1f478711a7535bb104
-assets/index-DXtOfkz9.js,1750735737918,8b37eb48854e323dd5a1d074a905f4492a61dfed1c43ada80a1c8fa834d0cb1e
+index.html,1750741252861,8b9d4805ed574e91beaa53042278746c0619f316a17b13230347a6c1b10d16fc
+assets/purify.es-CQJ0hv7W.js,1750741252860,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
+assets/MaterialListPage-CiGSo8Kd.js,1750741252860,d28489a5e356d5ac6e7725fc987824400cfd5a223036fc52c0ecc19b74662c77
+assets/index-aPXvdHQj.css,1750741252859,2fbf145739c2780d1c627167ed25d1c171fdf6d575ca7b81baa63bc933e7c3c4
+assets/Pagination-DZMi2jzB.js,1750741252860,5c90519559c14144a7b139c5880600457370519e9805f7bd5517fb151208af3b
+assets/index.es-BUoLsnVY.js,1750741252861,3a6317c17a34a381b5a4207030b27abfd98c7eca9d78148eb83850a8a662d7ac
+assets/html2canvas.esm-CBrSDip1.js,1750741252860,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
+assets/LogPage-DBCJIPZd.js,1750741252860,76a959b1b8f84f8c23c3bd3a600f80b6ebaf68e6f76e279b8390617f5afccd84
+assets/index-CFM_FBRB.js,1750741252861,6832672eadcdda178557d75149bcd8ebf7ef9d03456013c58c02a847a271bb0c
 </file>
 
 <file path=".firebaserc">
@@ -192,11 +192,7 @@ export default [
 {
   "hosting": {
     "public": "dist",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
@@ -376,9 +372,18 @@ const AppRoutes = () => {
           <Route index element={<MaterialListPage />} />
           <Route path="category/:filterValue" element={<MaterialListPage />} />
           <Route path="supplier/:filterValue" element={<MaterialListPage />} />
-          <Route path="status/surplus" element={<MaterialListPage statusFilter="surplus" />} />
-          <Route path="status/deficit" element={<MaterialListPage statusFilter="deficit" />} />
-          <Route path="status/exact" element={<MaterialListPage statusFilter="exact" />} />
+          <Route
+            path="status/surplus"
+            element={<MaterialListPage statusFilter="surplus" />}
+          />
+          <Route
+            path="status/deficit"
+            element={<MaterialListPage statusFilter="deficit" />}
+          />
+          <Route
+            path="status/exact"
+            element={<MaterialListPage statusFilter="exact" />}
+          />
           <Route path="delivery-log" element={<LogPage type="delivery" />} />
           <Route path="issuance-log" element={<LogPage type="issuance" />} />
           <Route path="balanced-materials" element={<MaterialListPage />} />
@@ -400,180 +405,424 @@ export default App;
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
-import { doc, updateDoc, addDoc, collection, arrayUnion, serverTimestamp } from 'firebase/firestore';
+import {
+  doc,
+  updateDoc,
+  addDoc,
+  collection,
+  arrayUnion,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { Combobox, Transition } from '@headlessui/react';
-import { FileText, Tag, Hash, Plus, Check, ChevronsUpDown, LoaderCircle, Info, Maximize2, Layers, X } from 'lucide-react';
+import {
+  FileText,
+  Tag,
+  Hash,
+  Plus,
+  Check,
+  ChevronsUpDown,
+  LoaderCircle,
+  Info,
+  Maximize2,
+  Layers,
+  X,
+} from 'lucide-react';
 import clsx from 'clsx';
 
 const AddEditMaterialModal = ({ material, onClose }) => {
-    const { currentUser, ADMIN_UID, appMetadata } = useAuth();
+  const { currentUser, ADMIN_UID, appMetadata } = useAuth();
 
-    // Form field states
-    const [description, setDescription] = useState(material?.description || '');
-    const [selectedBoreSize1, setSelectedBoreSize1] = useState(material?.boreSize1 || null);
-    const [selectedBoreSize2, setSelectedBoreSize2] = useState(material?.boreSize2 || null);
-    const [expectedQty, setExpectedQty] = useState(material?.expectedQty || 1);
-    const [selectedCategory, setSelectedCategory] = useState(material?.category || null);
-    const [selectedSupplier, setSelectedSupplier] = useState(material?.supplier || null);
-    const [selectedMaterialGrade, setSelectedMaterialGrade] = useState(material?.materialGrade || null);
+  // Form field states
+  const [description, setDescription] = useState(material?.description || '');
+  const [selectedBoreSize1, setSelectedBoreSize1] = useState(
+    material?.boreSize1 || null,
+  );
+  const [selectedBoreSize2, setSelectedBoreSize2] = useState(
+    material?.boreSize2 || null,
+  );
+  const [expectedQty, setExpectedQty] = useState(material?.expectedQty || 1);
+  const [selectedCategory, setSelectedCategory] = useState(
+    material?.category || null,
+  );
+  const [selectedSupplier, setSelectedSupplier] = useState(
+    material?.supplier || null,
+  );
+  const [selectedMaterialGrade, setSelectedMaterialGrade] = useState(
+    material?.materialGrade || null,
+  );
 
-    const [categoryQuery, setCategoryQuery] = useState('');
-    const [supplierQuery, setSupplierQuery] = useState('');
-    const [materialGradeQuery, setMaterialGradeQuery] = useState('');
-    const [boreSize1Query, setBoreSize1Query] = useState('');
-    const [boreSize2Query, setBoreSize2Query] = useState('');
+  const [categoryQuery, setCategoryQuery] = useState('');
+  const [supplierQuery, setSupplierQuery] = useState('');
+  const [materialGradeQuery, setMaterialGradeQuery] = useState('');
+  const [boreSize1Query, setBoreSize1Query] = useState('');
+  const [boreSize2Query, setBoreSize2Query] = useState('');
 
-    const [errors, setErrors] = useState({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Use data directly from the context. No local copies needed.
-    const categories = appMetadata.categories || [];
-    const suppliers = appMetadata.suppliers || [];
-    const materialGrades = appMetadata.materialGrades || [];
-    const boreSize1Options = appMetadata.boreSize1Options || [];
-    const boreSize2Options = appMetadata.boreSize2Options || [];
+  // Use data directly from the context. No local copies needed.
+  const categories = appMetadata.categories || [];
+  const suppliers = appMetadata.suppliers || [];
+  const materialGrades = appMetadata.materialGrades || [];
+  const boreSize1Options = appMetadata.boreSize1Options || [];
+  const boreSize2Options = appMetadata.boreSize2Options || [];
 
-    const descriptionInputRef = useRef(null);
-    useEffect(() => {
-        // The only thing needed in this effect now is the focus action.
-        setTimeout(() => descriptionInputRef.current?.focus(), 100);
-    }, []); // Dependency array can now be empty.
+  const descriptionInputRef = useRef(null);
+  useEffect(() => {
+    // The only thing needed in this effect now is the focus action.
+    setTimeout(() => descriptionInputRef.current?.focus(), 100);
+  }, []); // Dependency array can now be empty.
 
-    const filteredCategories = categoryQuery === '' ? categories : categories.filter(cat => cat.toLowerCase().includes(categoryQuery.toLowerCase()));
-    const filteredSuppliers = supplierQuery === '' ? suppliers : suppliers.filter(sup => sup.toLowerCase().includes(supplierQuery.toLowerCase()));
-    const filteredMaterialGrades = materialGradeQuery === '' ? materialGrades : materialGrades.filter(grade => grade.toLowerCase().includes(materialGradeQuery.toLowerCase()));
-    const filteredBoreSize1 = boreSize1Query === '' ? boreSize1Options : boreSize1Options.filter(size => size.includes(boreSize1Query));
-    const filteredBoreSize2 = boreSize2Query === '' ? boreSize2Options : boreSize2Options.filter(size => size.includes(boreSize2Query));
+  const filteredCategories =
+    categoryQuery === ''
+      ? categories
+      : categories.filter((cat) =>
+          cat.toLowerCase().includes(categoryQuery.toLowerCase()),
+        );
+  const filteredSuppliers =
+    supplierQuery === ''
+      ? suppliers
+      : suppliers.filter((sup) =>
+          sup.toLowerCase().includes(supplierQuery.toLowerCase()),
+        );
+  const filteredMaterialGrades =
+    materialGradeQuery === ''
+      ? materialGrades
+      : materialGrades.filter((grade) =>
+          grade.toLowerCase().includes(materialGradeQuery.toLowerCase()),
+        );
+  const filteredBoreSize1 =
+    boreSize1Query === ''
+      ? boreSize1Options
+      : boreSize1Options.filter((size) => size.includes(boreSize1Query));
+  const filteredBoreSize2 =
+    boreSize2Query === ''
+      ? boreSize2Options
+      : boreSize2Options.filter((size) => size.includes(boreSize2Query));
 
-    const handleQtyChange = (amount) => {
-        setExpectedQty(prev => Math.max(0, prev + amount));
+  const handleQtyChange = (amount) => {
+    setExpectedQty((prev) => Math.max(0, prev + amount));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!description) newErrors.description = 'Description is required.';
+    if (!selectedBoreSize1)
+      newErrors.selectedBoreSize1 = 'Bore Size 1 is required.';
+    if (!selectedCategory) newErrors.selectedCategory = 'Category is required.';
+    if (!selectedSupplier) newErrors.selectedSupplier = 'Supplier is required.';
+    if (!selectedMaterialGrade)
+      newErrors.selectedMaterialGrade = 'Material Grade is required.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const createMaterial = async (data) => {
+    const materialsCollectionRef = collection(
+      db,
+      `materials/${ADMIN_UID}/items`,
+    );
+    await addDoc(materialsCollectionRef, {
+      ...data,
+      delivered: 0,
+      issued: 0,
+      createdAt: serverTimestamp(),
+    });
+  };
+
+  const updateMaterial = async (data) => {
+    const materialRef = doc(db, `materials/${ADMIN_UID}/items`, material.id);
+    await updateDoc(materialRef, data);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (currentUser.isViewer || !validateForm()) return;
+
+    setIsSubmitting(true);
+    const dataToSave = {
+      description,
+      category: selectedCategory,
+      supplier: selectedSupplier,
+      materialGrade: selectedMaterialGrade,
+      boreSize1: selectedBoreSize1,
+      boreSize2: selectedBoreSize2 || null,
+      expectedQty: parseInt(expectedQty, 10),
+      updatedAt: serverTimestamp(),
     };
 
-    const validateForm = () => {
-        const newErrors = {};
-        if (!description) newErrors.description = 'Description is required.';
-        if (!selectedBoreSize1) newErrors.selectedBoreSize1 = 'Bore Size 1 is required.';
-        if (!selectedCategory) newErrors.selectedCategory = 'Category is required.';
-        if (!selectedSupplier) newErrors.selectedSupplier = 'Supplier is required.';
-        if (!selectedMaterialGrade) newErrors.selectedMaterialGrade = 'Material Grade is required.';
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+    try {
+      if (material) {
+        await updateMaterial(dataToSave);
+      } else {
+        await createMaterial(dataToSave);
+      }
+      onClose();
+    } catch (error) {
+      console.error('Error saving material:', error);
+      alert('Failed to save material.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddNewItem = async (type, value) => {
+    if (!value || currentUser.isViewer) return;
+    const normalizedValue = value.trim();
+    const metadataRef = doc(db, 'app_metadata', 'lists');
+
+    const typeMap = {
+      category: {
+        list: categories,
+        setter: setSelectedCategory,
+        field: 'categories',
+      },
+      supplier: {
+        list: suppliers,
+        setter: setSelectedSupplier,
+        field: 'suppliers',
+      },
+      materialGrade: {
+        list: materialGrades,
+        setter: setSelectedMaterialGrade,
+        field: 'materialGrades',
+      },
+      boreSize1: {
+        list: boreSize1Options,
+        setter: setSelectedBoreSize1,
+        field: 'boreSize1Options',
+      },
+      boreSize2: {
+        list: boreSize2Options,
+        setter: setSelectedBoreSize2,
+        field: 'boreSize2Options',
+      },
     };
 
-    const createMaterial = async (data) => {
-        const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
-        await addDoc(materialsCollectionRef, {
-            ...data,
-            delivered: 0,
-            issued: 0,
-            createdAt: serverTimestamp(),
-        });
-    };
+    const config = typeMap[type];
+    if (
+      config.list
+        .map((item) => item.toLowerCase())
+        .includes(normalizedValue.toLowerCase())
+    ) {
+      config.setter(
+        config.list.find(
+          (item) => item.toLowerCase() === normalizedValue.toLowerCase(),
+        ),
+      );
+      return;
+    }
 
-    const updateMaterial = async (data) => {
-        const materialRef = doc(db, `materials/${ADMIN_UID}/items`, material.id);
-        await updateDoc(materialRef, data);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (currentUser.isViewer || !validateForm()) return;
-
-        setIsSubmitting(true);
-        const dataToSave = {
-            description,
-            category: selectedCategory,
-            supplier: selectedSupplier,
-            materialGrade: selectedMaterialGrade,
-            boreSize1: selectedBoreSize1,
-            boreSize2: selectedBoreSize2 || null,
-            expectedQty: parseInt(expectedQty, 10),
-            updatedAt: serverTimestamp(),
-        };
-
-        try {
-            if (material) {
-                await updateMaterial(dataToSave);
-            } else {
-                await createMaterial(dataToSave);
-            }
-            onClose();
-        } catch (error) {
-            console.error("Error saving material:", error);
-            alert("Failed to save material.");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleAddNewItem = async (type, value) => {
-        if (!value || currentUser.isViewer) return;
-        const normalizedValue = value.trim();
-        const metadataRef = doc(db, 'app_metadata', 'lists');
-
-        const typeMap = {
-            category: { list: categories, setter: setSelectedCategory, field: 'categories' },
-            supplier: { list: suppliers, setter: setSelectedSupplier, field: 'suppliers' },
-            materialGrade: { list: materialGrades, setter: setSelectedMaterialGrade, field: 'materialGrades' },
-            boreSize1: { list: boreSize1Options, setter: setSelectedBoreSize1, field: 'boreSize1Options' },
-            boreSize2: { list: boreSize2Options, setter: setSelectedBoreSize2, field: 'boreSize2Options' }
-        };
-
-        const config = typeMap[type];
-        if (config.list.map(item => item.toLowerCase()).includes(normalizedValue.toLowerCase())) {
-             config.setter(config.list.find(item => item.toLowerCase() === normalizedValue.toLowerCase()));
-             return;
-        }
-
-        try {
-            await updateDoc(metadataRef, { [config.field]: arrayUnion(normalizedValue) });
-            config.setter(normalizedValue);
-        } catch (error) {
-            console.error("Failed to add new item:", error);
-            alert(`Could not add new ${type}.`);
-        }
-    };
+    try {
+      await updateDoc(metadataRef, {
+        [config.field]: arrayUnion(normalizedValue),
+      });
+      config.setter(normalizedValue);
+    } catch (error) {
+      console.error('Failed to add new item:', error);
+      alert(`Could not add new ${type}.`);
+    }
+  };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div
+      className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="relative mx-auto p-8 border w-full max-w-2xl shadow-lg rounded-xl bg-white dark:bg-gray-800">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">{material ? 'Edit Material' : 'Add New Material'}</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-8">Fill out the details below to add an item to the inventory.</p>
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"><X /></button>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+          {material ? 'Edit Material' : 'Add New Material'}
+        </h2>
+        <p className="text-gray-500 dark:text-gray-400 mb-8">
+          Fill out the details below to add an item to the inventory.
+        </p>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        >
+          <X />
+        </button>
         <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-6">
             <div className="space-y-4 p-5 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600">
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Item Details</h3>
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Item Details
+              </h3>
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Description
+                </label>
                 <div className="relative">
                   <FileText className="absolute left-3 top-4 h-5 w-5 text-gray-400" />
-                  <textarea id="description" name="description" ref={descriptionInputRef} rows="3"
-                    className={clsx("w-full rounded-md border py-4 pl-10 pr-4 text-sm shadow-sm transition-colors bg-white dark:bg-gray-700 dark:text-gray-100", errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600')}
-                    value={description} onChange={(e) => setDescription(e.target.value)} onBlur={() => validateForm()} />
+                  <textarea
+                    id="description"
+                    name="description"
+                    ref={descriptionInputRef}
+                    rows="3"
+                    className={clsx(
+                      'w-full rounded-md border py-4 pl-10 pr-4 text-sm shadow-sm transition-colors bg-white dark:bg-gray-700 dark:text-gray-100',
+                      errors.description
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600',
+                    )}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    onBlur={() => validateForm()}
+                  />
                 </div>
-                {errors.description && <p className="mt-1 text-xs text-red-600 flex items-center gap-1"><Info size={14}/>{errors.description}</p>}
+                {errors.description && (
+                  <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                    <Info size={14} />
+                    {errors.description}
+                  </p>
+                )}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 <SearchableDropdown label="Bore Size 1" items={filteredBoreSize1} selectedItem={selectedBoreSize1} setSelectedItem={setSelectedBoreSize1} query={boreSize1Query} setQuery={setBoreSize1Query} onAddNew={(value) => handleAddNewItem('boreSize1', value)} error={errors.selectedBoreSize1} onBlur={() => validateForm()} icon={<Maximize2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} allowAddNew={true} isRequired={true}/>
-                 <SearchableDropdown label="Bore Size 2" items={filteredBoreSize2} selectedItem={selectedBoreSize2} setSelectedItem={setSelectedBoreSize2} query={boreSize2Query} setQuery={setBoreSize2Query} onAddNew={(value) => handleAddNewItem('boreSize2', value)} icon={<Maximize2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} allowAddNew={true} isRequired={false}/>
+                <SearchableDropdown
+                  label="Bore Size 1"
+                  items={filteredBoreSize1}
+                  selectedItem={selectedBoreSize1}
+                  setSelectedItem={setSelectedBoreSize1}
+                  query={boreSize1Query}
+                  setQuery={setBoreSize1Query}
+                  onAddNew={(value) => handleAddNewItem('boreSize1', value)}
+                  error={errors.selectedBoreSize1}
+                  onBlur={() => validateForm()}
+                  icon={
+                    <Maximize2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  }
+                  allowAddNew={true}
+                  isRequired={true}
+                />
+                <SearchableDropdown
+                  label="Bore Size 2"
+                  items={filteredBoreSize2}
+                  selectedItem={selectedBoreSize2}
+                  setSelectedItem={setSelectedBoreSize2}
+                  query={boreSize2Query}
+                  setQuery={setBoreSize2Query}
+                  onAddNew={(value) => handleAddNewItem('boreSize2', value)}
+                  icon={
+                    <Maximize2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  }
+                  allowAddNew={true}
+                  isRequired={false}
+                />
               </div>
               <div>
-                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expected Quantity</label>
-                <div className="relative flex items-center"><button type="button" onClick={() => handleQtyChange(-1)} className="h-11 px-3 bg-slate-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-l-md hover:bg-slate-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">-</button><Hash className="absolute left-12 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" /><input type="number" id="quantity" className="w-full h-11 border-y border-gray-300 dark:border-gray-600 text-center pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 z-10 bg-white dark:bg-gray-700 dark:text-gray-100" value={expectedQty} onChange={(e) => setExpectedQty(parseInt(e.target.value, 10) || 0)} /><button type="button" onClick={() => handleQtyChange(1)} className="h-11 px-3 bg-slate-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-r-md hover:bg-slate-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">+</button></div>
+                <label
+                  htmlFor="quantity"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Expected Quantity
+                </label>
+                <div className="relative flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => handleQtyChange(-1)}
+                    className="h-11 px-3 bg-slate-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-l-md hover:bg-slate-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10"
+                  >
+                    -
+                  </button>
+                  <Hash className="absolute left-12 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                  <input
+                    type="number"
+                    id="quantity"
+                    className="w-full h-11 border-y border-gray-300 dark:border-gray-600 text-center pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 z-10 bg-white dark:bg-gray-700 dark:text-gray-100"
+                    value={expectedQty}
+                    onChange={(e) =>
+                      setExpectedQty(parseInt(e.target.value, 10) || 0)
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleQtyChange(1)}
+                    className="h-11 px-3 bg-slate-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-r-md hover:bg-slate-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
             <div className="space-y-4 p-5 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600">
-               <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Classification</h3>
-              <SearchableDropdown label="Category" items={filteredCategories} selectedItem={selectedCategory} setSelectedItem={setSelectedCategory} query={categoryQuery} setQuery={setCategoryQuery} onAddNew={(value) => handleAddNewItem('category', value)} error={errors.selectedCategory} onBlur={() => validateForm()} icon={<Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
-              <SearchableDropdown label="Supplier" items={filteredSuppliers} selectedItem={selectedSupplier} setSelectedItem={setSelectedSupplier} query={supplierQuery} setQuery={setSupplierQuery} onAddNew={(value) => handleAddNewItem('supplier', value)} error={errors.selectedSupplier} onBlur={() => validateForm()} icon={<Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
-              <SearchableDropdown label="Material Grade" items={filteredMaterialGrades} selectedItem={selectedMaterialGrade} setSelectedItem={setSelectedMaterialGrade} query={materialGradeQuery} setQuery={setMaterialGradeQuery} onAddNew={(value) => handleAddNewItem('materialGrade', value)} error={errors.selectedMaterialGrade} onBlur={() => validateForm()} icon={<Layers className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />} />
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Classification
+              </h3>
+              <SearchableDropdown
+                label="Category"
+                items={filteredCategories}
+                selectedItem={selectedCategory}
+                setSelectedItem={setSelectedCategory}
+                query={categoryQuery}
+                setQuery={setCategoryQuery}
+                onAddNew={(value) => handleAddNewItem('category', value)}
+                error={errors.selectedCategory}
+                onBlur={() => validateForm()}
+                icon={
+                  <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                }
+              />
+              <SearchableDropdown
+                label="Supplier"
+                items={filteredSuppliers}
+                selectedItem={selectedSupplier}
+                setSelectedItem={setSelectedSupplier}
+                query={supplierQuery}
+                setQuery={setSupplierQuery}
+                onAddNew={(value) => handleAddNewItem('supplier', value)}
+                error={errors.selectedSupplier}
+                onBlur={() => validateForm()}
+                icon={
+                  <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                }
+              />
+              <SearchableDropdown
+                label="Material Grade"
+                items={filteredMaterialGrades}
+                selectedItem={selectedMaterialGrade}
+                setSelectedItem={setSelectedMaterialGrade}
+                query={materialGradeQuery}
+                setQuery={setMaterialGradeQuery}
+                onAddNew={(value) => handleAddNewItem('materialGrade', value)}
+                error={errors.selectedMaterialGrade}
+                onBlur={() => validateForm()}
+                icon={
+                  <Layers className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                }
+              />
             </div>
           </div>
           <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">Cancel</button>
-            <button type="submit" disabled={isSubmitting} className={clsx("flex items-center justify-center w-full sm:w-auto px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md transition-all duration-300", isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 transform hover:-translate-y-0.5")}>
-              {isSubmitting ? (<><LoaderCircle className="animate-spin mr-2 h-4 w-4" />Saving...</>) : ('Save Material')}
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={clsx(
+                'flex items-center justify-center w-full sm:w-auto px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md transition-all duration-300',
+                isSubmitting
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 transform hover:-translate-y-0.5',
+              )}
+            >
+              {isSubmitting ? (
+                <>
+                  <LoaderCircle className="animate-spin mr-2 h-4 w-4" />
+                  Saving...
+                </>
+              ) : (
+                'Save Material'
+              )}
             </button>
           </div>
         </form>
@@ -582,7 +831,20 @@ const AddEditMaterialModal = ({ material, onClose }) => {
   );
 };
 
-const SearchableDropdown = ({ label, items, selectedItem, setSelectedItem, query, setQuery, onAddNew, error, onBlur, icon, allowAddNew = true, isRequired = true }) => {
+const SearchableDropdown = ({
+  label,
+  items,
+  selectedItem,
+  setSelectedItem,
+  query,
+  setQuery,
+  onAddNew,
+  error,
+  onBlur,
+  icon,
+  allowAddNew = true,
+  isRequired = true,
+}) => {
   const [showAddNew, setShowAddNew] = useState(false);
   const [newItem, setNewItem] = useState('');
 
@@ -597,39 +859,121 @@ const SearchableDropdown = ({ label, items, selectedItem, setSelectedItem, query
 
   return (
     <div>
-      <Combobox value={selectedItem} onChange={(value) => {
-        if (allowAddNew && value === "add_new") { setShowAddNew(true); }
-        else { setShowAddNew(false); setSelectedItem(value); }
-      }} nullable>
+      <Combobox
+        value={selectedItem}
+        onChange={(value) => {
+          if (allowAddNew && value === 'add_new') {
+            setShowAddNew(true);
+          } else {
+            setShowAddNew(false);
+            setSelectedItem(value);
+          }
+        }}
+        nullable
+      >
         {({ open }) => (
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {label} {isRequired ? <span className="text-red-500">*</span> : <span className="text-gray-400 dark:text-gray-500">(Optional)</span>}
+              {label}{' '}
+              {isRequired ? (
+                <span className="text-red-500">*</span>
+              ) : (
+                <span className="text-gray-400 dark:text-gray-500">
+                  (Optional)
+                </span>
+              )}
             </label>
             <div className="relative">
               {icon}
-              <Combobox.Input className={clsx("w-full h-11 rounded-md border bg-white dark:bg-gray-700 py-2 pl-10 pr-10 text-sm shadow-sm transition-colors dark:text-gray-100", error ? 'border-red-500' : 'border-gray-300 dark:border-gray-600')} displayValue={(item) => item || ''} onChange={(event) => setQuery(event.target.value)} placeholder={`Select a ${label.toLowerCase()}`} onBlur={onBlur} autoComplete="off" />
-              <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2"><ChevronsUpDown className="h-5 w-5 text-gray-400" /></Combobox.Button>
+              <Combobox.Input
+                className={clsx(
+                  'w-full h-11 rounded-md border bg-white dark:bg-gray-700 py-2 pl-10 pr-10 text-sm shadow-sm transition-colors dark:text-gray-100',
+                  error
+                    ? 'border-red-500'
+                    : 'border-gray-300 dark:border-gray-600',
+                )}
+                displayValue={(item) => item || ''}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={`Select a ${label.toLowerCase()}`}
+                onBlur={onBlur}
+                autoComplete="off"
+              />
+              <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+                <ChevronsUpDown className="h-5 w-5 text-gray-400" />
+              </Combobox.Button>
             </div>
-            <Transition as={Fragment} show={open} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0" afterLeave={() => setQuery('')}>
+            <Transition
+              as={Fragment}
+              show={open}
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+              afterLeave={() => setQuery('')}
+            >
               <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm z-20">
-                {items.length === 0 && query !== '' ? (<div className="relative cursor-default select-none py-2 px-4 text-gray-700 dark:text-gray-300">Nothing found.</div>) : 
-                (items.map((item) => (
-                    <Combobox.Option key={item} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900 dark:text-gray-300'}`} value={item}>
-                        {({ selected, active }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{item}</span>{selected && <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check className="h-5 w-5" /></span>}</>)}
+                {items.length === 0 && query !== '' ? (
+                  <div className="relative cursor-default select-none py-2 px-4 text-gray-700 dark:text-gray-300">
+                    Nothing found.
+                  </div>
+                ) : (
+                  items.map((item) => (
+                    <Combobox.Option
+                      key={item}
+                      className={({ active }) =>
+                        `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900 dark:text-gray-300'}`
+                      }
+                      value={item}
+                    >
+                      {({ selected, active }) => (
+                        <>
+                          <span
+                            className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}
+                          >
+                            {item}
+                          </span>
+                          {selected && (
+                            <span
+                              className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}
+                            >
+                              <Check className="h-5 w-5" />
+                            </span>
+                          )}
+                        </>
+                      )}
                     </Combobox.Option>
-                )))}
-                {allowAddNew && (<Combobox.Option className="relative cursor-default select-none py-2 px-4 text-blue-600 font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20" value="add_new">+ Add New {label}</Combobox.Option>)}
+                  ))
+                )}
+                {allowAddNew && (
+                  <Combobox.Option
+                    className="relative cursor-default select-none py-2 px-4 text-blue-600 font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                    value="add_new"
+                  >
+                    + Add New {label}
+                  </Combobox.Option>
+                )}
               </Combobox.Options>
             </Transition>
           </div>
         )}
       </Combobox>
-      {error && <p className="mt-1 text-xs text-red-600 flex items-center gap-1"><Info size={14}/>{error}</p>}
+      {error && (
+        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+          <Info size={14} />
+          {error}
+        </p>
+      )}
       {showAddNew && (
         <div className="relative mt-2">
           <Plus className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <input type="text" value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={handleAddNewKeyDown} placeholder={`Type new ${label.toLowerCase()} and press Enter`} className="w-full h-11 rounded-md border bg-white dark:bg-gray-700 py-2 pl-10 pr-4 text-sm shadow-sm border-blue-500 focus:border-blue-500 focus:ring-blue-500 dark:text-gray-100 dark:border-blue-500 dark:focus:border-blue-500 dark:focus:ring-blue-500" autoFocus />
+          <input
+            type="text"
+            value={newItem}
+            onChange={(e) => setNewItem(e.target.value)}
+            onKeyDown={handleAddNewKeyDown}
+            placeholder={`Type new ${label.toLowerCase()} and press Enter`}
+            className="w-full h-11 rounded-md border bg-white dark:bg-gray-700 py-2 pl-10 pr-4 text-sm shadow-sm border-blue-500 focus:border-blue-500 focus:ring-blue-500 dark:text-gray-100 dark:border-blue-500 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            autoFocus
+          />
         </div>
       )}
     </div>
@@ -646,17 +990,17 @@ import MaterialTable from './MaterialTable';
 import { useAuth } from './context/authContext';
 
 const Dashboard = () => {
-    const { currentUser } = useAuth(); // Keep useAuth if currentUser is used for logic, not just styling
-    return (
-        // MODIFIED: Removed viewer-mode class as theme is handled globally
-        <div>
-            <Header />
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <MaterialTable />
-            </main>
-        </div>
-    );
-}
+  const { currentUser } = useAuth(); // Keep useAuth if currentUser is used for logic, not just styling
+  return (
+    // MODIFIED: Removed viewer-mode class as theme is handled globally
+    <div>
+      <Header />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <MaterialTable />
+      </main>
+    </div>
+  );
+};
 
 export default Dashboard;
 </file>
@@ -678,16 +1022,32 @@ const Header = () => {
   // Determine which icon to show based on the current theme
   const getNextThemeAndIcon = () => {
     if (theme === 'light') {
-      return { nextTheme: 'dark', icon: <Moon size={20} />, title: "Switch to Dark Mode" };
+      return {
+        nextTheme: 'dark',
+        icon: <Moon size={20} />,
+        title: 'Switch to Dark Mode',
+      };
     }
     if (theme === 'dark') {
-      return { nextTheme: 'system', icon: <Monitor size={20} />, title: "Switch to System Preference" };
+      return {
+        nextTheme: 'system',
+        icon: <Monitor size={20} />,
+        title: 'Switch to System Preference',
+      };
     }
     // If theme is 'system' or anything else, default to light
-    return { nextTheme: 'light', icon: <Sun size={20} />, title: "Switch to Light Mode" };
+    return {
+      nextTheme: 'light',
+      icon: <Sun size={20} />,
+      title: 'Switch to Light Mode',
+    };
   };
 
-  const { nextTheme, icon: currentIcon, title: iconTitle } = getNextThemeAndIcon();
+  const {
+    nextTheme,
+    icon: currentIcon,
+    title: iconTitle,
+  } = getNextThemeAndIcon();
 
   const handleThemeToggleClick = () => {
     toggleTheme(nextTheme);
@@ -708,14 +1068,19 @@ const Header = () => {
           {currentIcon}
         </button>
         <div className="text-right hidden sm:block">
-            <p className="text-sm font-medium text-gray-800 dark:text-gray-200" title={currentUser?.email}>{currentUser?.email}</p>
+          <p
+            className="text-sm font-medium text-gray-800 dark:text-gray-200"
+            title={currentUser?.email}
+          >
+            {currentUser?.email}
+          </p>
         </div>
         <button
-            onClick={handleSignOut}
-            className="p-2 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20"
-            title="Sign Out"
+          onClick={handleSignOut}
+          className="p-2 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20"
+          title="Sign Out"
         >
-            <LogOut size={20} />
+          <LogOut size={20} />
         </button>
       </div>
     </header>
@@ -729,7 +1094,13 @@ export default Header;
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
-import { collection, doc, writeBatch, arrayUnion, serverTimestamp } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  writeBatch,
+  arrayUnion,
+  serverTimestamp,
+} from 'firebase/firestore';
 import Papa from 'papaparse';
 import toast from 'react-hot-toast';
 import { Upload, LoaderCircle } from 'lucide-react';
@@ -772,18 +1143,32 @@ const ImportCSV = () => {
       return;
     }
 
-    const requiredHeaders = ['Description', 'ExpectedQuantity', 'Category', 'Supplier', 'MaterialGrade', 'BoreSize1'];
+    const requiredHeaders = [
+      'Description',
+      'ExpectedQuantity',
+      'Category',
+      'Supplier',
+      'MaterialGrade',
+      'BoreSize1',
+    ];
     const fileHeaders = Object.keys(data[0]);
-    const missingHeaders = requiredHeaders.filter(h => !fileHeaders.includes(h));
+    const missingHeaders = requiredHeaders.filter(
+      (h) => !fileHeaders.includes(h),
+    );
 
     if (missingHeaders.length > 0) {
-      toast.error(`Missing required columns: ${missingHeaders.join(', ')}`, { id: toastId });
+      toast.error(`Missing required columns: ${missingHeaders.join(', ')}`, {
+        id: toastId,
+      });
       setIsImporting(false);
       return;
     }
 
     try {
-      const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
+      const materialsCollectionRef = collection(
+        db,
+        `materials/${ADMIN_UID}/items`,
+      );
       const metadataRef = doc(db, 'app_metadata', 'lists');
       const newMetadata = {
         categories: new Set(),
@@ -794,10 +1179,11 @@ const ImportCSV = () => {
       };
 
       // First, parse all data to collect metadata
-      data.forEach(row => {
+      data.forEach((row) => {
         if (row.Category) newMetadata.categories.add(row.Category);
         if (row.Supplier) newMetadata.suppliers.add(row.Supplier);
-        if (row.MaterialGrade) newMetadata.materialGrades.add(row.MaterialGrade);
+        if (row.MaterialGrade)
+          newMetadata.materialGrades.add(row.MaterialGrade);
         if (row.BoreSize1) newMetadata.boreSize1Options.add(row.BoreSize1);
         if (row.BoreSize2) newMetadata.boreSize2Options.add(row.BoreSize2);
       });
@@ -805,15 +1191,21 @@ const ImportCSV = () => {
       // Update metadata in a single operation
       await writeBatch(db)
         .update(metadataRef, {
-            categories: arrayUnion(...Array.from(newMetadata.categories)),
-            suppliers: arrayUnion(...Array.from(newMetadata.suppliers)),
-            materialGrades: arrayUnion(...Array.from(newMetadata.materialGrades)),
-            boreSize1Options: arrayUnion(...Array.from(newMetadata.boreSize1Options)),
-            boreSize2Options: arrayUnion(...Array.from(newMetadata.boreSize2Options)),
+          categories: arrayUnion(...Array.from(newMetadata.categories)),
+          suppliers: arrayUnion(...Array.from(newMetadata.suppliers)),
+          materialGrades: arrayUnion(...Array.from(newMetadata.materialGrades)),
+          boreSize1Options: arrayUnion(
+            ...Array.from(newMetadata.boreSize1Options),
+          ),
+          boreSize2Options: arrayUnion(
+            ...Array.from(newMetadata.boreSize2Options),
+          ),
         })
         .commit();
-      
-      toast.loading('Metadata updated. Now uploading materials...', { id: toastId });
+
+      toast.loading('Metadata updated. Now uploading materials...', {
+        id: toastId,
+      });
 
       // NEW: Chunking logic for materials
       const BATCH_SIZE = 499; // Firestore limit is 500 writes per batch
@@ -823,7 +1215,7 @@ const ImportCSV = () => {
         const chunk = data.slice(i, i + BATCH_SIZE);
         const batch = writeBatch(db);
 
-        chunk.forEach(row => {
+        chunk.forEach((row) => {
           const newMaterialRef = doc(materialsCollectionRef);
           const materialData = {
             description: row.Description || '',
@@ -840,16 +1232,17 @@ const ImportCSV = () => {
           };
           batch.set(newMaterialRef, materialData);
         });
-        
+
         batchPromises.push(batch.commit());
       }
 
       await Promise.all(batchPromises);
 
-      toast.success(`Successfully imported ${data.length} materials!`, { id: toastId });
-
+      toast.success(`Successfully imported ${data.length} materials!`, {
+        id: toastId,
+      });
     } catch (error) {
-      console.error("Import failed: ", error);
+      console.error('Import failed: ', error);
       toast.error(`Import failed: ${error.message}`, { id: toastId });
     } finally {
       setIsImporting(false);
@@ -871,14 +1264,14 @@ const ImportCSV = () => {
         onClick={() => fileInputRef.current.click()}
         disabled={isImporting}
         className={clsx(
-            "bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 transition-colors",
-            isImporting && "bg-gray-400 cursor-not-allowed"
+          'bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 transition-colors',
+          isImporting && 'bg-gray-400 cursor-not-allowed',
         )}
       >
         {isImporting ? (
-            <LoaderCircle className="animate-spin h-5 w-5" />
+          <LoaderCircle className="animate-spin h-5 w-5" />
         ) : (
-            <Upload className="h-5 w-5" />
+          <Upload className="h-5 w-5" />
         )}
         <span>Import CSV</span>
       </button>
@@ -895,10 +1288,14 @@ import { LoaderCircle } from 'lucide-react';
 
 const Loading = () => {
   return (
-    <div className="flex items-center justify-center h-screen w-full bg-gray-100 dark:bg-gray-900"> {/* MODIFIED: Added dark background */}
+    <div className="flex items-center justify-center h-screen w-full bg-gray-100 dark:bg-gray-900">
+      {' '}
+      {/* MODIFIED: Added dark background */}
       <div className="flex flex-col items-center">
         <LoaderCircle className="animate-spin h-12 w-12 text-blue-600" />
-        <p className="mt-4 text-lg font-medium text-gray-700 dark:text-gray-300"> {/* MODIFIED: Added dark text */}
+        <p className="mt-4 text-lg font-medium text-gray-700 dark:text-gray-300">
+          {' '}
+          {/* MODIFIED: Added dark text */}
           Loading Page...
         </p>
       </div>
@@ -914,9 +1311,26 @@ export default Loading;
 import React, { useState, useEffect, Fragment, useMemo } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
-import { collection, doc, runTransaction, serverTimestamp, query, getDocs, Timestamp } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  runTransaction,
+  serverTimestamp,
+  query,
+  getDocs,
+  Timestamp,
+} from 'firebase/firestore';
 import toast from 'react-hot-toast';
-import { X, LoaderCircle, ChevronsUpDown, Check, Layers, Maximize2, Hash, CheckCircle } from 'lucide-react';
+import {
+  X,
+  LoaderCircle,
+  ChevronsUpDown,
+  Check,
+  Layers,
+  Maximize2,
+  Hash,
+  CheckCircle,
+} from 'lucide-react';
 import { Combobox, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 
@@ -925,7 +1339,7 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [quantity, setQuantity] = useState(log?.quantity || '');
   const [remarks, setRemarks] = useState(log?.remarks || '');
-  
+
   const getInitialDateString = () => {
     if (log?.date?.toDate) {
       return log.date.toDate().toISOString().split('T')[0];
@@ -941,115 +1355,210 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
 
   const materialsForDropdown = useMemo(() => {
     if (!allMaterials) return [];
-    return allMaterials.map(m => ({
+    return allMaterials.map((m) => ({
       ...m,
-      label: m.description || 'No Description'
+      label: m.description || 'No Description',
     }));
   }, [allMaterials]);
 
   useEffect(() => {
     if (log && materialsForDropdown.length > 0) {
-      const preselected = materialsForDropdown.find(m => m.id === log.materialId);
+      const preselected = materialsForDropdown.find(
+        (m) => m.id === log.materialId,
+      );
       setSelectedMaterial(preselected);
     }
   }, [log, materialsForDropdown]);
 
   useEffect(() => {
-    setQuantityStep(selectedMaterial?.category?.toLowerCase() === 'pipes' ? 0.01 : 1);
+    setQuantityStep(
+      selectedMaterial?.category?.toLowerCase() === 'pipes' ? 0.01 : 1,
+    );
   }, [selectedMaterial]);
-  
+
   const filteredMaterials = useMemo(() => {
     if (!materialQuery) return materialsForDropdown;
-    const searchKeywords = materialQuery.toLowerCase().split(' ').filter(kw => kw.trim() !== '');
-    return materialsForDropdown.filter(material => {
-        const labelText = (material.label || '').toLowerCase();
-        return searchKeywords.every(kw => labelText.includes(kw));
+    const searchKeywords = materialQuery
+      .toLowerCase()
+      .split(' ')
+      .filter((kw) => kw.trim() !== '');
+    return materialsForDropdown.filter((material) => {
+      const labelText = (material.label || '').toLowerCase();
+      return searchKeywords.every((kw) => labelText.includes(kw));
     });
   }, [materialsForDropdown, materialQuery]);
 
-  const issuanceOptions = type === 'issuance' ? filteredMaterials.filter(m => (m.delivered || 0) > (m.issued || 0)) : filteredMaterials;
+  const issuanceOptions =
+    type === 'issuance'
+      ? filteredMaterials.filter((m) => (m.delivered || 0) > (m.issued || 0))
+      : filteredMaterials;
 
   const runLogTransaction = async () => {
     const logCollectionRef = collection(db, `${type}_logs`);
-    const materialRef = doc(db, `materials/${ADMIN_UID}/items`, selectedMaterial.id);
+    const materialRef = doc(
+      db,
+      `materials/${ADMIN_UID}/items`,
+      selectedMaterial.id,
+    );
     const logRef = log ? doc(logCollectionRef, log.id) : doc(logCollectionRef);
     await runTransaction(db, async (transaction) => {
-        const materialDoc = await transaction.get(materialRef);
-        if (!materialDoc.exists()) throw new Error("Material does not exist!");
-        const materialData = materialDoc.data();
-        const oldLogQty = log ? log.quantity : 0;
-        const numQuantity = quantityStep === 1 ? parseInt(quantity, 10) : parseFloat(quantity);
-        const quantityChange = numQuantity - oldLogQty;
-        const newDelivered = (materialData.delivered || 0) + (type === 'delivery' ? quantityChange : 0);
-        const newIssued = (materialData.issued || 0) + (type === 'issuance' ? quantityChange : 0);
-        if (newDelivered < newIssued) throw new Error("This action would result in a negative stock balance.");
-        if (type === 'issuance' && quantityChange > 0) {
-            const currentBalance = (materialData.delivered || 0) - (materialData.issued || 0);
-            if(quantityChange > currentBalance) throw new Error(`Issuance failed. Only ${currentBalance} items are in stock.`);
-        }
+      const materialDoc = await transaction.get(materialRef);
+      if (!materialDoc.exists()) throw new Error('Material does not exist!');
+      const materialData = materialDoc.data();
+      const oldLogQty = log ? log.quantity : 0;
+      const numQuantity =
+        quantityStep === 1 ? parseInt(quantity, 10) : parseFloat(quantity);
+      const quantityChange = numQuantity - oldLogQty;
+      const newDelivered =
+        (materialData.delivered || 0) +
+        (type === 'delivery' ? quantityChange : 0);
+      const newIssued =
+        (materialData.issued || 0) + (type === 'issuance' ? quantityChange : 0);
+      if (newDelivered < newIssued)
+        throw new Error(
+          'This action would result in a negative stock balance.',
+        );
+      if (type === 'issuance' && quantityChange > 0) {
+        const currentBalance =
+          (materialData.delivered || 0) - (materialData.issued || 0);
+        if (quantityChange > currentBalance)
+          throw new Error(
+            `Issuance failed. Only ${currentBalance} items are in stock.`,
+          );
+      }
 
-        const logData = {
-          materialId: selectedMaterial.id,
-          materialDescription: selectedMaterial.description,
-          category: selectedMaterial.category,
-          materialGrade: selectedMaterial.materialGrade,
-          boreSize1: selectedMaterial.boreSize1,
-          boreSize2: selectedMaterial.boreSize2 || null,
-          supplier: selectedMaterial.supplier,
-          quantity: numQuantity,
-          remarks,
-          date: Timestamp.fromDate(new Date(logDate)),
-          lastEditedBy: currentUser.email,
-          lastEditedAt: serverTimestamp(),
-        };
+      const logData = {
+        materialId: selectedMaterial.id,
+        materialDescription: selectedMaterial.description,
+        category: selectedMaterial.category,
+        materialGrade: selectedMaterial.materialGrade,
+        boreSize1: selectedMaterial.boreSize1,
+        boreSize2: selectedMaterial.boreSize2 || null,
+        supplier: selectedMaterial.supplier,
+        quantity: numQuantity,
+        remarks,
+        date: Timestamp.fromDate(new Date(logDate)),
+        lastEditedBy: currentUser.email,
+        lastEditedAt: serverTimestamp(),
+      };
 
-        if (log) { transaction.update(logRef, logData); }
-        else { transaction.set(logRef, { ...logData, createdBy: currentUser.email, createdAt: serverTimestamp() }); }
-        transaction.update(materialRef, { delivered: newDelivered, issued: newIssued });
+      if (log) {
+        transaction.update(logRef, logData);
+      } else {
+        transaction.set(logRef, {
+          ...logData,
+          createdBy: currentUser.email,
+          createdAt: serverTimestamp(),
+        });
+      }
+      transaction.update(materialRef, {
+        delivered: newDelivered,
+        issued: newIssued,
       });
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedMaterial || !quantity || quantity <= 0) {
-      setError("Please select a material and enter a valid quantity."); return;
+      setError('Please select a material and enter a valid quantity.');
+      return;
     }
     setError('');
     setIsSubmitting(true);
-    const toastId = toast.loading("Saving log...");
+    const toastId = toast.loading('Saving log...');
     try {
-        await runLogTransaction();
-        toast.success(`Log ${log ? 'updated' : 'created'} successfully!`, { id: toastId });
-        onClose();
+      await runLogTransaction();
+      toast.success(`Log ${log ? 'updated' : 'created'} successfully!`, {
+        id: toastId,
+      });
+      onClose();
     } catch (err) {
-      toast.error(err.message || "An unknown error occurred.", { id: toastId });
+      toast.error(err.message || 'An unknown error occurred.', { id: toastId });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center p-4 z-50" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div
+      className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center p-4 z-50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="relative mx-auto p-8 w-full max-w-2xl shadow-lg rounded-xl bg-white dark:bg-gray-800">
-        <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 capitalize">{log ? `Edit ${type} Log` : `Add New ${type} Log`}</h3>
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white"><X /></button>
+        <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 capitalize">
+          {log ? `Edit ${type} Log` : `Add New ${type} Log`}
+        </h3>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white"
+        >
+          <X />
+        </button>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Material</label>
-              <Combobox value={selectedMaterial} onChange={setSelectedMaterial} nullable disabled={!!log}>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Material
+              </label>
+              <Combobox
+                value={selectedMaterial}
+                onChange={setSelectedMaterial}
+                nullable
+                disabled={!!log}
+              >
                 {({ open }) => (
                   <div className="relative">
-                    <Combobox.Input className="w-full h-11 rounded-md border border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2 pl-3 pr-10 text-sm shadow-sm" displayValue={(material) => material?.label || ''} onChange={(event) => setMaterialQuery(event.target.value)} placeholder="Select a material..."/>
-                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2"><ChevronsUpDown className="h-5 w-5 text-gray-400" /></Combobox.Button>
-                    <Transition as={Fragment} show={open} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
-                        <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black/5 z-20">
-                            {(type === 'issuance' ? issuanceOptions : filteredMaterials).map((material) => (
-                                <Combobox.Option key={material.id} value={material} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900 dark:text-gray-300'}`}>
-                                    {({ selected }) => (<> <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{material.label}</span> {selected ? <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}><Check/></span> : null} </>)}
-                                </Combobox.Option>
-                            ))}
-                        </Combobox.Options>
+                    <Combobox.Input
+                      className="w-full h-11 rounded-md border border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2 pl-3 pr-10 text-sm shadow-sm"
+                      displayValue={(material) => material?.label || ''}
+                      onChange={(event) => setMaterialQuery(event.target.value)}
+                      placeholder="Select a material..."
+                    />
+                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+                      <ChevronsUpDown className="h-5 w-5 text-gray-400" />
+                    </Combobox.Button>
+                    <Transition
+                      as={Fragment}
+                      show={open}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0"
+                    >
+                      <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black/5 z-20">
+                        {(type === 'issuance'
+                          ? issuanceOptions
+                          : filteredMaterials
+                        ).map((material) => (
+                          <Combobox.Option
+                            key={material.id}
+                            value={material}
+                            className={({ active }) =>
+                              `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-600 text-white' : 'text-gray-900 dark:text-gray-300'}`
+                            }
+                          >
+                            {({ selected }) => (
+                              <>
+                                {' '}
+                                <span
+                                  className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}
+                                >
+                                  {material.label}
+                                </span>{' '}
+                                {selected ? (
+                                  <span
+                                    className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-blue-600'}`}
+                                  >
+                                    <Check />
+                                  </span>
+                                ) : null}{' '}
+                              </>
+                            )}
+                          </Combobox.Option>
+                        ))}
+                      </Combobox.Options>
                     </Transition>
                   </div>
                 )}
@@ -1057,30 +1566,131 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
             </div>
             {selectedMaterial && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-3 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600 text-sm">
-                <div className="flex items-center gap-2"><Hash size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">QE: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.expectedQty || 0}</span></div></div>
-                <div className="flex items-center gap-2"><CheckCircle size={14} className="text-green-500" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">QD: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.delivered || 0}</span></div></div>
-                <div className="flex items-center gap-2"><Layers size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">Grade: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.materialGrade}</span></div></div>
-                <div className="flex items-center gap-2"><Maximize2 size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">Bore: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.boreSize1}</span></div></div>
+                <div className="flex items-center gap-2">
+                  <Hash
+                    size={14}
+                    className="text-gray-500 dark:text-gray-400"
+                  />
+                  <div>
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">
+                      QE:{' '}
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-300">
+                      {selectedMaterial.expectedQty || 0}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle size={14} className="text-green-500" />
+                  <div>
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">
+                      QD:{' '}
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-300">
+                      {selectedMaterial.delivered || 0}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Layers
+                    size={14}
+                    className="text-gray-500 dark:text-gray-400"
+                  />
+                  <div>
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">
+                      Grade:{' '}
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-300">
+                      {selectedMaterial.materialGrade}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Maximize2
+                    size={14}
+                    className="text-gray-500 dark:text-gray-400"
+                  />
+                  <div>
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">
+                      Bore:{' '}
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-300">
+                      {selectedMaterial.boreSize1}
+                    </span>
+                  </div>
+                </div>
               </div>
             )}
             <div>
-              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity</label>
-              <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(e.target.value)} step={quantityStep} className="w-full h-11 px-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm" min={quantityStep > 0.01 ? 1 : 0.01} />
+              <label
+                htmlFor="quantity"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
+                Quantity
+              </label>
+              <input
+                type="number"
+                id="quantity"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                step={quantityStep}
+                className="w-full h-11 px-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm"
+                min={quantityStep > 0.01 ? 1 : 0.01}
+              />
             </div>
             <div>
-              <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
-              <input type="date" id="date" value={logDate} onChange={e => setLogDate(e.target.value)} className="w-full h-11 px-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm" />
+              <label
+                htmlFor="date"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
+                Date
+              </label>
+              <input
+                type="date"
+                id="date"
+                value={logDate}
+                onChange={(e) => setLogDate(e.target.value)}
+                className="w-full h-11 px-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm"
+              />
             </div>
             <div>
-              <label htmlFor="remarks" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Remarks (Optional)</label>
-              <textarea id="remarks" rows="3" value={remarks} onChange={e => setRemarks(e.target.value)} className="w-full p-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm" />
+              <label
+                htmlFor="remarks"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
+                Remarks (Optional)
+              </label>
+              <textarea
+                id="remarks"
+                rows="3"
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+                className="w-full p-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm"
+              />
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
           </div>
           <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500">Cancel</button>
-            <button type="submit" disabled={isSubmitting} className={clsx("flex items-center justify-center w-32 px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md", isSubmitting ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700")}>
-              {isSubmitting ? <LoaderCircle className="animate-spin h-5 w-5" /> : 'Save Log'}
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={clsx(
+                'flex items-center justify-center w-32 px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md',
+                isSubmitting ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700',
+              )}
+            >
+              {isSubmitting ? (
+                <LoaderCircle className="animate-spin h-5 w-5" />
+              ) : (
+                'Save Log'
+              )}
             </button>
           </div>
         </form>
@@ -1093,15 +1703,15 @@ export default LogForm;
 </file>
 
 <file path="src/components/Login.jsx">
-import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
-import clsx from "clsx";
+import React, { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+import clsx from 'clsx';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({}); // NEW: State for inline errors
 
@@ -1109,12 +1719,12 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!email) {
-      newErrors.email = "Email is required.";
+      newErrors.email = 'Email is required.';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Email address is invalid.";
+      newErrors.email = 'Email address is invalid.';
     }
     if (!password) {
-      newErrors.password = "Password is required.";
+      newErrors.password = 'Password is required.';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -1122,7 +1732,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setErrors({});
     // MODIFIED: Validate form before submitting
     if (!validateForm()) {
@@ -1133,14 +1743,14 @@ const Login = () => {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
       switch (err.code) {
-        case "auth/user-not-found":
-        case "auth/invalid-email":
-        case "auth/wrong-password":
-        case "auth/invalid-credential":
-          setError("Invalid email or password. Please try again.");
+        case 'auth/user-not-found':
+        case 'auth/invalid-email':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          setError('Invalid email or password. Please try again.');
           break;
         default:
-          setError("An unexpected error occurred. Please try again later.");
+          setError('An unexpected error occurred. Please try again later.');
           break;
       }
     } finally {
@@ -1159,19 +1769,19 @@ const Login = () => {
           src="/graphic1.png"
           alt=""
           className="absolute opacity-20"
-          style={{ top: "-8%", left: "41.5%", width: "11.8vw" }}
+          style={{ top: '-8%', left: '41.5%', width: '11.8vw' }}
         />
         <img
           src="/graphic1.png"
           alt=""
           className="absolute opacity-20"
-          style={{ top: "88%", left: "91.6%", width: "11.8vw" }}
+          style={{ top: '88%', left: '91.6%', width: '11.8vw' }}
         />
         <img
           src="/graphic2.png"
           alt=""
           className="absolute opacity-20"
-          style={{ top: "6.4%", left: "90.6%", width: "4.5vw" }}
+          style={{ top: '6.4%', left: '90.6%', width: '4.5vw' }}
         />
       </div>
       <div className="relative z-30 flex items-center justify-center min-h-screen w-full px-6 sm:px-8 lg:px-12">
@@ -1207,7 +1817,7 @@ const Login = () => {
                 src="/graphic3.png"
                 alt=""
                 className="opacity-20"
-                style={{ width: "6.2vw", minWidth: "50px" }}
+                style={{ width: '6.2vw', minWidth: '50px' }}
               />
             </footer>
           </div>
@@ -1217,7 +1827,9 @@ const Login = () => {
                 <h3 className="text-3xl font-bold text-white">Welcome</h3>
                 <p className="text-white/60 mt-1">Let's get you signed in.</p>
               </div>
-              <form onSubmit={handleLogin} noValidate> {/* MODIFIED: Added noValidate */}
+              <form onSubmit={handleLogin} noValidate>
+                {' '}
+                {/* MODIFIED: Added noValidate */}
                 <div className="space-y-7">
                   <div>
                     <label
@@ -1233,14 +1845,18 @@ const Login = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@company.com"
                       className={clsx(
-                        "w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300",
+                        'w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300',
                         // MODIFIED: Add red border on error
-                        errors.email ? "border-red-400" : "border-transparent",
-                        "focus:outline-none focus:border-yellow-400 focus:bg-white/20"
+                        errors.email ? 'border-red-400' : 'border-transparent',
+                        'focus:outline-none focus:border-yellow-400 focus:bg-white/20',
                       )}
                     />
                     {/* NEW: Display inline error */}
-                    {errors.email && <p className="text-red-400 text-sm mt-2">{errors.email}</p>}
+                    {errors.email && (
+                      <p className="text-red-400 text-sm mt-2">
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label
@@ -1255,15 +1871,21 @@ const Login = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••"
-                       className={clsx(
-                        "w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300",
+                      className={clsx(
+                        'w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300',
                         // MODIFIED: Add red border on error
-                        errors.password ? "border-red-400" : "border-transparent",
-                        "focus:outline-none focus:border-yellow-400 focus:bg-white/20"
+                        errors.password
+                          ? 'border-red-400'
+                          : 'border-transparent',
+                        'focus:outline-none focus:border-yellow-400 focus:bg-white/20',
                       )}
                     />
-                     {/* NEW: Display inline error */}
-                    {errors.password && <p className="text-red-400 text-sm mt-2">{errors.password}</p>}
+                    {/* NEW: Display inline error */}
+                    {errors.password && (
+                      <p className="text-red-400 text-sm mt-2">
+                        {errors.password}
+                      </p>
+                    )}
                   </div>
                 </div>
                 {error && (
@@ -1276,14 +1898,14 @@ const Login = () => {
                     type="submit"
                     disabled={isSubmitting}
                     className={clsx(
-                      "w-full font-bold py-3 rounded-full text-lg transition-all duration-300",
-                      "bg-[#FDE047] text-[#1E3A8A]",
+                      'w-full font-bold py-3 rounded-full text-lg transition-all duration-300',
+                      'bg-[#FDE047] text-[#1E3A8A]',
                       isSubmitting
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-[#FACC15]"
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'hover:bg-[#FACC15]',
                     )}
                   >
-                    {isSubmitting ? "Signing In..." : "Login"}
+                    {isSubmitting ? 'Signing In...' : 'Login'}
                   </button>
                 </div>
               </form>
@@ -1307,98 +1929,248 @@ import { doc, runTransaction } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { Edit, Trash2 } from 'lucide-react';
 
-const LogTable = ({ logs, type, onEdit, currentPage, itemsPerPage, allMaterials }) => {
+const LogTable = ({
+  logs,
+  type,
+  onEdit,
+  currentPage,
+  itemsPerPage,
+  allMaterials,
+}) => {
   const { currentUser, ADMIN_UID } = useAuth();
 
   const materialsMap = useMemo(() => {
-    return new Map(allMaterials.map(m => [m.id, m]));
+    return new Map(allMaterials.map((m) => [m.id, m]));
   }, [allMaterials]);
 
   const handleDelete = async (log) => {
-    if (!window.confirm("Are you sure you want to delete this log? This action is permanent and will update the inventory count.")) return;
+    if (
+      !window.confirm(
+        'Are you sure you want to delete this log? This action is permanent and will update the inventory count.',
+      )
+    )
+      return;
 
-    const toastId = toast.loading("Deleting log...");
+    const toastId = toast.loading('Deleting log...');
     const logRef = doc(db, `${type}_logs`, log.id);
     const materialRef = doc(db, `materials/${ADMIN_UID}/items`, log.materialId);
 
     try {
       await runTransaction(db, async (transaction) => {
         const materialDoc = await transaction.get(materialRef);
-        if (!materialDoc.exists()) throw new Error("Associated material not found!");
+        if (!materialDoc.exists())
+          throw new Error('Associated material not found!');
 
         const materialData = materialDoc.data();
         const quantityChange = -log.quantity;
 
-        const newDelivered = (materialData.delivered || 0) + (type === 'delivery' ? quantityChange : 0);
-        const newIssued = (materialData.issued || 0) + (type === 'issuance' ? quantityChange : 0);
+        const newDelivered =
+          (materialData.delivered || 0) +
+          (type === 'delivery' ? quantityChange : 0);
+        const newIssued =
+          (materialData.issued || 0) +
+          (type === 'issuance' ? quantityChange : 0);
 
         if (newDelivered < newIssued) {
-            throw new Error("Deletion failed: This would result in a negative stock balance.");
+          throw new Error(
+            'Deletion failed: This would result in a negative stock balance.',
+          );
         }
 
         transaction.delete(logRef);
         transaction.update(materialRef, {
-            delivered: newDelivered,
-            issued: newIssued,
+          delivered: newDelivered,
+          issued: newIssued,
         });
       });
-      toast.success("Log deleted successfully.", { id: toastId });
+      toast.success('Log deleted successfully.', { id: toastId });
     } catch (err) {
-      console.error("Delete transaction failed:", err);
-      toast.error(err.message || "Failed to delete log.", { id: toastId });
+      console.error('Delete transaction failed:', err);
+      toast.error(err.message || 'Failed to delete log.', { id: toastId });
     }
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md dark:bg-gray-800">
       <div className="overflow-x-auto overflow-y-auto max-h-[65vh]">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">{/*
-          */}<thead className="bg-gray-50 dark:bg-gray-700">{/*
-            */}<tr className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">{/*
-              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">S/N</th>{/*
-              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>{/*
-              */}<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Material</th>{/*
-              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>{/*
-              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supplier</th>{/*
-              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Grade</th>{/*
-              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 1</th>{/*
-              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bore 2</th>{/*
-              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantity</th>{/*
-              */}<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Remarks</th>{/*
-              */}<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>{/*
-            */}</tr>{/*
-          */}</thead>{/*
-          */}<tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">{/*
-            */}{logs.length > 0 ? logs.map((log, index) => {
-              const category = log.category || materialsMap.get(log.materialId)?.category || 'N/A';
-              const displayDate = log.date?.toDate ? log.date.toDate().toLocaleDateString() : log.date;
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          {/*
+           */}
+          <thead className="bg-gray-50 dark:bg-gray-700">
+            {/*
+             */}
+            <tr className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
+              {/*
+               */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                S/N
+              </th>
+              {/*
+               */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Date
+              </th>
+              {/*
+               */}
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Material
+              </th>
+              {/*
+               */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Category
+              </th>
+              {/*
+               */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Supplier
+              </th>
+              {/*
+               */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Grade
+              </th>
+              {/*
+               */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Bore 1
+              </th>
+              {/*
+               */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Bore 2
+              </th>
+              {/*
+               */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Quantity
+              </th>
+              {/*
+               */}
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Remarks
+              </th>
+              {/*
+               */}
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Actions
+              </th>
+              {/*
+               */}
+            </tr>
+            {/*
+             */}
+          </thead>
+          {/*
+           */}
+          <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+            {/*
+             */}
+            {logs.length > 0 ? (
+              logs.map((log, index) => {
+                const category =
+                  log.category ||
+                  materialsMap.get(log.materialId)?.category ||
+                  'N/A';
+                const displayDate = log.date?.toDate
+                  ? log.date.toDate().toLocaleDateString()
+                  : log.date;
 
-              return (
-              <tr key={log.id}>{/*
-                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td>{/*
-                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{displayDate}</td>{/*
-                */}<td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">{log.materialDescription}</td>{/*
-                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{category}</td>{/*
-                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.supplier || 'N/A'}</td>{/*
-                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.materialGrade || 'N/A'}</td>{/*
-                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize1 || 'N/A'}</td>{/*
-                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{log.boreSize2 || 'N/A'}</td>{/*
-                */}<td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-200 text-center">{log.quantity}</td>{/*
-                */}<td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400">{log.remarks || 'N/A'}</td>{/*
-                */}<td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                  {!currentUser.isViewer && (
-                    <div className="flex items-center justify-center space-x-4">
-                      <button onClick={() => onEdit(log)} className="text-blue-600 hover:text-blue-900" title="Edit Log"><Edit size={16} /></button>
-                      <button onClick={() => handleDelete(log)} className="text-red-600 hover:text-red-900" title="Delete Log"><Trash2 size={16} /></button>
-                    </div>
-                  )}
-                </td>{/*
-              */}</tr>
-            )}) : (
-              <tr><td colSpan="11" className="text-center py-10 text-gray-500 dark:text-gray-400">No logs found.</td></tr>
-            )}{/*
-          */}</tbody>{/*
-        */}</table>
+                return (
+                  <tr key={log.id}>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                      {displayDate}
+                    </td>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">
+                      {log.materialDescription}
+                    </td>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                      {category}
+                    </td>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                      {log.supplier || 'N/A'}
+                    </td>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                      {log.materialGrade || 'N/A'}
+                    </td>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                      {log.boreSize1 || 'N/A'}
+                    </td>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                      {log.boreSize2 || 'N/A'}
+                    </td>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-200 text-center">
+                      {log.quantity}
+                    </td>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400">
+                      {log.remarks || 'N/A'}
+                    </td>
+                    {/*
+                     */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                      {!currentUser.isViewer && (
+                        <div className="flex items-center justify-center space-x-4">
+                          <button
+                            onClick={() => onEdit(log)}
+                            className="text-blue-600 hover:text-blue-900"
+                            title="Edit Log"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(log)}
+                            className="text-red-600 hover:text-red-900"
+                            title="Delete Log"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                    {/*
+                     */}
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td
+                  colSpan="11"
+                  className="text-center py-10 text-gray-500 dark:text-gray-400"
+                >
+                  No logs found.
+                </td>
+              </tr>
+            )}
+            {/*
+             */}
+          </tbody>
+          {/*
+           */}
+        </table>
       </div>
     </div>
   );
@@ -1412,7 +2184,14 @@ export default LogTable;
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
-import { collection, query, where, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  doc,
+  deleteDoc,
+} from 'firebase/firestore';
 import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import StatsCards from './StatsCards';
@@ -1423,224 +2202,391 @@ import Pagination from './Pagination';
 const ITEMS_PER_PAGE = 10;
 
 const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
-    const { currentUser, ADMIN_UID } = useAuth();
-    const [materials, setMaterials] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
-    const [editingMaterial, setEditingMaterial] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
+  const { currentUser, ADMIN_UID } = useAuth();
+  const [materials, setMaterials] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
+  const [editingMaterial, setEditingMaterial] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-    useEffect(() => {
-        const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
-        let q;
-        if ((filterKey === 'category' || filterKey === 'supplier') && filterValue) {
-            q = query(materialsCollectionRef, where(filterKey, "==", filterValue));
-        } else {
-            q = query(materialsCollectionRef);
-        }
-
-        const unsubscribe = onSnapshot(q, snapshot => {
-            setMaterials(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
-            setCurrentPage(1);
-        }, (error) => console.error("Error fetching materials: ", error));
-
-        return () => unsubscribe();
-    }, [ADMIN_UID, filterKey, filterValue]);
-
-    const handleDelete = async (id) => {
-      if(currentUser.isViewer) return;
-      if (window.confirm('Are you sure? This will also delete associated logs.')) {
-        try {
-          await deleteDoc(doc(db, `materials/${ADMIN_UID}/items`, id));
-          toast.success("Material deleted.");
-        } catch (error) { toast.error("Failed to delete material."); }
-      }
-    };
-
-    const processedMaterials = useMemo(() => {
-        let filtered = [...materials];
-        if (statusFilter) {
-            filtered = filtered.filter(m => {
-                const delivered = m.delivered || 0;
-                const expected = m.expectedQty || 0;
-                if (statusFilter === 'surplus') return delivered > expected;
-                if (statusFilter === 'deficit') return delivered < expected && delivered > 0;
-                if (statusFilter === 'exact') return delivered === expected && delivered > 0;
-                return false;
-            });
-        }
-
-        if (searchTerm) {
-            const searchKeywords = searchTerm.toLowerCase().split(' ').filter(kw => kw.trim() !== '');
-            filtered = filtered.filter(m => {
-                const descriptionText = m.description.toLowerCase();
-                return searchKeywords.every(kw => descriptionText.includes(kw));
-            });
-        }
-        return filtered;
-    }, [materials, searchTerm, statusFilter]);
-
-    const paginatedMaterials = useMemo(() => {
-        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-        return processedMaterials.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-    }, [processedMaterials, currentPage]);
-
-    const totalPages = Math.ceil(processedMaterials.length / ITEMS_PER_PAGE);
-
-    const getPageTitle = () => {
-        if(statusFilter) return `${statusFilter} Materials`;
-        if(viewType === 'balanced') return 'Balanced Materials';
-        if(filterValue) return `${filterValue} List`;
-        return 'All Materials';
+  useEffect(() => {
+    const materialsCollectionRef = collection(
+      db,
+      `materials/${ADMIN_UID}/items`,
+    );
+    let q;
+    if ((filterKey === 'category' || filterKey === 'supplier') && filterValue) {
+      q = query(materialsCollectionRef, where(filterKey, '==', filterValue));
+    } else {
+      q = query(materialsCollectionRef);
     }
 
-    const dashboardStats = {
-        totalMaterials: materials.length,
-        totalDelivered: materials.reduce((sum, m) => sum + (m.delivered || 0), 0),
-        totalIssued: materials.reduce((sum, m) => sum + (m.issued || 0), 0),
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        setMaterials(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setCurrentPage(1);
+      },
+      (error) => console.error('Error fetching materials: ', error),
+    );
+
+    return () => unsubscribe();
+  }, [ADMIN_UID, filterKey, filterValue]);
+
+  const handleDelete = async (id) => {
+    if (currentUser.isViewer) return;
+    if (
+      window.confirm('Are you sure? This will also delete associated logs.')
+    ) {
+      try {
+        await deleteDoc(doc(db, `materials/${ADMIN_UID}/items`, id));
+        toast.success('Material deleted.');
+      } catch (error) {
+        toast.error('Failed to delete material.');
+      }
+    }
+  };
+
+  const processedMaterials = useMemo(() => {
+    let filtered = [...materials];
+    if (statusFilter) {
+      filtered = filtered.filter((m) => {
+        const delivered = m.delivered || 0;
+        const expected = m.expectedQty || 0;
+        if (statusFilter === 'surplus') return delivered > expected;
+        if (statusFilter === 'deficit')
+          return delivered < expected && delivered > 0;
+        if (statusFilter === 'exact')
+          return delivered === expected && delivered > 0;
+        return false;
+      });
+    }
+
+    if (searchTerm) {
+      const searchKeywords = searchTerm
+        .toLowerCase()
+        .split(' ')
+        .filter((kw) => kw.trim() !== '');
+      filtered = filtered.filter((m) => {
+        const descriptionText = m.description.toLowerCase();
+        return searchKeywords.every((kw) => descriptionText.includes(kw));
+      });
+    }
+    return filtered;
+  }, [materials, searchTerm, statusFilter]);
+
+  const paginatedMaterials = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return processedMaterials.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [processedMaterials, currentPage]);
+
+  const totalPages = Math.ceil(processedMaterials.length / ITEMS_PER_PAGE);
+
+  const getPageTitle = () => {
+    if (statusFilter) return `${statusFilter} Materials`;
+    if (viewType === 'balanced') return 'Balanced Materials';
+    if (filterValue) return `${filterValue} List`;
+    return 'All Materials';
+  };
+
+  const dashboardStats = {
+    totalMaterials: materials.length,
+    totalDelivered: materials.reduce((sum, m) => sum + (m.delivered || 0), 0),
+    totalIssued: materials.reduce((sum, m) => sum + (m.issued || 0), 0),
+  };
+
+  const renderTableHeaders = () => {
+    const baseHeaders = [
+      'S/N',
+      'Description',
+      'Cat.',
+      'Grade',
+      'Bore 1',
+      'Bore 2',
+    ];
+    const actionHeader = ['Actions'];
+    let dynamicHeaders = [];
+
+    switch (viewType) {
+      case 'surplus':
+        dynamicHeaders = ['Expected', 'Delivered', 'Surplus'];
+        break;
+      case 'deficit':
+        dynamicHeaders = ['Expected', 'Delivered', 'Deficit'];
+        break;
+      case 'exact':
+        dynamicHeaders = ['Expected', 'Delivered'];
+        break;
+      default:
+        dynamicHeaders = ['Expected', 'Delivered', 'Issued', 'Balance'];
+    }
+
+    const allHeaders = [...baseHeaders, ...dynamicHeaders, ...actionHeader];
+    return (
+      <tr className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
+        {/*
+         */}
+        {allHeaders.map((header, index) => (
+          <th
+            key={index}
+            className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${header === 'Description' ? 'text-left' : 'text-center'}`}
+          >
+            {header}
+          </th>
+        ))}
+        {/*
+         */}
+      </tr>
+    );
+  };
+
+  const renderTableBody = (material, index) => {
+    const delivered = material.delivered || 0;
+    const issued = material.issued || 0;
+    const expected = material.expectedQty || 0;
+    const balance = delivered - issued;
+
+    const isPipe = material.category?.toLowerCase() === 'pipes';
+
+    const formatNumber = (num) => {
+      if (isPipe) {
+        return Math.round(num * 100) / 100;
+      }
+      return Math.round(num);
     };
 
-    const renderTableHeaders = () => {
-        const baseHeaders = [ "S/N", "Description", "Cat.", "Grade", "Bore 1", "Bore 2"];
-        const actionHeader = ["Actions"];
-        let dynamicHeaders = [];
+    const baseCells = (
+      <>
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+          {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
+        </td>
+        <td className="px-6 py-4 max-w-sm">
+          <div className="text-sm font-medium text-gray-900 dark:text-white">
+            {material.description}
+          </div>
+        </td>
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+          {material.category}
+        </td>
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+          {material.materialGrade}
+        </td>
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+          {material.boreSize1}
+        </td>
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+          {material.boreSize2 || 'N/A'}
+        </td>
+      </>
+    );
 
-        switch(viewType) {
-            case 'surplus':
-                dynamicHeaders = ["Expected", "Delivered", "Surplus"];
-                break;
-            case 'deficit':
-                dynamicHeaders = ["Expected", "Delivered", "Deficit"];
-                break;
-            case 'exact':
-                dynamicHeaders = ["Expected", "Delivered"];
-                break;
-            default:
-                dynamicHeaders = ["Expected", "Delivered", "Issued", "Balance"];
-        }
-
-        const allHeaders = [...baseHeaders, ...dynamicHeaders, ...actionHeader];
-        return (
-            <tr className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">{/*
-                */}{allHeaders.map((header, index) => (
-                    <th key={index} className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${header === 'Description' ? 'text-left' : 'text-center'}`}>
-                        {header}
-                    </th>
-                ))}{/*
-            */}</tr>
+    let dynamicCells;
+    switch (viewType) {
+      case 'surplus':
+        dynamicCells = (
+          <>
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              {expected}
+            </td>
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              {delivered}
+            </td>
+            <td className="px-6 py-4 text-center text-sm font-bold text-green-600 dark:text-green-400">
+              {formatNumber(delivered - expected)}
+            </td>
+          </>
         );
-    };
-
-    const renderTableBody = (material, index) => {
-        const delivered = material.delivered || 0;
-        const issued = material.issued || 0;
-        const expected = material.expectedQty || 0;
-        const balance = delivered - issued;
-
-        const isPipe = material.category?.toLowerCase() === 'pipes';
-
-        const formatNumber = (num) => {
-            if (isPipe) {
-                return Math.round(num * 100) / 100;
-            }
-            return Math.round(num);
-        };
-
-        const baseCells = (
-            <>
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
-                <td className="px-6 py-4 max-w-sm"><div className="text-sm font-medium text-gray-900 dark:text-white">{material.description}</div></td>
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.category}</td>
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.materialGrade}</td>
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize1}</td>
-                <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{material.boreSize2 || 'N/A'}</td>
-            </>
+        break;
+      case 'deficit':
+        dynamicCells = (
+          <>
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              {expected}
+            </td>
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              {delivered}
+            </td>
+            <td className="px-6 py-4 text-center text-sm font-bold text-red-500 dark:text-red-400">
+              {formatNumber(expected - delivered)}
+            </td>
+          </>
         );
-
-        let dynamicCells;
-        switch(viewType) {
-            case 'surplus':
-                dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td>
-                    <td className="px-6 py-4 text-center text-sm font-bold text-green-600 dark:text-green-400">{formatNumber(delivered - expected)}</td>
-                </>);
-                break;
-            case 'deficit':
-                dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{delivered}</td>
-                    <td className="px-6 py-4 text-center text-sm font-bold text-red-500 dark:text-red-400">{formatNumber(expected - delivered)}</td>
-                </>);
-                break;
-            case 'exact':
-                 dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{expected}</td>
-                    <td className="px-6 py-4 text-center text-sm font-bold text-blue-500 dark:text-blue-400">{delivered}</td>
-                </>);
-                break;
-            default:
-                 dynamicCells = (<>
-                    <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">{expected}</td>
-                    <td className="px-6 py-4 text-center text-sm text-green-600 dark:text-green-400 font-semibold">{formatNumber(delivered)}</td>
-                    <td className="px-6 py-4 text-center text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{formatNumber(issued)}</td>
-                    <td className={`px-6 py-4 text-center text-sm font-bold ${balance >= 0 ? 'text-blue-500 dark:text-blue-400' : 'text-red-500 dark:text-red-400'}`}>{formatNumber(balance)}</td>
-                 </>);
-        }
-
-        return (
-            <tr key={material.id}>{/*
-                */}{baseCells}{/*
-                */}{dynamicCells}{/*
-                */}<td className="px-6 py-4 text-center text-sm font-medium">
-                    {!currentUser.isViewer &&
-                        <div className="flex items-center justify-center space-x-4">
-                            <button onClick={() => {setEditingMaterial(material); setIsMaterialModalOpen(true);}} className="text-blue-600 hover:text-blue-900"><Edit className="h-4 w-4" /></button>
-                            <button onClick={() => handleDelete(material.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
-                        </div>
-                    }
-                </td>{/*
-            */}</tr>
+        break;
+      case 'exact':
+        dynamicCells = (
+          <>
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              {expected}
+            </td>
+            <td className="px-6 py-4 text-center text-sm font-bold text-blue-500 dark:text-blue-400">
+              {delivered}
+            </td>
+          </>
         );
-    };
+        break;
+      default:
+        dynamicCells = (
+          <>
+            <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">
+              {expected}
+            </td>
+            <td className="px-6 py-4 text-center text-sm text-green-600 dark:text-green-400 font-semibold">
+              {formatNumber(delivered)}
+            </td>
+            <td className="px-6 py-4 text-center text-sm text-yellow-600 dark:text-yellow-400 font-semibold">
+              {formatNumber(issued)}
+            </td>
+            <td
+              className={`px-6 py-4 text-center text-sm font-bold ${balance >= 0 ? 'text-blue-500 dark:text-blue-400' : 'text-red-500 dark:text-red-400'}`}
+            >
+              {formatNumber(balance)}
+            </td>
+          </>
+        );
+    }
 
     return (
-        <>
-            <StatsCards stats={dashboardStats} />
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8">
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4">
-                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 capitalize">{getPageTitle()}</h2>
-                    <div className="flex items-center space-x-4">
-                        <div className="relative">
-                            <input type="text" value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} placeholder="Search descriptions..." className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>
-                            {searchTerm && (<button onClick={() => { setSearchTerm(''); setCurrentPage(1); }} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><X className="h-5 w-5"/></button>)}
-                        </div>
-                        {!statusFilter && viewType !== 'balanced' && !currentUser.isViewer && (
-                            <div className="flex items-center space-x-2">
-                                <ImportCSV />
-                                <button onClick={() => {setEditingMaterial(null); setIsMaterialModalOpen(true);}} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2" title="Add New Material">
-                                    <Plus className="h-5 w-5" /><span>Add</span>
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className="overflow-x-auto overflow-y-auto max-h-[65vh]">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">{/*
-                        */}<thead className="bg-gray-50 dark:bg-gray-700">{renderTableHeaders()}</thead>{/*
-                        */}<tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">{/*
-                            */}{paginatedMaterials.length > 0 ? paginatedMaterials.map((material, index) => renderTableBody(material, index)) : (
-                                <tr><td colSpan="11" className="text-center py-10 text-gray-500 dark:text-gray-400">No materials found.</td></tr>
-                            )}{/*
-                        */}</tbody>{/*
-                    */}</table>
-                </div>
-                <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+      <tr key={material.id}>
+        {/*
+         */}
+        {baseCells}
+        {/*
+         */}
+        {dynamicCells}
+        {/*
+         */}
+        <td className="px-6 py-4 text-center text-sm font-medium">
+          {!currentUser.isViewer && (
+            <div className="flex items-center justify-center space-x-4">
+              <button
+                onClick={() => {
+                  setEditingMaterial(material);
+                  setIsMaterialModalOpen(true);
+                }}
+                className="text-blue-600 hover:text-blue-900"
+              >
+                <Edit className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => handleDelete(material.id)}
+                className="text-red-600 hover:text-red-900"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
             </div>
-            {isMaterialModalOpen && <AddEditMaterialModal material={editingMaterial} onClose={() => {setIsMaterialModalOpen(false); setEditingMaterial(null);}} />}
-        </>
+          )}
+        </td>
+        {/*
+         */}
+      </tr>
     );
+  };
+
+  return (
+    <>
+      <StatsCards stats={dashboardStats} />
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 capitalize">
+            {getPageTitle()}
+          </h2>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="Search descriptions..."
+                className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              {searchTerm && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setCurrentPage(1);
+                  }}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+            {!statusFilter &&
+              viewType !== 'balanced' &&
+              !currentUser.isViewer && (
+                <div className="flex items-center space-x-2">
+                  <ImportCSV />
+                  <button
+                    onClick={() => {
+                      setEditingMaterial(null);
+                      setIsMaterialModalOpen(true);
+                    }}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                    title="Add New Material"
+                  >
+                    <Plus className="h-5 w-5" />
+                    <span>Add</span>
+                  </button>
+                </div>
+              )}
+          </div>
+        </div>
+        <div className="overflow-x-auto overflow-y-auto max-h-[65vh]">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            {/*
+             */}
+            <thead className="bg-gray-50 dark:bg-gray-700">
+              {renderTableHeaders()}
+            </thead>
+            {/*
+             */}
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {/*
+               */}
+              {paginatedMaterials.length > 0 ? (
+                paginatedMaterials.map((material, index) =>
+                  renderTableBody(material, index),
+                )
+              ) : (
+                <tr>
+                  <td
+                    colSpan="11"
+                    className="text-center py-10 text-gray-500 dark:text-gray-400"
+                  >
+                    No materials found.
+                  </td>
+                </tr>
+              )}
+              {/*
+               */}
+            </tbody>
+            {/*
+             */}
+          </table>
+        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
+      {isMaterialModalOpen && (
+        <AddEditMaterialModal
+          material={editingMaterial}
+          onClose={() => {
+            setIsMaterialModalOpen(false);
+            setEditingMaterial(null);
+          }}
+        />
+      )}
+    </>
+  );
 };
 
 export default MaterialTable;
@@ -1656,16 +2602,23 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   }
 
   return (
-    <div className="flex items-center justify-between mt-4 px-6 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"> {/* MODIFIED: Added dark background and border */}
-      <p className="text-sm text-gray-700 dark:text-gray-300"> {/* MODIFIED: Added dark text */}
-        Page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
+    <div className="flex items-center justify-between mt-4 px-6 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      {' '}
+      {/* MODIFIED: Added dark background and border */}
+      <p className="text-sm text-gray-700 dark:text-gray-300">
+        {' '}
+        {/* MODIFIED: Added dark text */}
+        Page <span className="font-medium">{currentPage}</span> of{' '}
+        <span className="font-medium">{totalPages}</span>
       </p>
       <div className="flex items-center space-x-2">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-        > {/* MODIFIED: Added dark styles */}
+        >
+          {' '}
+          {/* MODIFIED: Added dark styles */}
           <ChevronLeft size={16} className="mr-2" />
           Previous
         </button>
@@ -1673,7 +2626,9 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-        > {/* MODIFIED: Added dark styles */}
+        >
+          {' '}
+          {/* MODIFIED: Added dark styles */}
           Next
           <ChevronRight size={16} className="ml-2" />
         </button>
@@ -1686,10 +2641,10 @@ export default Pagination;
 </file>
 
 <file path="src/components/Sidebar.jsx">
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { useAuth } from "../context/authContext";
-import { useLayout } from "../context/LayoutContext";
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/authContext';
+import { useLayout } from '../context/LayoutContext';
 import {
   Box,
   Building,
@@ -1702,8 +2657,8 @@ import {
   MinusCircle,
   AlertCircle,
   Scale,
-} from "lucide-react";
-import clsx from "clsx";
+} from 'lucide-react';
+import clsx from 'clsx';
 
 const Sidebar = () => {
   const { appMetadata } = useAuth();
@@ -1712,24 +2667,24 @@ const Sidebar = () => {
   const [suppliersOpen, setSuppliersOpen] = useState(false);
 
   const linkClass =
-    "flex items-center p-3 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white transition-colors w-full";
-  const activeLinkClass = "bg-blue-700 text-white";
+    'flex items-center p-3 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white transition-colors w-full';
+  const activeLinkClass = 'bg-blue-700 text-white';
   const childLinkClass = `flex items-center py-2 px-3 text-sm rounded-md hover:text-white transition-colors ${
-    isSidebarCollapsed ? "justify-center" : "ml-6"
+    isSidebarCollapsed ? 'justify-center' : 'ml-6'
   }`;
 
   return (
     <div
       className={clsx(
-        "flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden", // MODIFIED: Added dark background
-        isSidebarCollapsed ? "w-20" : "w-64"
+        'flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden', // MODIFIED: Added dark background
+        isSidebarCollapsed ? 'w-20' : 'w-64',
       )}
     >
       {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
       <div
         className={clsx(
-          "flex items-center h-20 border-b border-gray-700 flex-shrink-0",
-          isSidebarCollapsed ? "justify-center" : "px-4 justify-start"
+          'flex items-center h-20 border-b border-gray-700 flex-shrink-0',
+          isSidebarCollapsed ? 'justify-center' : 'px-4 justify-start',
         )}
       >
         <img
@@ -1751,7 +2706,7 @@ const Sidebar = () => {
               !isSidebarCollapsed && setDashboardOpen(!dashboardOpen)
             }
             className={`${linkClass} ${
-              isSidebarCollapsed ? "justify-center" : "justify-between"
+              isSidebarCollapsed ? 'justify-center' : 'justify-between'
             }`}
             title="Dashboard"
           >
@@ -1773,14 +2728,14 @@ const Sidebar = () => {
               to="/"
               className={({ isActive }) =>
                 `${childLinkClass} ml-0 ${
-                  isActive ? "text-white" : "text-gray-400"
+                  isActive ? 'text-white' : 'text-gray-400'
                 }`
               }
               end
               title="All Materials"
             >
               All Materials
-            </NavLink>{" "}
+            </NavLink>{' '}
             {/* MODIFIED: Added dark text */}
             {appMetadata.categories?.sort().map((cat) => (
               <NavLink
@@ -1789,11 +2744,11 @@ const Sidebar = () => {
                 title={cat}
                 className={({ isActive }) =>
                   `${childLinkClass} ml-0 ${
-                    isActive ? "text-white" : "text-gray-400"
+                    isActive ? 'text-white' : 'text-gray-400'
                   }`
                 }
               >
-                {" "}
+                {' '}
                 {/* MODIFIED: Added dark text */}
                 <Box size={16} className="mr-3 flex-shrink-0" />
                 <span className="truncate">{cat}</span>
@@ -1808,7 +2763,7 @@ const Sidebar = () => {
               !isSidebarCollapsed && setSuppliersOpen(!suppliersOpen)
             }
             className={`${linkClass} ${
-              isSidebarCollapsed ? "justify-center" : "justify-between"
+              isSidebarCollapsed ? 'justify-center' : 'justify-between'
             }`}
             title="Suppliers"
           >
@@ -1833,11 +2788,11 @@ const Sidebar = () => {
                 title={sup}
                 className={({ isActive }) =>
                   `${childLinkClass} ml-0 ${
-                    isActive ? "text-white" : "text-gray-400"
+                    isActive ? 'text-white' : 'text-gray-400'
                   }`
                 }
               >
-                {" "}
+                {' '}
                 {/* MODIFIED: Added dark text */}
                 <span className="truncate">{sup}</span>
               </NavLink>
@@ -1850,8 +2805,8 @@ const Sidebar = () => {
             to="/delivery-log"
             title="Delivery Log"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -1862,8 +2817,8 @@ const Sidebar = () => {
             to="/issuance-log"
             title="Issuance Log"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -1877,8 +2832,8 @@ const Sidebar = () => {
             to="/balanced-materials"
             title="Balanced Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -1891,8 +2846,8 @@ const Sidebar = () => {
             to="/status/surplus"
             title="Surplus Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -1905,8 +2860,8 @@ const Sidebar = () => {
             to="/status/deficit"
             title="Deficit Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -1919,8 +2874,8 @@ const Sidebar = () => {
             to="/status/exact"
             title="Exact Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -1944,40 +2899,60 @@ import { Package, Truck, Send } from 'lucide-react';
 
 // NEW: Helper function to format numbers to 2 decimal places if they are not whole numbers
 const formatNumber = (num) => {
-  if (num % 1 !== 0) { // Check if the number has a decimal part
+  if (num % 1 !== 0) {
+    // Check if the number has a decimal part
     return num.toFixed(2);
   }
   return num;
 };
 
 const StatCard = ({ title, value, icon, color }) => {
-    // MODIFIED: Updated color classes to include dark mode variants
-    const colors = {
-        blue: 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
-        green: 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400',
-        yellow: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400',
-    };
-    return (
-        // MODIFIED: Added dark mode classes for background and text
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center justify-between">
-            <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
-                {/* MODIFIED: Applied the number formatting function to the value */}
-                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{formatNumber(value)}</p>
-            </div>
-            <div className={`${colors[color]} p-3 rounded-full`}>
-                {icon}
-            </div>
-        </div>
-    );
+  // MODIFIED: Updated color classes to include dark mode variants
+  const colors = {
+    blue: 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
+    green:
+      'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400',
+    yellow:
+      'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400',
+  };
+  return (
+    // MODIFIED: Added dark mode classes for background and text
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center justify-between">
+      <div>
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          {title}
+        </p>
+        {/* MODIFIED: Applied the number formatting function to the value */}
+        <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          {formatNumber(value)}
+        </p>
+      </div>
+      <div className={`${colors[color]} p-3 rounded-full`}>{icon}</div>
+    </div>
+  );
 };
 
 const StatsCards = ({ stats }) => (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Total Materials" value={stats?.totalMaterials || 0} icon={<Package />} color="blue" />
-        <StatCard title="Total Delivered" value={stats?.totalDelivered || 0} icon={<Truck />} color="green" />
-        <StatCard title="Total Issued" value={stats?.totalIssued || 0} icon={<Send />} color="yellow" />
-    </div>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <StatCard
+      title="Total Materials"
+      value={stats?.totalMaterials || 0}
+      icon={<Package />}
+      color="blue"
+    />
+    <StatCard
+      title="Total Delivered"
+      value={stats?.totalDelivered || 0}
+      icon={<Truck />}
+      color="green"
+    />
+    <StatCard
+      title="Total Issued"
+      value={stats?.totalIssued || 0}
+      icon={<Send />}
+      color="yellow"
+    />
+  </div>
 );
 
 export default StatsCards;
@@ -1996,22 +2971,22 @@ export const useAuth = () => useContext(authContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [appMetadata, setAppMetadata] = useState({ 
-    categories: [], 
-    suppliers: [], 
+  const [appMetadata, setAppMetadata] = useState({
+    categories: [],
+    suppliers: [],
     materialGrades: [],
     boreSize1Options: [],
-    boreSize2Options: []
+    boreSize2Options: [],
   });
   const [authLoading, setAuthLoading] = useState(true);
   const [metadataLoaded, setMetadataLoaded] = useState(false); // New state for metadata status
 
-  const ADMIN_UID = "liClr3tmuecp40P96GCXoHmzc6x1";
-  const VIEWER_UID = "DY1kwGWNwET1VauTFlNN0xxtH9O2";
+  const ADMIN_UID = 'liClr3tmuecp40P96GCXoHmzc6x1';
+  const VIEWER_UID = 'DY1kwGWNwET1VauTFlNN0xxtH9O2';
   const authorizedUIDs = [ADMIN_UID, VIEWER_UID];
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, user => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user && authorizedUIDs.includes(user.uid)) {
         const isViewer = user.uid === VIEWER_UID;
         setCurrentUser({ ...user, isViewer, isAdmin: !isViewer });
@@ -2023,17 +2998,26 @@ export const AuthProvider = ({ children }) => {
     });
 
     const metadataRef = doc(db, 'app_metadata', 'lists');
-    const unsubscribeMetadata = onSnapshot(metadataRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setAppMetadata(docSnap.data());
-      } else {
-        console.log("Metadata document does not exist! Please create it in Firestore.");
-      }
-      setMetadataLoaded(true); // Mark metadata as loaded
-    }, (error) => {
-      console.error("AuthContext: Error fetching metadata! Check Firestore Rules.", error);
-      setMetadataLoaded(true); // Mark as loaded even on error to prevent infinite loading
-    });
+    const unsubscribeMetadata = onSnapshot(
+      metadataRef,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setAppMetadata(docSnap.data());
+        } else {
+          console.log(
+            'Metadata document does not exist! Please create it in Firestore.',
+          );
+        }
+        setMetadataLoaded(true); // Mark metadata as loaded
+      },
+      (error) => {
+        console.error(
+          'AuthContext: Error fetching metadata! Check Firestore Rules.',
+          error,
+        );
+        setMetadataLoaded(true); // Mark as loaded even on error to prevent infinite loading
+      },
+    );
 
     return () => {
       unsubscribeAuth();
@@ -2059,7 +3043,7 @@ export const AuthProvider = ({ children }) => {
 </file>
 
 <file path="src/context/LayoutContext.jsx">
-import React, { createContext, useContext, useState } from "react"; // MODIFIED: Removed useEffect
+import React, { createContext, useContext, useState } from 'react'; // MODIFIED: Removed useEffect
 
 const LayoutContext = createContext();
 export const useLayout = () => useContext(LayoutContext);
@@ -2108,7 +3092,9 @@ export const ThemeProvider = ({ children }) => {
     root.classList.remove('light', 'dark');
 
     if (theme === 'system') {
-      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDarkMode = window.matchMedia(
+        '(prefers-color-scheme: dark)',
+      ).matches;
       root.classList.add(prefersDarkMode ? 'dark' : 'light');
     } else {
       root.classList.add(theme);
@@ -2164,8 +3150,8 @@ export const db = getFirestore(app);
 </file>
 
 <file path="src/index.css">
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -2173,7 +3159,7 @@ export const db = getFirestore(app);
 @custom-variant dark (&:where(.dark, .dark *));
 
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 @keyframes spreadFade {
   0% {
@@ -2193,13 +3179,13 @@ body {
 </file>
 
 <file path="src/layouts/MainLayout.jsx">
-import React from "react";
-import { Outlet } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import { useLayout } from "../context/LayoutContext";
-import { ChevronsLeft } from "lucide-react";
-import clsx from "clsx";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import Header from '../components/Header';
+import { useLayout } from '../context/LayoutContext';
+import { ChevronsLeft } from 'lucide-react';
+import clsx from 'clsx';
 
 const MainLayout = () => {
   const { isSidebarCollapsed, toggleSidebar } = useLayout();
@@ -2209,7 +3195,7 @@ const MainLayout = () => {
     <div className="relative h-screen bg-white dark:bg-gray-900">
       <div
         className={`grid h-full transition-all duration-300 ${
-          isSidebarCollapsed ? "grid-cols-[80px_1fr]" : "grid-cols-[256px_1fr]"
+          isSidebarCollapsed ? 'grid-cols-[80px_1fr]' : 'grid-cols-[256px_1fr]'
         }`}
       >
         <Sidebar />
@@ -2224,21 +3210,21 @@ const MainLayout = () => {
       {/* MODIFIED: Added -translate-x-1/2 to perfectly center the button on the border */}
       <div
         className={clsx(
-          "absolute top-[15%] -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out z-30 -translate-x-1/2 bg-white dark:bg-gray-800 opacity-90",
-          isSidebarCollapsed ? "left-[80px]" : "left-[256px]",
-          "glow"
+          'absolute top-[15%] -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out z-30 -translate-x-1/2 bg-white dark:bg-gray-800 opacity-90',
+          isSidebarCollapsed ? 'left-[80px]' : 'left-[256px]',
+          'glow',
         )}
       >
         <button
           onClick={toggleSidebar}
-          title={isSidebarCollapsed ? "Expand Menu" : "Collapse Menu"}
+          title={isSidebarCollapsed ? 'Expand Menu' : 'Collapse Menu'}
           className="w-full h-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-500 "
         >
           <ChevronsLeft
             size={20}
             className={clsx(
-              "transition-transform duration-300 ease-in-out",
-              isSidebarCollapsed && "rotate-180"
+              'transition-transform duration-300 ease-in-out',
+              isSidebarCollapsed && 'rotate-180',
             )}
           />
         </button>
@@ -2251,24 +3237,27 @@ export default MainLayout;
 </file>
 
 <file path="src/main.jsx">
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import { Toaster } from 'react-hot-toast' // NEW: Import Toaster
-import App from './App.jsx'
-import './index.css'
-import { ThemeProvider } from './context/ThemeContext.jsx' // NEW: Import ThemeProvider
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast'; // NEW: Import Toaster
+import App from './App.jsx';
+import './index.css';
+import { ThemeProvider } from './context/ThemeContext.jsx'; // NEW: Import ThemeProvider
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ThemeProvider> {/* NEW: Wrap App with ThemeProvider */}
+      <ThemeProvider>
+        {' '}
+        {/* NEW: Wrap App with ThemeProvider */}
         <App />
       </ThemeProvider>
-      <Toaster position="top-right" reverseOrder={false} /> {/* NEW: Add Toaster component */}
+      <Toaster position="top-right" reverseOrder={false} />{' '}
+      {/* NEW: Add Toaster component */}
     </BrowserRouter>
   </React.StrictMode>,
-)
+);
 </file>
 
 <file path="src/pages/LogPage.jsx">
@@ -2276,7 +3265,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
-import { collection, query, onSnapshot, orderBy, where, getDocs, Timestamp } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  onSnapshot,
+  orderBy,
+  where,
+  getDocs,
+  Timestamp,
+} from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import Papa from 'papaparse';
 import jsPDF from 'jspdf';
@@ -2304,17 +3301,31 @@ const LogPage = ({ type }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const config = useMemo(() => ({
-    delivery: { title: "Delivery Log", collectionName: "delivery_logs", icon: <Download className="h-8 w-8 text-blue-600" /> },
-    issuance: { title: "Issuance Log", collectionName: "issuance_logs", icon: <Upload className="h-8 w-8 text-red-600" /> }
-  }), []);
+  const config = useMemo(
+    () => ({
+      delivery: {
+        title: 'Delivery Log',
+        collectionName: 'delivery_logs',
+        icon: <Download className="h-8 w-8 text-blue-600" />,
+      },
+      issuance: {
+        title: 'Issuance Log',
+        collectionName: 'issuance_logs',
+        icon: <Upload className="h-8 w-8 text-red-600" />,
+      },
+    }),
+    [],
+  );
 
   const currentConfig = config[type];
 
   useEffect(() => {
     const materialsRef = collection(db, `materials/${ADMIN_UID}/items`);
     const unsubscribe = onSnapshot(materialsRef, (snapshot) => {
-      const materialsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const materialsList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setAllMaterials(materialsList);
     });
     return () => unsubscribe();
@@ -2322,15 +3333,17 @@ const LogPage = ({ type }) => {
 
   useEffect(() => {
     const logCollectionRef = collection(db, currentConfig.collectionName);
-    getDocs(query(logCollectionRef)).then(snapshot => {
-        const dates = snapshot.docs.map(doc => {
-            const data = doc.data();
-            if (data.date?.toDate) {
-                return data.date.toDate().toISOString().split('T')[0];
-            }
-            return data.date;
-        });
-        setUniqueDates(Array.from(new Set(dates)).sort((a,b) => new Date(b) - new Date(a)));
+    getDocs(query(logCollectionRef)).then((snapshot) => {
+      const dates = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        if (data.date?.toDate) {
+          return data.date.toDate().toISOString().split('T')[0];
+        }
+        return data.date;
+      });
+      setUniqueDates(
+        Array.from(new Set(dates)).sort((a, b) => new Date(b) - new Date(a)),
+      );
     });
   }, [currentConfig.collectionName]);
 
@@ -2350,37 +3363,59 @@ const LogPage = ({ type }) => {
     } else if (selectedDate !== 'all' && selectedDate !== 'custom') {
       const startOfDay = Timestamp.fromDate(new Date(selectedDate));
       const endOfDay = Timestamp.fromDate(new Date(selectedDate + 'T23:59:59'));
-      q = query(q, where('date', '>=', startOfDay), where('date', '<=', endOfDay));
+      q = query(
+        q,
+        where('date', '>=', startOfDay),
+        where('date', '<=', endOfDay),
+      );
     }
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setAllLogs(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setCurrentPage(1);
-    }, (error) => {
-      console.error("Firestore Query Error:", error);
-      toast.error(`Failed to fetch ${type} logs. Check console for details.`);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        setAllLogs(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        setCurrentPage(1);
+      },
+      (error) => {
+        console.error('Firestore Query Error:', error);
+        toast.error(`Failed to fetch ${type} logs. Check console for details.`);
+      },
+    );
 
     return () => unsubscribe();
-  }, [currentUser, currentConfig.collectionName, type, selectedDate, startDate, endDate]);
+  }, [
+    currentUser,
+    currentConfig.collectionName,
+    type,
+    selectedDate,
+    startDate,
+    endDate,
+  ]);
 
   // Client-side filtering for category and supplier
   const filteredLogs = useMemo(() => {
-    return allLogs.filter(log => {
-      const categoryMatch = selectedCategory === 'all' || 
-        (log.category || '').toLowerCase().trim() === selectedCategory.toLowerCase().trim();
-      const supplierMatch = selectedSupplier === 'all' || 
-        (log.supplier || '').toLowerCase().trim() === selectedSupplier.toLowerCase().trim();
+    return allLogs.filter((log) => {
+      const categoryMatch =
+        selectedCategory === 'all' ||
+        (log.category || '').toLowerCase().trim() ===
+          selectedCategory.toLowerCase().trim();
+      const supplierMatch =
+        selectedSupplier === 'all' ||
+        (log.supplier || '').toLowerCase().trim() ===
+          selectedSupplier.toLowerCase().trim();
       return categoryMatch && supplierMatch;
     });
   }, [allLogs, selectedCategory, selectedSupplier]);
 
   const searchedLogs = useMemo(() => {
     if (!searchTerm) return filteredLogs;
-    const searchKeywords = searchTerm.toLowerCase().split(' ').filter(kw => kw.trim() !== '');
-    return filteredLogs.filter(log => {
+    const searchKeywords = searchTerm
+      .toLowerCase()
+      .split(' ')
+      .filter((kw) => kw.trim() !== '');
+    return filteredLogs.filter((log) => {
       const descriptionText = (log.materialDescription || '').toLowerCase();
-      return searchKeywords.every(kw => descriptionText.includes(kw));
+      return searchKeywords.every((kw) => descriptionText.includes(kw));
     });
   }, [filteredLogs, searchTerm]);
 
@@ -2391,14 +3426,34 @@ const LogPage = ({ type }) => {
 
   const totalPages = Math.ceil(searchedLogs.length / ITEMS_PER_PAGE);
 
-  const handleOpenForm = (log = null) => { setEditingLog(log); setIsFormOpen(true); };
-  const handleCloseForm = () => { setEditingLog(null); setIsFormOpen(false); };
+  const handleOpenForm = (log = null) => {
+    setEditingLog(log);
+    setIsFormOpen(true);
+  };
+  const handleCloseForm = () => {
+    setEditingLog(null);
+    setIsFormOpen(false);
+  };
 
   const handleExport = (format) => {
-    if (searchedLogs.length === 0) { toast.error("No logs to export."); return; }
-    const dataToExport = searchedLogs.map(log => {
-        const date = log.date?.toDate ? log.date.toDate().toLocaleDateString() : log.date;
-        return { Date: date, Material: log.materialDescription, Supplier: log.supplier || 'N/A', Grade: log.materialGrade, 'Bore 1': log.boreSize1, 'Bore 2': log.boreSize2 || 'N/A', Quantity: log.quantity, Remarks: log.remarks || 'N/A' };
+    if (searchedLogs.length === 0) {
+      toast.error('No logs to export.');
+      return;
+    }
+    const dataToExport = searchedLogs.map((log) => {
+      const date = log.date?.toDate
+        ? log.date.toDate().toLocaleDateString()
+        : log.date;
+      return {
+        Date: date,
+        Material: log.materialDescription,
+        Supplier: log.supplier || 'N/A',
+        Grade: log.materialGrade,
+        'Bore 1': log.boreSize1,
+        'Bore 2': log.boreSize2 || 'N/A',
+        Quantity: log.quantity,
+        Remarks: log.remarks || 'N/A',
+      };
     });
     const filename = `${type}_log_${new Date().toISOString().split('T')[0]}`;
     if (format === 'csv') {
@@ -2413,7 +3468,12 @@ const LogPage = ({ type }) => {
     } else if (format === 'pdf') {
       const doc = new jsPDF();
       doc.text(`${currentConfig.title} Report`, 14, 16);
-      doc.autoTable({ head: [Object.keys(dataToExport[0])], body: dataToExport.map(row => Object.values(row)), startY: 25, styles: { fontSize: 8 } });
+      doc.autoTable({
+        head: [Object.keys(dataToExport[0])],
+        body: dataToExport.map((row) => Object.values(row)),
+        startY: 25,
+        styles: { fontSize: 8 },
+      });
       doc.save(`${filename}.pdf`);
     }
   };
@@ -2421,47 +3481,178 @@ const LogPage = ({ type }) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center flex-wrap gap-4">
-        <div className="flex items-center gap-4"><div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow">{currentConfig.icon}</div><h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">{currentConfig.title}</h1></div>
-        {!currentUser.isViewer && (<button onClick={() => handleOpenForm()} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"><Plus size={16}/><span>Add New {type}</span></button>)}
+        <div className="flex items-center gap-4">
+          <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow">
+            {currentConfig.icon}
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+            {currentConfig.title}
+          </h1>
+        </div>
+        {!currentUser.isViewer && (
+          <button
+            onClick={() => handleOpenForm()}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+          >
+            <Plus size={16} />
+            <span>Add New {type}</span>
+          </button>
+        )}
       </div>
 
       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Category</label>
-                <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="all">All Categories</option>
-                    {appMetadata.categories?.sort().map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                </select>
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Filter by Category
+            </label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="all">All Categories</option>
+              {appMetadata.categories?.sort().map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Filter by Supplier
+            </label>
+            <select
+              value={selectedSupplier}
+              onChange={(e) => setSelectedSupplier(e.target.value)}
+              className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="all">All Suppliers</option>
+              {appMetadata.suppliers?.sort().map((sup) => (
+                <option key={sup} value={sup}>
+                  {sup}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Filter by Date
+            </label>
+            <select
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="all">All Dates</option>
+              <option value="custom">Custom Range</option>
+              {uniqueDates.map((date, index) => (
+                <option key={`${date}-${index}`} value={date}>
+                  {date}
+                </option>
+              ))}
+            </select>
+          </div>
+          {selectedDate === 'custom' && (
+            <>
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+            </>
+          )}
+          <div className="lg:col-start-4">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Search Material
+            </label>
+            <div className="relative mt-1">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="Search descriptions..."
+                className="pl-10 pr-10 w-full h-10 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
             </div>
-            <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Supplier</label>
-                <select value={selectedSupplier} onChange={e => setSelectedSupplier(e.target.value)} className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="all">All Suppliers</option>
-                    {appMetadata.suppliers?.sort().map(sup => <option key={sup} value={sup}>{sup}</option>)}
-                </select>
-            </div>
-            <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Date</label>
-                <select value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="w-full h-10 px-2 mt-1 border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="all">All Dates</option>
-                    <option value="custom">Custom Range</option>
-                    {uniqueDates.map((date, index) => <option key={`${date}-${index}`} value={date}>{date}</option>)}
-                </select>
-            </div>
-            {selectedDate === 'custom' && (<><div><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"/></div><div><label className="text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"/></div></>)}
-            <div className="lg:col-start-4"><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Search Material</label><div className="relative mt-1"><input type="text" value={searchTerm} onChange={e => {setSearchTerm(e.target.value); setCurrentPage(1);}} placeholder="Search descriptions..." className="pl-10 pr-10 w-full h-10 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white" /><div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>{searchTerm && <button onClick={() => setSearchTerm('')} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><X className="h-5 w-5"/></button>}</div></div>
+          </div>
         </div>
         <div className="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Export:</span>
-            <button onClick={() => handleExport('csv')} disabled={searchedLogs.length === 0} className="flex items-center gap-2 px-4 py-2 text-sm bg-green-100 text-green-800 rounded-md hover:bg-green-200 disabled:opacity-50" title="Export current view to CSV"><FileDown size={16}/> CSV</button>
-            <button onClick={() => handleExport('pdf')} disabled={searchedLogs.length === 0} className="flex items-center gap-2 px-4 py-2 text-sm bg-red-100 text-red-800 rounded-md hover:bg-red-200 disabled:opacity-50" title="Export current view to PDF"><FileDown size={16}/> PDF</button>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Export:
+          </span>
+          <button
+            onClick={() => handleExport('csv')}
+            disabled={searchedLogs.length === 0}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-green-100 text-green-800 rounded-md hover:bg-green-200 disabled:opacity-50"
+            title="Export current view to CSV"
+          >
+            <FileDown size={16} /> CSV
+          </button>
+          <button
+            onClick={() => handleExport('pdf')}
+            disabled={searchedLogs.length === 0}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-red-100 text-red-800 rounded-md hover:bg-red-200 disabled:opacity-50"
+            title="Export current view to PDF"
+          >
+            <FileDown size={16} /> PDF
+          </button>
         </div>
       </div>
 
-      <LogTable logs={paginatedLogs} type={type} onEdit={handleOpenForm} currentPage={currentPage} itemsPerPage={ITEMS_PER_PAGE} allMaterials={allMaterials} />
-      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-      {isFormOpen && <LogForm type={type} log={editingLog} onClose={handleCloseForm} allMaterials={allMaterials} />}
+      <LogTable
+        logs={paginatedLogs}
+        type={type}
+        onEdit={handleOpenForm}
+        currentPage={currentPage}
+        itemsPerPage={ITEMS_PER_PAGE}
+        allMaterials={allMaterials}
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+      {isFormOpen && (
+        <LogForm
+          type={type}
+          log={editingLog}
+          onClose={handleCloseForm}
+          allMaterials={allMaterials}
+        />
+      )}
     </div>
   );
 };
@@ -2477,18 +3668,22 @@ import MaterialTable from '../components/MaterialTable';
 const MaterialListPage = ({ statusFilter }) => {
   const params = useParams();
   const location = useLocation();
-  
+
   const filterKey = location.pathname.split('/')[1] || null;
-  const filterValue = params.filterValue ? decodeURIComponent(params.filterValue) : null;
-  
+  const filterValue = params.filterValue
+    ? decodeURIComponent(params.filterValue)
+    : null;
+
   // MODIFIED: Determine the viewType to pass to the table
-  const viewType = statusFilter || (location.pathname === '/balanced-materials' ? 'balanced' : 'default');
+  const viewType =
+    statusFilter ||
+    (location.pathname === '/balanced-materials' ? 'balanced' : 'default');
 
   return (
     <div>
-      <MaterialTable 
-        filterKey={filterKey} 
-        filterValue={filterValue} 
+      <MaterialTable
+        filterKey={filterKey}
+        filterValue={filterValue}
         statusFilter={statusFilter}
         viewType={viewType}
       />
@@ -2502,16 +3697,16 @@ export default MaterialListPage;
 <file path="tailwind.config.js">
 // tailwind.config.js
 export default {
-  darkMode: "selector", // <--- THIS IS THE KEY
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  darkMode: 'selector', // <--- THIS IS THE KEY
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       fontFamily: {
-        montserrat: ["Montserrat", "sans-serif"],
+        montserrat: ['Montserrat', 'sans-serif'],
       },
       colors: {
-        "brand-blue": "#004aad",
-        "brand-yellow": "#fdfe13",
+        'brand-blue': '#004aad',
+        'brand-yellow': '#fdfe13',
       },
     },
   },
@@ -2521,9 +3716,9 @@ export default {
 
 <file path="vite.config.js">
 // vite.config.js
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 // This is the entire corrected file content.
 export default defineConfig({

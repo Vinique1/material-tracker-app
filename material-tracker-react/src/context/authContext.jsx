@@ -10,22 +10,22 @@ export const useAuth = () => useContext(authContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [appMetadata, setAppMetadata] = useState({ 
-    categories: [], 
-    suppliers: [], 
+  const [appMetadata, setAppMetadata] = useState({
+    categories: [],
+    suppliers: [],
     materialGrades: [],
     boreSize1Options: [],
-    boreSize2Options: []
+    boreSize2Options: [],
   });
   const [authLoading, setAuthLoading] = useState(true);
   const [metadataLoaded, setMetadataLoaded] = useState(false); // New state for metadata status
 
-  const ADMIN_UID = "liClr3tmuecp40P96GCXoHmzc6x1";
-  const VIEWER_UID = "DY1kwGWNwET1VauTFlNN0xxtH9O2";
+  const ADMIN_UID = 'liClr3tmuecp40P96GCXoHmzc6x1';
+  const VIEWER_UID = 'DY1kwGWNwET1VauTFlNN0xxtH9O2';
   const authorizedUIDs = [ADMIN_UID, VIEWER_UID];
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, user => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user && authorizedUIDs.includes(user.uid)) {
         const isViewer = user.uid === VIEWER_UID;
         setCurrentUser({ ...user, isViewer, isAdmin: !isViewer });
@@ -37,17 +37,26 @@ export const AuthProvider = ({ children }) => {
     });
 
     const metadataRef = doc(db, 'app_metadata', 'lists');
-    const unsubscribeMetadata = onSnapshot(metadataRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setAppMetadata(docSnap.data());
-      } else {
-        console.log("Metadata document does not exist! Please create it in Firestore.");
-      }
-      setMetadataLoaded(true); // Mark metadata as loaded
-    }, (error) => {
-      console.error("AuthContext: Error fetching metadata! Check Firestore Rules.", error);
-      setMetadataLoaded(true); // Mark as loaded even on error to prevent infinite loading
-    });
+    const unsubscribeMetadata = onSnapshot(
+      metadataRef,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setAppMetadata(docSnap.data());
+        } else {
+          console.log(
+            'Metadata document does not exist! Please create it in Firestore.',
+          );
+        }
+        setMetadataLoaded(true); // Mark metadata as loaded
+      },
+      (error) => {
+        console.error(
+          'AuthContext: Error fetching metadata! Check Firestore Rules.',
+          error,
+        );
+        setMetadataLoaded(true); // Mark as loaded even on error to prevent infinite loading
+      },
+    );
 
     return () => {
       unsubscribeAuth();

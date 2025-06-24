@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
-import clsx from "clsx";
+import React, { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+import clsx from 'clsx';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({}); // NEW: State for inline errors
 
@@ -14,12 +14,12 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!email) {
-      newErrors.email = "Email is required.";
+      newErrors.email = 'Email is required.';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Email address is invalid.";
+      newErrors.email = 'Email address is invalid.';
     }
     if (!password) {
-      newErrors.password = "Password is required.";
+      newErrors.password = 'Password is required.';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -27,7 +27,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setErrors({});
     // MODIFIED: Validate form before submitting
     if (!validateForm()) {
@@ -38,14 +38,14 @@ const Login = () => {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
       switch (err.code) {
-        case "auth/user-not-found":
-        case "auth/invalid-email":
-        case "auth/wrong-password":
-        case "auth/invalid-credential":
-          setError("Invalid email or password. Please try again.");
+        case 'auth/user-not-found':
+        case 'auth/invalid-email':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          setError('Invalid email or password. Please try again.');
           break;
         default:
-          setError("An unexpected error occurred. Please try again later.");
+          setError('An unexpected error occurred. Please try again later.');
           break;
       }
     } finally {
@@ -64,19 +64,19 @@ const Login = () => {
           src="/graphic1.png"
           alt=""
           className="absolute opacity-20"
-          style={{ top: "-8%", left: "41.5%", width: "11.8vw" }}
+          style={{ top: '-8%', left: '41.5%', width: '11.8vw' }}
         />
         <img
           src="/graphic1.png"
           alt=""
           className="absolute opacity-20"
-          style={{ top: "88%", left: "91.6%", width: "11.8vw" }}
+          style={{ top: '88%', left: '91.6%', width: '11.8vw' }}
         />
         <img
           src="/graphic2.png"
           alt=""
           className="absolute opacity-20"
-          style={{ top: "6.4%", left: "90.6%", width: "4.5vw" }}
+          style={{ top: '6.4%', left: '90.6%', width: '4.5vw' }}
         />
       </div>
       <div className="relative z-30 flex items-center justify-center min-h-screen w-full px-6 sm:px-8 lg:px-12">
@@ -112,7 +112,7 @@ const Login = () => {
                 src="/graphic3.png"
                 alt=""
                 className="opacity-20"
-                style={{ width: "6.2vw", minWidth: "50px" }}
+                style={{ width: '6.2vw', minWidth: '50px' }}
               />
             </footer>
           </div>
@@ -122,7 +122,9 @@ const Login = () => {
                 <h3 className="text-3xl font-bold text-white">Welcome</h3>
                 <p className="text-white/60 mt-1">Let's get you signed in.</p>
               </div>
-              <form onSubmit={handleLogin} noValidate> {/* MODIFIED: Added noValidate */}
+              <form onSubmit={handleLogin} noValidate>
+                {' '}
+                {/* MODIFIED: Added noValidate */}
                 <div className="space-y-7">
                   <div>
                     <label
@@ -138,14 +140,18 @@ const Login = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@company.com"
                       className={clsx(
-                        "w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300",
+                        'w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300',
                         // MODIFIED: Add red border on error
-                        errors.email ? "border-red-400" : "border-transparent",
-                        "focus:outline-none focus:border-yellow-400 focus:bg-white/20"
+                        errors.email ? 'border-red-400' : 'border-transparent',
+                        'focus:outline-none focus:border-yellow-400 focus:bg-white/20',
                       )}
                     />
                     {/* NEW: Display inline error */}
-                    {errors.email && <p className="text-red-400 text-sm mt-2">{errors.email}</p>}
+                    {errors.email && (
+                      <p className="text-red-400 text-sm mt-2">
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label
@@ -160,15 +166,21 @@ const Login = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••"
-                       className={clsx(
-                        "w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300",
+                      className={clsx(
+                        'w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300',
                         // MODIFIED: Add red border on error
-                        errors.password ? "border-red-400" : "border-transparent",
-                        "focus:outline-none focus:border-yellow-400 focus:bg-white/20"
+                        errors.password
+                          ? 'border-red-400'
+                          : 'border-transparent',
+                        'focus:outline-none focus:border-yellow-400 focus:bg-white/20',
                       )}
                     />
-                     {/* NEW: Display inline error */}
-                    {errors.password && <p className="text-red-400 text-sm mt-2">{errors.password}</p>}
+                    {/* NEW: Display inline error */}
+                    {errors.password && (
+                      <p className="text-red-400 text-sm mt-2">
+                        {errors.password}
+                      </p>
+                    )}
                   </div>
                 </div>
                 {error && (
@@ -181,14 +193,14 @@ const Login = () => {
                     type="submit"
                     disabled={isSubmitting}
                     className={clsx(
-                      "w-full font-bold py-3 rounded-full text-lg transition-all duration-300",
-                      "bg-[#FDE047] text-[#1E3A8A]",
+                      'w-full font-bold py-3 rounded-full text-lg transition-all duration-300',
+                      'bg-[#FDE047] text-[#1E3A8A]',
                       isSubmitting
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-[#FACC15]"
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'hover:bg-[#FACC15]',
                     )}
                   >
-                    {isSubmitting ? "Signing In..." : "Login"}
+                    {isSubmitting ? 'Signing In...' : 'Login'}
                   </button>
                 </div>
               </form>

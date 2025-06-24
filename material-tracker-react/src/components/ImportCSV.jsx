@@ -1,7 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
-import { collection, doc, writeBatch, arrayUnion, serverTimestamp } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  writeBatch,
+  arrayUnion,
+  serverTimestamp,
+} from 'firebase/firestore';
 import Papa from 'papaparse';
 import toast from 'react-hot-toast';
 import { Upload, LoaderCircle } from 'lucide-react';
@@ -44,18 +50,32 @@ const ImportCSV = () => {
       return;
     }
 
-    const requiredHeaders = ['Description', 'ExpectedQuantity', 'Category', 'Supplier', 'MaterialGrade', 'BoreSize1'];
+    const requiredHeaders = [
+      'Description',
+      'ExpectedQuantity',
+      'Category',
+      'Supplier',
+      'MaterialGrade',
+      'BoreSize1',
+    ];
     const fileHeaders = Object.keys(data[0]);
-    const missingHeaders = requiredHeaders.filter(h => !fileHeaders.includes(h));
+    const missingHeaders = requiredHeaders.filter(
+      (h) => !fileHeaders.includes(h),
+    );
 
     if (missingHeaders.length > 0) {
-      toast.error(`Missing required columns: ${missingHeaders.join(', ')}`, { id: toastId });
+      toast.error(`Missing required columns: ${missingHeaders.join(', ')}`, {
+        id: toastId,
+      });
       setIsImporting(false);
       return;
     }
 
     try {
-      const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
+      const materialsCollectionRef = collection(
+        db,
+        `materials/${ADMIN_UID}/items`,
+      );
       const metadataRef = doc(db, 'app_metadata', 'lists');
       const newMetadata = {
         categories: new Set(),
@@ -66,10 +86,11 @@ const ImportCSV = () => {
       };
 
       // First, parse all data to collect metadata
-      data.forEach(row => {
+      data.forEach((row) => {
         if (row.Category) newMetadata.categories.add(row.Category);
         if (row.Supplier) newMetadata.suppliers.add(row.Supplier);
-        if (row.MaterialGrade) newMetadata.materialGrades.add(row.MaterialGrade);
+        if (row.MaterialGrade)
+          newMetadata.materialGrades.add(row.MaterialGrade);
         if (row.BoreSize1) newMetadata.boreSize1Options.add(row.BoreSize1);
         if (row.BoreSize2) newMetadata.boreSize2Options.add(row.BoreSize2);
       });
@@ -77,15 +98,21 @@ const ImportCSV = () => {
       // Update metadata in a single operation
       await writeBatch(db)
         .update(metadataRef, {
-            categories: arrayUnion(...Array.from(newMetadata.categories)),
-            suppliers: arrayUnion(...Array.from(newMetadata.suppliers)),
-            materialGrades: arrayUnion(...Array.from(newMetadata.materialGrades)),
-            boreSize1Options: arrayUnion(...Array.from(newMetadata.boreSize1Options)),
-            boreSize2Options: arrayUnion(...Array.from(newMetadata.boreSize2Options)),
+          categories: arrayUnion(...Array.from(newMetadata.categories)),
+          suppliers: arrayUnion(...Array.from(newMetadata.suppliers)),
+          materialGrades: arrayUnion(...Array.from(newMetadata.materialGrades)),
+          boreSize1Options: arrayUnion(
+            ...Array.from(newMetadata.boreSize1Options),
+          ),
+          boreSize2Options: arrayUnion(
+            ...Array.from(newMetadata.boreSize2Options),
+          ),
         })
         .commit();
-      
-      toast.loading('Metadata updated. Now uploading materials...', { id: toastId });
+
+      toast.loading('Metadata updated. Now uploading materials...', {
+        id: toastId,
+      });
 
       // NEW: Chunking logic for materials
       const BATCH_SIZE = 499; // Firestore limit is 500 writes per batch
@@ -95,7 +122,7 @@ const ImportCSV = () => {
         const chunk = data.slice(i, i + BATCH_SIZE);
         const batch = writeBatch(db);
 
-        chunk.forEach(row => {
+        chunk.forEach((row) => {
           const newMaterialRef = doc(materialsCollectionRef);
           const materialData = {
             description: row.Description || '',
@@ -112,16 +139,17 @@ const ImportCSV = () => {
           };
           batch.set(newMaterialRef, materialData);
         });
-        
+
         batchPromises.push(batch.commit());
       }
 
       await Promise.all(batchPromises);
 
-      toast.success(`Successfully imported ${data.length} materials!`, { id: toastId });
-
+      toast.success(`Successfully imported ${data.length} materials!`, {
+        id: toastId,
+      });
     } catch (error) {
-      console.error("Import failed: ", error);
+      console.error('Import failed: ', error);
       toast.error(`Import failed: ${error.message}`, { id: toastId });
     } finally {
       setIsImporting(false);
@@ -143,14 +171,14 @@ const ImportCSV = () => {
         onClick={() => fileInputRef.current.click()}
         disabled={isImporting}
         className={clsx(
-            "bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 transition-colors",
-            isImporting && "bg-gray-400 cursor-not-allowed"
+          'bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 transition-colors',
+          isImporting && 'bg-gray-400 cursor-not-allowed',
         )}
       >
         {isImporting ? (
-            <LoaderCircle className="animate-spin h-5 w-5" />
+          <LoaderCircle className="animate-spin h-5 w-5" />
         ) : (
-            <Upload className="h-5 w-5" />
+          <Upload className="h-5 w-5" />
         )}
         <span>Import CSV</span>
       </button>

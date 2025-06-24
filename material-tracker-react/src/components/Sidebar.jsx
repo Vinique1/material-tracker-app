@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { useAuth } from "../context/authContext";
-import { useLayout } from "../context/LayoutContext";
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/authContext';
+import { useLayout } from '../context/LayoutContext';
 import {
   Box,
   Building,
@@ -14,8 +14,8 @@ import {
   MinusCircle,
   AlertCircle,
   Scale,
-} from "lucide-react";
-import clsx from "clsx";
+} from 'lucide-react';
+import clsx from 'clsx';
 
 const Sidebar = () => {
   const { appMetadata } = useAuth();
@@ -24,24 +24,24 @@ const Sidebar = () => {
   const [suppliersOpen, setSuppliersOpen] = useState(false);
 
   const linkClass =
-    "flex items-center p-3 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white transition-colors w-full";
-  const activeLinkClass = "bg-blue-700 text-white";
+    'flex items-center p-3 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white transition-colors w-full';
+  const activeLinkClass = 'bg-blue-700 text-white';
   const childLinkClass = `flex items-center py-2 px-3 text-sm rounded-md hover:text-white transition-colors ${
-    isSidebarCollapsed ? "justify-center" : "ml-6"
+    isSidebarCollapsed ? 'justify-center' : 'ml-6'
   }`;
 
   return (
     <div
       className={clsx(
-        "flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden", // MODIFIED: Added dark background
-        isSidebarCollapsed ? "w-20" : "w-64"
+        'flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden', // MODIFIED: Added dark background
+        isSidebarCollapsed ? 'w-20' : 'w-64',
       )}
     >
       {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
       <div
         className={clsx(
-          "flex items-center h-20 border-b border-gray-700 flex-shrink-0",
-          isSidebarCollapsed ? "justify-center" : "px-4 justify-start"
+          'flex items-center h-20 border-b border-gray-700 flex-shrink-0',
+          isSidebarCollapsed ? 'justify-center' : 'px-4 justify-start',
         )}
       >
         <img
@@ -63,7 +63,7 @@ const Sidebar = () => {
               !isSidebarCollapsed && setDashboardOpen(!dashboardOpen)
             }
             className={`${linkClass} ${
-              isSidebarCollapsed ? "justify-center" : "justify-between"
+              isSidebarCollapsed ? 'justify-center' : 'justify-between'
             }`}
             title="Dashboard"
           >
@@ -85,14 +85,14 @@ const Sidebar = () => {
               to="/"
               className={({ isActive }) =>
                 `${childLinkClass} ml-0 ${
-                  isActive ? "text-white" : "text-gray-400"
+                  isActive ? 'text-white' : 'text-gray-400'
                 }`
               }
               end
               title="All Materials"
             >
               All Materials
-            </NavLink>{" "}
+            </NavLink>{' '}
             {/* MODIFIED: Added dark text */}
             {appMetadata.categories?.sort().map((cat) => (
               <NavLink
@@ -101,11 +101,11 @@ const Sidebar = () => {
                 title={cat}
                 className={({ isActive }) =>
                   `${childLinkClass} ml-0 ${
-                    isActive ? "text-white" : "text-gray-400"
+                    isActive ? 'text-white' : 'text-gray-400'
                   }`
                 }
               >
-                {" "}
+                {' '}
                 {/* MODIFIED: Added dark text */}
                 <Box size={16} className="mr-3 flex-shrink-0" />
                 <span className="truncate">{cat}</span>
@@ -120,7 +120,7 @@ const Sidebar = () => {
               !isSidebarCollapsed && setSuppliersOpen(!suppliersOpen)
             }
             className={`${linkClass} ${
-              isSidebarCollapsed ? "justify-center" : "justify-between"
+              isSidebarCollapsed ? 'justify-center' : 'justify-between'
             }`}
             title="Suppliers"
           >
@@ -145,11 +145,11 @@ const Sidebar = () => {
                 title={sup}
                 className={({ isActive }) =>
                   `${childLinkClass} ml-0 ${
-                    isActive ? "text-white" : "text-gray-400"
+                    isActive ? 'text-white' : 'text-gray-400'
                   }`
                 }
               >
-                {" "}
+                {' '}
                 {/* MODIFIED: Added dark text */}
                 <span className="truncate">{sup}</span>
               </NavLink>
@@ -162,8 +162,8 @@ const Sidebar = () => {
             to="/delivery-log"
             title="Delivery Log"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -174,8 +174,8 @@ const Sidebar = () => {
             to="/issuance-log"
             title="Issuance Log"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -189,8 +189,8 @@ const Sidebar = () => {
             to="/balanced-materials"
             title="Balanced Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -203,8 +203,8 @@ const Sidebar = () => {
             to="/status/surplus"
             title="Surplus Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -217,8 +217,8 @@ const Sidebar = () => {
             to="/status/deficit"
             title="Deficit Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >
@@ -231,8 +231,8 @@ const Sidebar = () => {
             to="/status/exact"
             title="Exact Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
           >

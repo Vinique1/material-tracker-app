@@ -23,7 +23,9 @@ export const ThemeProvider = ({ children }) => {
     root.classList.remove('light', 'dark');
 
     if (theme === 'system') {
-      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDarkMode = window.matchMedia(
+        '(prefers-color-scheme: dark)',
+      ).matches;
       root.classList.add(prefersDarkMode ? 'dark' : 'light');
     } else {
       root.classList.add(theme);
