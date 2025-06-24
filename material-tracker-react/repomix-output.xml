@@ -110,15 +110,15 @@ graphic3.png,1750541927755,94a6d89d84f47305d00403a201cd43a36389c760412bc32e6deff
 graphic2.png,1750541927755,2e512b34db88ed39c52d00eed81ce5e2cfc134e8ce7e38761b2d9afe4b8dc17e
 graphic1.png,1750541927739,4f9ebcb3e5cee6bd416f6cd64305fb7b32f89a62190289c522e0fb7b17a77f7f
 Background (2).jpg,1750541927666,48ac255e04d9e26bca0ecdfb0f45c811dad88aa42d88989b7ce8923e74a46cec
-index.html,1750753362044,fa30d6d48d6085e86390f28079f4d4808792519b7b7218f638cc215855a7645c
-assets/purify.es-CQJ0hv7W.js,1750753362044,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
-assets/MaterialListPage-k8V9faLC.js,1750753362042,6c9de874aeb37527b8db7dd3389b9eb4ad12954e15b66ba4cf164e886f15a67d
-assets/index-FqfMdoVz.css,1750753362033,097de65a848feb77a87628eea9e884944797b44277246832c80675a941d1d673
-assets/Pagination-BblXdSGM.js,1750753362043,cdb0c6cd7c4395fe1aea1b2dfe4069597a2e638a1cfcf70429f1884c2e1c699b
-assets/index.es-B14Nhn-u.js,1750753362045,6571c23c7227372ae8a59b7a1fe31372385dbb90c4b5602aee275807f8438c7d
-assets/html2canvas.esm-CBrSDip1.js,1750753362044,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
-assets/LogPage-BkJtV85W.js,1750753362043,5c5f9e762fcb9ca3884d138289c39a480f216c070623df030993ff21e2ab2727
-assets/index-C3eL4ZaR.js,1750753362045,348a02ecc0978b4ee7c5fd6ff461d414aebde289aa4162df1ee864bf800b5e90
+index.html,1750765621801,4f448de84bd47735e2ba78babf30e391fdbdf2a9edfce6b43d509e1322ddb401
+assets/purify.es-CQJ0hv7W.js,1750765621801,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
+assets/MaterialListPage-DoIplUEW.js,1750765621801,5dd365fa4bc4c0d92c52ddfa52c688b9473f3016ee0d87988d21978eac0663cb
+assets/index-D7A501zX.css,1750765621799,d47453d2009e904853125bbafed85773db1b371431021bf5143359838219b483
+assets/index.es-YE_PfMmB.js,1750765621801,25ffe1b3637fd1a4fd01ef8270cd4279da3b74e9ffd2594a80d0b07e56775d3b
+assets/html2canvas.esm-CBrSDip1.js,1750765621801,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
+assets/Pagination-DJXA9QlW.js,1750765621801,45b7e965ee72603e1b11a3dbf844fef8c7bcf5fa9b5b268ae017aa51fbcb41f1
+assets/LogPage-PekxJba9.js,1750765621801,ebe176a8fbda483ef0573b723c33302304fabc9b2478f447cb3f990394f09141
+assets/index-IYuhyNXq.js,1750765621804,f0691d68a355807e386e2b567e4b7ce846beac8f2c0d0500d9914cf33af81313
 </file>
 
 <file path=".firebaserc">
@@ -3426,7 +3426,7 @@ const Sidebar = () => {
     <div
       className={clsx(
         'flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden', // MODIFIED: Added dark background
-        isSidebarCollapsed ? 'w-20' : 'w-64',
+        isSidebarCollapsed ? 'w20' : 'w-64',
       )}
     >
       {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
@@ -3448,7 +3448,7 @@ const Sidebar = () => {
         )}
       </div>
 
-      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+      <nav className={clsx('flex-1 px-4 py-4 space-y-1 overflow-y-auto', isSidebarCollapsed && 'border-r border-r-gray-700')}>
         <div>
           <button
             onClick={() =>
@@ -3991,7 +3991,7 @@ const MainLayout = () => {
     <div className="relative h-screen bg-white dark:bg-gray-900">
       <div
         className={`grid h-full transition-all duration-300 ${
-          isSidebarCollapsed ? 'grid-cols-[80px_1fr]' : 'grid-cols-[256px_1fr]'
+          isSidebarCollapsed ? 'grid-cols-[60px_1fr]' : 'grid-cols-[256px_1fr]'
         }`}
       >
         <Sidebar />
@@ -4007,7 +4007,7 @@ const MainLayout = () => {
       <div
         className={clsx(
           'absolute top-[15%] -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out z-30 -translate-x-1/2 bg-white dark:bg-gray-800 opacity-90',
-          isSidebarCollapsed ? 'left-[80px]' : 'left-[256px]',
+          isSidebarCollapsed ? 'left-[60px]' : 'left-[256px]',
           'glow',
         )}
       >
