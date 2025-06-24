@@ -66,9 +66,9 @@ const LogPage = ({ type }) => {
 
     let q = query(logCollectionRef, orderBy('date', 'desc'));
 
-    if (selectedCategory !== 'all') { q = query(q, where('category', '==', selectedCategory)); }
-    if (selectedSupplier !== 'all') { q = query(q, where('supplier', '==', selectedSupplier)); }
-    
+    // This diagnostic client-side filtering logic remains for now
+    // In a production environment, this would be reverted to server-side with indexes
+
     if (selectedDate === 'custom' && startDate && endDate) {
       const start = Timestamp.fromDate(new Date(startDate));
       const end = Timestamp.fromDate(new Date(endDate + 'T23:59:59'));
@@ -88,13 +88,27 @@ const LogPage = ({ type }) => {
     });
 
     return () => unsubscribe();
-  }, [currentUser, currentConfig.collectionName, type, selectedDate, startDate, endDate, selectedCategory, selectedSupplier]);
+  }, [currentUser, currentConfig.collectionName, type, selectedDate, startDate, endDate]);
+
+  // Client-side filtering for category and supplier
+  const filteredLogs = useMemo(() => {
+    return allLogs.filter(log => {
+      const categoryMatch = selectedCategory === 'all' || 
+        (log.category || '').toLowerCase().trim() === selectedCategory.toLowerCase().trim();
+      const supplierMatch = selectedSupplier === 'all' || 
+        (log.supplier || '').toLowerCase().trim() === selectedSupplier.toLowerCase().trim();
+      return categoryMatch && supplierMatch;
+    });
+  }, [allLogs, selectedCategory, selectedSupplier]);
 
   const searchedLogs = useMemo(() => {
-    return allLogs.filter(log => 
-      (log.materialDescription || '').toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [allLogs, searchTerm]);
+    if (!searchTerm) return filteredLogs;
+    const searchKeywords = searchTerm.toLowerCase().split(' ').filter(kw => kw.trim() !== '');
+    return filteredLogs.filter(log => {
+      const descriptionText = (log.materialDescription || '').toLowerCase();
+      return searchKeywords.every(kw => descriptionText.includes(kw));
+    });
+  }, [filteredLogs, searchTerm]);
 
   const paginatedLogs = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;

@@ -4,7 +4,7 @@ import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { collection, doc, runTransaction, serverTimestamp, query, getDocs, Timestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
-import { X, LoaderCircle, ChevronsUpDown, Check, Layers, Maximize2 } from 'lucide-react';
+import { X, LoaderCircle, ChevronsUpDown, Check, Layers, Maximize2, Hash, CheckCircle } from 'lucide-react';
 import { Combobox, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 
@@ -14,12 +14,10 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
   const [quantity, setQuantity] = useState(log?.quantity || '');
   const [remarks, setRemarks] = useState(log?.remarks || '');
   
-  // Helper function to safely get the initial date string
   const getInitialDateString = () => {
-    if (log?.date?.toDate) { // Check if it's a Timestamp with a .toDate() method
+    if (log?.date?.toDate) {
       return log.date.toDate().toISOString().split('T')[0];
     }
-    // Default for new logs
     return new Date().toISOString().split('T')[0];
   };
 
@@ -29,12 +27,11 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
   const [materialQuery, setMaterialQuery] = useState('');
   const [quantityStep, setQuantityStep] = useState(1);
 
-  // Create a memoized list of materials suitable for the dropdown
   const materialsForDropdown = useMemo(() => {
     if (!allMaterials) return [];
     return allMaterials.map(m => ({
       ...m,
-      label: m.description || 'No Description' // Create the 'label' property
+      label: m.description || 'No Description'
     }));
   }, [allMaterials]);
 
@@ -48,8 +45,16 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
   useEffect(() => {
     setQuantityStep(selectedMaterial?.category?.toLowerCase() === 'pipes' ? 0.01 : 1);
   }, [selectedMaterial]);
+  
+  const filteredMaterials = useMemo(() => {
+    if (!materialQuery) return materialsForDropdown;
+    const searchKeywords = materialQuery.toLowerCase().split(' ').filter(kw => kw.trim() !== '');
+    return materialsForDropdown.filter(material => {
+        const labelText = (material.label || '').toLowerCase();
+        return searchKeywords.every(kw => labelText.includes(kw));
+    });
+  }, [materialsForDropdown, materialQuery]);
 
-  const filteredMaterials = materialQuery === '' ? materialsForDropdown : materialsForDropdown.filter(m => m.label.toLowerCase().includes(materialQuery.toLowerCase()));
   const issuanceOptions = type === 'issuance' ? filteredMaterials.filter(m => (m.delivered || 0) > (m.issued || 0)) : filteredMaterials;
 
   const runLogTransaction = async () => {
@@ -81,7 +86,7 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
           supplier: selectedMaterial.supplier,
           quantity: numQuantity,
           remarks,
-          date: Timestamp.fromDate(new Date(logDate)), // Save as a proper Timestamp
+          date: Timestamp.fromDate(new Date(logDate)),
           lastEditedBy: currentUser.email,
           lastEditedAt: serverTimestamp(),
         };
@@ -138,7 +143,14 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
                 )}
               </Combobox>
             </div>
-            {selectedMaterial && (<div className="grid grid-cols-3 gap-4 p-3 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600 text-sm"><div className="flex items-center gap-2"><Layers size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">Grade: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.materialGrade}</span></div></div><div className="flex items-center gap-2"><Maximize2 size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">Bore 1: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.boreSize1}</span></div></div><div className="flex items-center gap-2"><Maximize2 size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">Bore 2: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.boreSize2 || 'N/A'}</span></div></div></div>)}
+            {selectedMaterial && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-3 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600 text-sm">
+                <div className="flex items-center gap-2"><Hash size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">QE: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.expectedQty || 0}</span></div></div>
+                <div className="flex items-center gap-2"><CheckCircle size={14} className="text-green-500" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">QD: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.delivered || 0}</span></div></div>
+                <div className="flex items-center gap-2"><Layers size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">Grade: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.materialGrade}</span></div></div>
+                <div className="flex items-center gap-2"><Maximize2 size={14} className="text-gray-500 dark:text-gray-400" /><div><span className="font-semibold text-gray-800 dark:text-gray-200">Bore: </span><span className="text-gray-600 dark:text-gray-300">{selectedMaterial.boreSize1}</span></div></div>
+              </div>
+            )}
             <div>
               <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity</label>
               <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(e.target.value)} step={quantityStep} className="w-full h-11 px-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm" min={quantityStep > 0.01 ? 1 : 0.01} />
