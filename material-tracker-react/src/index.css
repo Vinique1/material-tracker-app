@@ -1,13 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
-/* NEW: This defines the 'dark' variant to apply when the 'dark' class is present on the html element */
 @custom-variant dark (&:where(.dark, .dark *));
 
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 @keyframes spreadFade {
   0% {
@@ -23,4 +20,54 @@ body {
 
 .glow {
   animation: spreadFade 2s infinite ease-out;
+}
+
+/* --- NEW: THEME-AWARE SCROLLBAR STYLES --- */
+@layer utilities {
+  /* For modern browsers like Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    /* This makes the track background transparent as requested */
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    /* Default light-mode thumb color */
+    @apply bg-slate-300;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    /* A slightly darker color on hover for better affordance */
+    @apply bg-slate-400;
+  }
+
+  /* --- Dark Mode Styles for Webkit --- */
+  .dark *::-webkit-scrollbar-thumb {
+    /* Dark mode thumb color */
+    @apply bg-slate-600;
+  }
+
+  .dark *::-webkit-scrollbar-thumb:hover {
+    /* A slightly lighter color on hover for dark mode */
+    @apply bg-slate-500;
+  }
+
+  /* --- Fallback for Firefox --- */
+  * {
+    /* Defines a thin scrollbar and sets the thumb/track colors */
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.slate.300') transparent;
+  }
+
+  .dark * {
+     /* Defines Firefox scrollbar colors for dark mode */
+    scrollbar-color: theme('colors.slate.600') transparent;
+  }
 }
