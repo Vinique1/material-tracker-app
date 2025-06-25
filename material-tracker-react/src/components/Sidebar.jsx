@@ -35,7 +35,7 @@ const Sidebar = () => {
     <div
       className={clsx(
         'flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden', // MODIFIED: Added dark background
-        isSidebarCollapsed ? 'w20' : 'w-64',
+        isSidebarCollapsed ? 'w-20' : 'w-64',
       )}
     >
       {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
@@ -57,7 +57,7 @@ const Sidebar = () => {
         )}
       </div>
 
-      <nav className={clsx('flex-1 px-4 py-4 space-y-1 overflow-y-auto', isSidebarCollapsed && 'border-r border-r-gray-700')}>
+      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
         <div>
           <button
             onClick={() =>

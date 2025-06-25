@@ -14,7 +14,7 @@ const MainLayout = () => {
     <div className="relative h-screen bg-white dark:bg-gray-900">
       <div
         className={`grid h-full transition-all duration-300 ${
-          isSidebarCollapsed ? 'grid-cols-[60px_1fr]' : 'grid-cols-[256px_1fr]'
+          isSidebarCollapsed ? 'grid-cols-[80px_1fr]' : 'grid-cols-[256px_1fr]'
         }`}
       >
         <Sidebar />
@@ -30,7 +30,7 @@ const MainLayout = () => {
       <div
         className={clsx(
           'absolute top-[15%] -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out z-30 -translate-x-1/2 bg-white dark:bg-gray-800 opacity-90',
-          isSidebarCollapsed ? 'left-[60px]' : 'left-[256px]',
+          isSidebarCollapsed ? 'left-[80px]' : 'left-[256px]',
           'glow',
         )}
       >
