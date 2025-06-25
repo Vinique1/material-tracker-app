@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import toast from 'react-hot-toast';
 import { FileDown, LoaderCircle, Eye, X } from 'lucide-react';
+import MaterialInspectionReport from './NewReportPage';
 
 // A new component for the preview modal
 const PreviewModal = ({ data, onClose, onDownload, isLoadingDownload }) => {
@@ -69,12 +70,43 @@ const ReportsPage = () => {
     }
   };
 
+
   const handleDownload = async () => {
     setIsLoadingDownload(true);
     const toastId = toast.loading('Generating report...');
-    // ... download logic from previous step ...
-    setIsLoadingDownload(false);
-  };
+    try {
+      const functions = getFunctions();
+      const generateReport = httpsCallable(functions, 'generateInspectionReport');
+      const result = await generateReport({ reportDate });
+
+      // Decode the Base64 string from the function's response
+      const base64 = result.data.fileBuffer;
+      const byteCharacters = atob(base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      
+      // Create a temporary link to trigger the browser download
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Inspection_Report_${reportDate}.xlsx`; 
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success('Report downloaded successfully!', { id: toastId });
+      setPreviewData(null); // Close the preview modal on successful download
+
+    } catch (error) {
+              console.error("Error generating report:", error);
+        toast.error(error.message || 'Failed to generate report.', { id: toastId });
+    } finally {
+        setIsLoadingDownload(false);
+    }
+  };
   
   return (
     <>
@@ -100,6 +132,8 @@ const ReportsPage = () => {
           isLoadingDownload={isLoadingDownload}
         />
       )}
+        <MaterialInspectionReport/>
+
     </>
   );
 };
