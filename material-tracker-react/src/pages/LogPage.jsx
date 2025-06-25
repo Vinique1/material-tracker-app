@@ -18,7 +18,8 @@ import 'jspdf-autotable';
 import LogForm from '../components/LogForm';
 import LogTable from '../components/LogTable';
 import Pagination from '../components/Pagination';
-import { Download, Upload, FileDown, Plus, Search, X } from 'lucide-react';
+import { Download, Upload, FileDown, Plus, Search, X, Printer } from 'lucide-react';
+import { exportToMir } from '../utils/exportToMir'; // Import our new function
 
 const ITEMS_PER_PAGE = 10;
 
@@ -215,6 +216,22 @@ const LogPage = ({ type }) => {
     }
   };
 
+  const handleExportMir = () => {
+    if (searchedLogs.length === 0) {
+      toast.error('No logs selected to export in MIR format.');
+      return;
+    }
+    
+    // You can gather these details from a form or use the current filter state
+    const reportDetails = {
+      sheetNo: 1, // Example
+      date: selectedDate !== 'all' ? selectedDate : new Date().toISOString().split('T')[0],
+      docNo: 'SITSL/GBARAN/25/QMS/MIR/002' // Example
+    };
+    
+    exportToMir(searchedLogs, reportDetails);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center flex-wrap gap-4">
@@ -366,6 +383,19 @@ const LogPage = ({ type }) => {
           >
             <FileDown size={16} /> PDF
           </button>
+
+         {/* ---- ADD THIS NEW BUTTON ---- */}
+         {type === 'delivery' && (
+             <button
+              onClick={handleExportMir}
+              disabled={searchedLogs.length === 0}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 disabled:opacity-50"
+              title="Export current view to MIR Excel format"
+             >
+              <Printer size={16} /> MIR
+             </button>
+        )}
+
         </div>
       </div>
 
