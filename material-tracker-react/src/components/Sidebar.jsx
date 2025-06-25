@@ -14,7 +14,6 @@ import {
   MinusCircle,
   AlertCircle,
   Scale,
-  FileDown
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -241,14 +240,6 @@ const Sidebar = () => {
             {!isSidebarCollapsed && (
               <span className="ml-4">Exact Materials</span>
             )}
-          </NavLink>
-          <NavLink
-            to="/reports"
-            title="Generate Reports"
-            className={({ isActive }) => `${linkClass} ${isActive ? activeLinkClass : ''} ${isSidebarCollapsed ? 'justify-center' : ''}`}
-          >
-            <FileDown size={20} className="flex-shrink-0 text-purple-400" />
-            {!isSidebarCollapsed && <span className="ml-4">Reports</span>}
           </NavLink>
         </div>
       </nav>

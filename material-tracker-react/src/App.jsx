@@ -9,8 +9,6 @@ import Loading from './components/Loading'; // NEW: Import the loading component
 // NEW: Convert static imports to dynamic imports for lazy loading
 const MaterialListPage = lazy(() => import('./pages/MaterialListPage'));
 const LogPage = lazy(() => import('./pages/LogPage'));
-const ReportsPage = lazy(() => import('./pages/ReportsPage'));
-
 
 const App = () => {
   return (
@@ -52,7 +50,6 @@ const AppRoutes = () => {
           <Route path="delivery-log" element={<LogPage type="delivery" />} />
           <Route path="issuance-log" element={<LogPage type="issuance" />} />
           <Route path="balanced-materials" element={<MaterialListPage />} />
-          <Route path="reports" element={<ReportsPage />} />
         </Route>
       </Routes>
     </Suspense>
