@@ -49,10 +49,6 @@ __mocks__/firebase.js
 babel.config.cjs
 eslint.config.js
 firebase.json
-functions/.eslintrc.js
-functions/.gitignore
-functions/index.js
-functions/package.json
 index.html
 jest.config.cjs
 package.json
@@ -90,7 +86,6 @@ src/layouts/MainLayout.jsx
 src/main.jsx
 src/pages/LogPage.jsx
 src/pages/MaterialListPage.jsx
-src/pages/ReportsPage.jsx
 src/setupTests.js
 src/ui/Button.jsx
 src/ui/Button.stories.jsx
@@ -265,280 +260,14 @@ export default [
 {
   "hosting": {
     "public": "dist",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
         "destination": "/index.html"
       }
     ]
-  },
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "*.local"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint"
-      ]
-    }
-  ]
-}
-</file>
-
-<file path="functions/.eslintrc.js">
-module.exports = {
-  root: true,
-  env: {
-    es2021: true,
-    node: true,
-  },
-  extends: [
-    "eslint:recommended",
-    "google",
-  ],
-  rules: {
-    quotes: ["error", "double"],
-    "max-len": ["error", { "code": 120 }],
-  },
-  parserOptions: {
-    ecmaVersion: "latest",
-  },
-};
-</file>
-
-<file path="functions/.gitignore">
-node_modules/
-*.local
-</file>
-
-<file path="functions/index.js">
-const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const { logger } = require("firebase-functions");
-const admin = require("firebase-admin");
-const ExcelJS = require("exceljs");
-const axios = require("axios");
-
-// Initialize the Admin SDK only if it hasn't been already.
-// This is the best practice to avoid deployment timeouts.
-if (admin.apps.length === 0) {
-  admin.initializeApp();
-}
-
-const db = admin.firestore();
-
-// Helper function to fetch an image from a URL and return a buffer
-const getImageBuffer = async (url) => {
-  try {
-    const response = await axios.get(url, { responseType: "arraybuffer" });
-    return Buffer.from(response.data, "binary");
-  } catch (error) {
-    logger.error(`Failed to fetch image at URL: ${url}`, error.message);
-    return null; // Return null if image fails to download
   }
-};
-
-exports.getReportPreviewData = onCall({ timeoutSeconds: 120 }, async (request) => {
-    if (!request.auth) {
-        throw new HttpsError("unauthenticated", "You must be logged in.");
-    }
-    const { reportDate } = request.data;
-    if (!reportDate) {
-        throw new HttpsError("invalid-argument", "A report date must be provided.");
-    }
-
-    try {
-        const startOfDay = new Date(`${reportDate}T00:00:00`);
-        const endOfDay = new Date(`${reportDate}T23:59:59`);
-        
-        const deliveryLogsPromise = db.collection("delivery_logs").where("date", ">=", startOfDay).where("date", "<=", endOfDay).get();
-        const issuanceLogsPromise = db.collection("issuance_logs").where("date", ">=", startOfDay).where("date", "<=", endOfDay).get();
-        
-        const [deliverySnapshot, issuanceSnapshot] = await Promise.all([deliveryLogsPromise, issuanceLogsPromise]);
-        
-        const allLogs = [
-            ...deliverySnapshot.docs.map(doc => ({...doc.data(), type: 'DELIVERED'})),
-            ...issuanceSnapshot.docs.map(doc => ({...doc.data(), type: 'ISSUED'}))
-        ];
-
-        if (allLogs.length === 0) {
-            return { reportData: [] };
-        }
-
-        const reportData = allLogs.map((log, index) => ({
-            sn: index + 1,
-            description: log.materialDescription,
-            qty: log.quantity,
-            type: log.type,
-            remarks: log.remarks || "N/A",
-        }));
-        
-        return { reportData };
-    } catch (error) {
-        logger.error("Preview data fetch failed:", error);
-        throw new HttpsError("internal", "Failed to fetch preview data.");
-    }
-});
-
-exports.generateInspectionReport = onCall({ timeoutSeconds: 300 }, async (request) => {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "You must be logged in.");
-  }
-  const { reportDate } = request.data;
-  if (!reportDate) {
-    throw new HttpsError("invalid-argument", "A report date must be provided.");
-  }
-
-  try {
-    const startOfDay = new Date(`${reportDate}T00:00:00`);
-    const endOfDay = new Date(`${reportDate}T23:59:59`);
-    
-    const deliveryLogsPromise = db.collection("delivery_logs").where("date", ">=", startOfDay).where("date", "<=", endOfDay).get();
-    const issuanceLogsPromise = db.collection("issuance_logs").where("date", ">=", startOfDay).where("date", "<=", endOfDay).get();
-    
-    const [deliverySnapshot, issuanceSnapshot] = await Promise.all([deliveryLogsPromise, issuanceLogsPromise]);
-    
-    const allLogs = [
-        ...deliverySnapshot.docs.map(doc => ({...doc.data(), type: 'DELIVERED'})),
-        ...issuanceSnapshot.docs.map(doc => ({...doc.data(), type: 'ISSUED'}))
-    ];
-
-    if (allLogs.length === 0) {
-        throw new HttpsError("not-found", "No data found for the selected date.");
-    }
-
-    const reportData = allLogs.map((log, index) => ({
-        sn: index + 1,
-        description: log.materialDescription || "N/A",
-        uom: (log.category || "").toLowerCase() === "pipes" ? "metres" : "pcs",
-        matSapNo: "N/A",
-        qty: log.quantity,
-        type: log.type,
-        remarks: log.remarks || "N/A",
-        supplier: log.supplier,
-    }));
-
-    const supplierCounts = reportData.reduce((acc, curr) => {
-      if (curr.supplier) acc[curr.supplier] = (acc[curr.supplier] || 0) + 1;
-      return acc;
-    }, {});
-    
-    let topSupplier = "N/A";
-    if (Object.keys(supplierCounts).length > 0) {
-        topSupplier = Object.keys(supplierCounts).reduce((a, b) => supplierCounts[a] > supplierCounts[b] ? a : b);
-    }
-
-    const workbook = new ExcelJS.Workbook();
-    workbook.properties.defaultFont = { name: 'Arial', size: 10 };
-
-    const sheet = workbook.addWorksheet("Inspection Report");
-
-    const companyLogoUrl = "https://firebasestorage.googleapis.com/v0/b/sitsl-inventory-tracker.firebasestorage.app/o/Steve%20Logo.png?alt=media&token=6ee962df-2798-4b7a-81e4-311075a408b1";
-    const clientLogoUrl = "https://firebasestorage.googleapis.com/v0/b/sitsl-inventory-tracker.firebasestorage.app/o/RENAISSANCE.jpg?alt=media&token=4167eee0-35f1-490f-96b1-fe4b61b4a998";
-    const signatureUrl = "https://firebasestorage.googleapis.com/v0/b/sitsl-inventory-tracker.firebasestorage.app/o/%5Bremoval.ai%5D_2c718afe-a296-4f4c-b20f-8cc641347c30-20240229_164012_0QZH4H.png?alt=media&token=e98ffcad-5bf5-4c40-8c58-23dbecbb1e8d";
-    
-    const [companyLogoBuffer, clientLogoBuffer, signatureBuffer] = await Promise.all([
-      getImageBuffer(companyLogoUrl),
-      getImageBuffer(clientLogoUrl),
-      getImageBuffer(signatureUrl),
-    ]);
-
-    if (companyLogoBuffer) {
-        const companyLogoImgId = workbook.addImage({ buffer: companyLogoBuffer, extension: "png" });
-        sheet.addImage(companyLogoImgId, "A1:B3");
-    }
-    if (clientLogoBuffer) {
-        const clientLogoImgId = workbook.addImage({ buffer: clientLogoBuffer, extension: "jpeg" });
-        sheet.addImage(clientLogoImgId, "H1:I3");
-    }
-    
-    sheet.mergeCells("C1:G2");
-    sheet.getCell("C1").value = "GBARAN MATERIALS INSPECTION REPORT";
-    sheet.getCell("C1").alignment = { vertical: "middle", horizontal: "center" };
-    sheet.getCell("C1").font = { bold: true, size: 16 };
-
-    sheet.mergeCells("C3:G3");
-    sheet.getCell("C3").value = `DATE: ${reportDate}`;
-    sheet.getCell("C3").alignment = { horizontal: "center" };
-    sheet.getCell("C3").font = { bold: true };
-    
-    sheet.getCell("I1").value = "CONTRACT NO:";
-    sheet.getCell("I2").value = "SHEET NO:";
-    sheet.getCell("I3").value = "DOC NO:";
-
-    const columns = [
-        { header: 'S/N', key: 'sn', width: 5 },
-        { header: 'DESCRIPTION', key: 'description', width: 40 },
-        { header: 'UOM', key: 'uom', width: 10 },
-        { header: 'MAT. SAP NO.', key: 'matSapNo', width: 15 },
-        { header: 'QTY', key: 'qty', width: 15 },
-        { header: 'TYPE', key: 'type', width: 15 },
-        { header: 'REMARKS', key: 'remarks', width: 30 },
-    ];
-    sheet.columns = columns;
-    sheet.getRow(5).font = { bold: true };
-    sheet.getRow(5).alignment = { horizontal: "center" };
-
-    sheet.addRows(reportData);
-    
-    const lastRow = sheet.lastRow ? sheet.lastRow.number : 6;
-    if (signatureBuffer) {
-        const signatureImageId = workbook.addImage({ buffer: signatureBuffer, extension: "png" });
-        sheet.addImage(signatureImageId, { tl: { col: 1, row: lastRow + 2 }, ext: { width: 100, height: 40 } });
-    }
-    sheet.getCell(`B${lastRow + 5}`).value = "___________________\nTechnip Inspector";
-    
-    sheet.getCell(`F${lastRow + 5}`).value = `witnessed by (${topSupplier})`;
-    sheet.getCell(`F${lastRow + 6}`).value = "___________________";
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    return { fileBuffer: buffer.toString("base64") };
-
-  } catch (error) {
-    logger.error("Report generation failed:", error);
-    throw new HttpsError("internal", error.message || "Failed to generate the report.");
-  }
-});
-</file>
-
-<file path="functions/package.json">
-{
-  "name": "functions",
-  "description": "Cloud Functions for Firebase",
-  "scripts": {
-    "lint": "echo 'Lint check temporarily bypassed' && exit 0",
-    "serve": "firebase emulators:start --only functions",
-    "shell": "firebase functions:shell",
-    "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
-  },
-  "engines": {
-    "node": "22"
-  },
-  "main": "index.js",
-  "dependencies": {
-    "axios": "^1.7.2",
-    "exceljs": "^4.4.0",
-    "firebase-admin": "^12.6.0",
-    "firebase-functions": "^6.0.1"
-  },
-  "devDependencies": {
-    "eslint": "^8.15.0",
-    "eslint-config-google": "^0.14.0",
-    "firebase-functions-test": "^3.1.0"
-  },
-  "private": true
 }
 </file>
 
@@ -721,8 +450,6 @@ import Loading from './components/Loading'; // NEW: Import the loading component
 // NEW: Convert static imports to dynamic imports for lazy loading
 const MaterialListPage = lazy(() => import('./pages/MaterialListPage'));
 const LogPage = lazy(() => import('./pages/LogPage'));
-const ReportsPage = lazy(() => import('./pages/ReportsPage'));
-
 
 const App = () => {
   return (
@@ -764,7 +491,6 @@ const AppRoutes = () => {
           <Route path="delivery-log" element={<LogPage type="delivery" />} />
           <Route path="issuance-log" element={<LogPage type="issuance" />} />
           <Route path="balanced-materials" element={<MaterialListPage />} />
-          <Route path="reports" element={<ReportsPage />} />
         </Route>
       </Routes>
     </Suspense>
@@ -3680,7 +3406,6 @@ import {
   MinusCircle,
   AlertCircle,
   Scale,
-  FileDown
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -3907,14 +3632,6 @@ const Sidebar = () => {
             {!isSidebarCollapsed && (
               <span className="ml-4">Exact Materials</span>
             )}
-          </NavLink>
-          <NavLink
-            to="/reports"
-            title="Generate Reports"
-            className={({ isActive }) => `${linkClass} ${isActive ? activeLinkClass : ''} ${isSidebarCollapsed ? 'justify-center' : ''}`}
-          >
-            <FileDown size={20} className="flex-shrink-0 text-purple-400" />
-            {!isSidebarCollapsed && <span className="ml-4">Reports</span>}
           </NavLink>
         </div>
       </nav>
@@ -4771,159 +4488,6 @@ const MaterialListPage = ({ statusFilter }) => {
 };
 
 export default MaterialListPage;
-</file>
-
-<file path="src/pages/ReportsPage.jsx">
-import React, { useState } from 'react';
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import toast from 'react-hot-toast';
-import { FileDown, LoaderCircle, Eye, X } from 'lucide-react';
-
-// The PreviewModal component remains the same.
-const PreviewModal = ({ data, onClose, onDownload, isLoadingDownload }) => {
-  return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-        <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
-          <h3 className="text-xl font-bold text-gray-800 dark:text-white">Report Data Preview</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-white"><X /></button>
-        </div>
-        <div className="p-4 overflow-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">S/N</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Description</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">QTY</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Type</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Remarks</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {data.map((row) => (
-                <tr key={row.sn}>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{row.sn}</td>
-                  <td className="px-4 py-2 text-sm text-gray-900 dark:text-white">{row.description}</td>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{row.qty}</td>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{row.type}</td>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{row.remarks}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="p-4 border-t dark:border-gray-700 flex justify-end gap-3">
-          <button onClick={onClose} className="px-6 py-2 text-sm font-semibold bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Close</button>
-          <button onClick={onDownload} disabled={isLoadingDownload} className="w-48 flex items-center justify-center gap-2 px-6 py-2 text-sm font-semibold text-white rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400">
-            {isLoadingDownload ? <><LoaderCircle className="animate-spin h-5 w-5" /> Downloading...</> : <><FileDown size={16} /> Download XLSX</>}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
-const ReportsPage = () => {
-  const [reportDate, setReportDate] = useState(new Date().toISOString().split('T')[0]);
-  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
-  const [isLoadingDownload, setIsLoadingDownload] = useState(false);
-  const [previewData, setPreviewData] = useState(null);
-
-  const handlePreview = async () => {
-    if (!reportDate) {
-      toast.error('Please select a date.');
-      return;
-    }
-    setIsLoadingPreview(true);
-    const toastId = toast.loading('Fetching preview data...');
-    try {
-      const functions = getFunctions();
-      const getPreview = httpsCallable(functions, 'getReportPreviewData');
-      const result = await getPreview({ reportDate });
-      
-      if (result.data.reportData.length === 0) {
-        toast.error('No data found for the selected date.', { id: toastId });
-        setPreviewData(null);
-      } else {
-        setPreviewData(result.data.reportData);
-        toast.success('Preview ready.', { id: toastId });
-      }
-    } catch (error) {
-      console.error("Error fetching preview:", error);
-      toast.error(error.message || 'Failed to get preview data.', { id: toastId });
-    } finally {
-      setIsLoadingPreview(false);
-    }
-  };
-
-  // MODIFIED: This function is now fully implemented.
-  const handleDownload = async () => {
-    setIsLoadingDownload(true);
-    const toastId = toast.loading('Generating report...');
-    try {
-      const functions = getFunctions();
-      const generateReport = httpsCallable(functions, 'generateInspectionReport');
-      const result = await generateReport({ reportDate });
-
-      // Decode the Base64 string from the function's response
-      const base64 = result.data.fileBuffer;
-      const byteCharacters = atob(base64);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      
-      // Create a temporary link to trigger the browser download
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `Inspection_Report_${reportDate}.xlsx`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      toast.success('Report downloaded successfully!', { id: toastId });
-      setPreviewData(null); // Close the preview modal on successful download
-
-    } catch (error) {
-        console.error("Error generating report:", error);
-        toast.error(error.message || 'Failed to generate report.', { id: toastId });
-    } finally {
-        setIsLoadingDownload(false);
-    }
-  };
-  
-  return (
-    <>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">Generate Inspection Report</h1>
-        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-md">
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="report-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Report Date</label>
-              <input type="date" id="report-date" value={reportDate} onChange={(e) => setReportDate(e.target.value)} className="w-full h-11 px-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm" />
-            </div>
-            <button onClick={handlePreview} disabled={isLoadingPreview} className="w-full flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md bg-green-600 hover:bg-green-700 disabled:bg-gray-400">
-              {isLoadingPreview ? <><LoaderCircle className="animate-spin h-5 w-5" /> Loading Preview...</> : <><Eye size={16} /> Preview Report</>}
-            </button>
-          </div>
-        </div>
-      </div>
-      {previewData && (
-        <PreviewModal 
-          data={previewData} 
-          onClose={() => setPreviewData(null)}
-          onDownload={handleDownload}
-          isLoadingDownload={isLoadingDownload}
-        />
-      )}
-    </>
-  );
-};
-
-export default ReportsPage;
 </file>
 
 <file path="src/setupTests.js">
