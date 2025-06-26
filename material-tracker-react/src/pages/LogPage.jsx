@@ -77,7 +77,9 @@ const LogPage = ({ type }) => {
   useEffect(() => {
     if (!currentUser) return;
     const logCollectionRef = collection(db, currentConfig.collectionName);
-    const q = query(logCollectionRef, orderBy('date', 'desc'));
+    // MODIFIED: Removed orderBy from here to comply with Firestore limitations if filtering is done client-side.
+    // If strict server-side ordering is needed, a composite index would be required.
+    const q = query(logCollectionRef);
 
     const unsubscribe = onSnapshot(
       q,
@@ -111,6 +113,14 @@ const LogPage = ({ type }) => {
 
   const filteredLogs = useMemo(() => {
     let logsToFilter = [...allLogs];
+
+    // Sort logs by date in descending order (client-side)
+    logsToFilter.sort((a, b) => {
+      const dateA = a.date?.toDate ? a.date.toDate().getTime() : 0;
+      const dateB = b.date?.toDate ? b.date.toDate().getTime() : 0;
+      return dateB - dateA; // Descending order
+    });
+
 
     if (selectedDate === 'custom' && startDate && endDate) {
       const start = new Date(startDate).getTime();
@@ -262,7 +272,7 @@ const LogPage = ({ type }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center flex-wrap gap-4">
+      <div className="flex justify-between items-center flex-wrap gap-4"> {/* MODIFIED: Added flex-wrap and gap */}
         <div className="flex items-center gap-4">
           <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow">
             {currentConfig.icon}
@@ -283,8 +293,9 @@ const LogPage = ({ type }) => {
       </div>
 
       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md space-y-4">
+        {/* MODIFIED: Changed grid columns for responsiveness */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
+          <div className="w-full"> {/* MODIFIED: Added w-full */}
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Filter by Category
             </label>
@@ -301,7 +312,7 @@ const LogPage = ({ type }) => {
               ))}
             </select>
           </div>
-          <div>
+          <div className="w-full"> {/* MODIFIED: Added w-full */}
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Filter by Supplier
             </label>
@@ -318,7 +329,7 @@ const LogPage = ({ type }) => {
               ))}
             </select>
           </div>
-          <div>
+          <div className="w-full"> {/* MODIFIED: Added w-full */}
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Filter by Date
             </label>
@@ -338,7 +349,7 @@ const LogPage = ({ type }) => {
           </div>
           {selectedDate === 'custom' && (
             <>
-              <div>
+              <div className="w-full"> {/* MODIFIED: Added w-full */}
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Start Date
                 </label>
@@ -349,7 +360,7 @@ const LogPage = ({ type }) => {
                   className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
-              <div>
+              <div className="w-full"> {/* MODIFIED: Added w-full */}
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   End Date
                 </label>
@@ -362,7 +373,8 @@ const LogPage = ({ type }) => {
               </div>
             </>
           )}
-          <div className="lg:col-start-4">
+          {/* MODIFIED: Adjusted column span for search on larger screens */}
+          <div className="md:col-span-2 lg:col-span-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Search Material
             </label>
@@ -391,7 +403,7 @@ const LogPage = ({ type }) => {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700"> {/* MODIFIED: Added flex-wrap and gap */}
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Export:
           </span>

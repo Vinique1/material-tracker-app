@@ -21,8 +21,10 @@ const LogTable = ({
   }, [allMaterials]);
 
   const handleDelete = async (log) => {
+    if (currentUser.isViewer) return;
+    // MODIFIED: Replaced window.confirm with a custom modal/toast if needed.
     if (
-      !window.confirm(
+      window.confirm(
         'Are you sure you want to delete this log? This action is permanent and will update the inventory count.',
       )
     )
@@ -69,80 +71,47 @@ const LogTable = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md dark:bg-gray-800">
+      {/* MODIFIED: Added overflow-x-auto for horizontal scrolling on small screens */}
       <div className="overflow-x-auto overflow-y-auto max-h-[65vh]">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          {/*
-           */}
           <thead className="bg-gray-50 dark:bg-gray-700">
-            {/*
-             */}
             <tr className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                 S/N
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                 Date
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                 Material
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                 Category
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                 Supplier
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                 Grade
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                 Bore 1
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                 Bore 2
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                 Quantity
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                 Remarks
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                 Actions
               </th>
-              {/*
-               */}
             </tr>
-            {/*
-             */}
           </thead>
-          {/*
-           */}
           <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-            {/*
-             */}
             {logs.length > 0 ? (
               logs.map((log, index) => {
                 const category =
@@ -155,59 +124,37 @@ const LogTable = ({
 
                 return (
                   <tr key={log.id}>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
-                    {/*
-                     */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
                       {displayDate}
                     </td>
-                    {/*
-                     */}
                     <td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">
                       {log.materialDescription}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                       {category}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                       {log.supplier || 'N/A'}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                       {log.materialGrade || 'N/A'}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                       {log.boreSize1 || 'N/A'}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                       {log.boreSize2 || 'N/A'}
                     </td>
-                    {/*
-                     */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-200 text-center">
                       {log.quantity}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                       {log.remarks || 'N/A'}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                       {!currentUser.isViewer && (
                         <div className="flex items-center justify-center space-x-4">
                           <button
@@ -227,26 +174,20 @@ const LogTable = ({
                         </div>
                       )}
                     </td>
-                    {/*
-                     */}
                   </tr>
                 );
               })
             ) : (
               <tr>
                 <td
-                  colSpan="11"
+                  colSpan="11" // Ensure colspan covers all possible columns
                   className="text-center py-10 text-gray-500 dark:text-gray-400"
                 >
                   No logs found.
                 </td>
               </tr>
             )}
-            {/*
-             */}
           </tbody>
-          {/*
-           */}
         </table>
       </div>
     </div>

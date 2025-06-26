@@ -256,7 +256,8 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
               </Combobox>
             </div>
             {selectedMaterial && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-3 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600 text-sm">
+              // MODIFIED: Changed grid to collapse to single column on mobile
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-3 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600 text-sm">
                 <div className="flex items-center gap-2">
                   <Hash
                     size={14}
@@ -361,19 +362,19 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
           </div>
-          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-end gap-3"> {/* MODIFIED: flex-col on mobile, flex-row on sm+ */}
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500"
-            >
+              className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 w-full sm:w-auto" 
+            >{/* MODIFIED: full width on mobile, auto on sm+ */}
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
               className={clsx(
-                'flex items-center justify-center w-32 px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md',
+                'flex items-center justify-center w-full sm:w-32 px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md', // MODIFIED: full width on mobile, fixed width on sm+
                 isSubmitting ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700',
               )}
             >

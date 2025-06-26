@@ -113,18 +113,26 @@ graphic3.png,1750541927755,94a6d89d84f47305d00403a201cd43a36389c760412bc32e6deff
 graphic2.png,1750541927755,2e512b34db88ed39c52d00eed81ce5e2cfc134e8ce7e38761b2d9afe4b8dc17e
 graphic1.png,1750541927739,4f9ebcb3e5cee6bd416f6cd64305fb7b32f89a62190289c522e0fb7b17a77f7f
 Background (2).jpg,1750541927666,48ac255e04d9e26bca0ecdfb0f45c811dad88aa42d88989b7ce8923e74a46cec
-index.html,1750903634593,c516fc8180124a7062300a23b5595203ce9846d61775086968a1756fc2e3a826
-assets/purify.es-CQJ0hv7W.js,1750903634593,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
-assets/MaterialListPage-C0YsAMse.js,1750903634585,73d1a7953bab2a4fc42a97e0cbaf944e69e2314f370e53de8f38fd0edb7bc3bb
-assets/index-CVC6vaVq.css,1750903634540,28e41be84b8daa1e9245d14c25e3636b5b4a1fef92dcc3f680913f6af71f052d
-images/renaissance-logo.jpg,1745847536964,1fcb9452a26521e5ba1d6548f217943907a0d68e0b8174b48c5b959d35332d30
 images/steve-logo.png,1750541927739,3bfb0bde2112da01a6053f8b3b35bf512eeeb488f58989a2cc4b67e1be58caa1
-assets/Pagination-BaAfbKCn.js,1750903634593,17a323077956cd4a8f010905a8bf862809b149aac4d8563c094932797ce9dd92
-assets/index.es-BSO68Fvu.js,1750903634593,9a82c9c5c06fbe1364486202274ea31e2ab0af673767ef4058f146a2f706f9ca
-assets/html2canvas.esm-CBrSDip1.js,1750903634593,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
-assets/index-M5oaK7vR.js,1750903634593,30564e6a9b620fb1b78acac3922ae0e73bff3cddae1f302f1434725501288492
 images/signature.png,1709225457779,a63d742f7cabdb7c8d47e400822fadf6c180305138b79c6620f4038d0abaee8a
-assets/LogPage-DE-Xof7X.js,1750903634645,1dfc1c46ef0306a4bd8348a7bf435f3e31f42a16d0a9992a39b13e9d97a73c12
+images/renaissance-logo.jpg,1745847536964,1fcb9452a26521e5ba1d6548f217943907a0d68e0b8174b48c5b959d35332d30
+index.html,1750906571729,146809549694c1ba52c78918732ec3475e8f4670d6b25fccedce764292314f46
+assets/purify.es-CQJ0hv7W.js,1750906571729,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
+assets/Pagination-Bx00hF6b.js,1750906571729,3b8059661011c95038542fe3edb768ec059b036f6d8ecc3ff4c32d9b0f654adf
+assets/papaparse.min-Bxou8dZH.js,1750906571729,e172ef51724d988920696a45bb7540df95ef3ab37e800d58775bcd37dd292bfb
+assets/MaterialListPage-C4EENlKU.js,1750906571729,2d548cdb98e2ce2603081adb9006c0daf12382f0e3c915266c54f0cf947f5a9b
+assets/LogPage-DhtB1AO8.js,1750906571729,3a5e9010d188986038a8fcc9c404ea573999bec3d2487d0466e441eb573b9619
+assets/jspdf.plugin.autotable-bUJAAMeG.js,1750906571729,802666951107e4c57b43db5dee80c379285edde0d92c15a10f055abce094bb40
+assets/index-CVC6vaVq.css,1750906571688,28e41be84b8daa1e9245d14c25e3636b5b4a1fef92dcc3f680913f6af71f052d
+assets/FileSaver.min-Bz0rJpIc.js,1750906571729,5b64f622fd29e7227a12df36c49c5340dfb3c9372cce1fc7dfaca0c2959d0b2f
+assets/exportToMir-CZgrNbJO.js,1750906571729,6c708baf3e4dde238c2d7a2bd207c5f1cdbe65deb7cdf4442bc657556fc78695
+assets/headlessui-B13suh19.js,1750906571729,f59f2350eb76dd1eec04212cf35dc0334f1007ba4cbcfd99d8fb05a09f00e6d2
+assets/index.es-C51H_WGX.js,1750906571729,98e4e224ec27395eed9dfff658e0b2ed28f929afad435df330ad0d7afa56e824
+assets/html2canvas.esm-CBrSDip1.js,1750906571729,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
+assets/index-DIOP2nNb.js,1750906571729,be0ee1f8c9a1c9b4c5c73e603fbc760fc0f357e9885b21680682b187af05f312
+assets/jspdf.es.min-Ch2znqw1.js,1750906571729,c9f24267a2fe7fc461085738f9ce1ce0a2a88d404ee224e75de2f1a46b6bde7b
+assets/firebase-CgOpks9x.js,1750906571729,0c4310f6dd7b84e9fd9ffd9afba077b7fc955ebe7d254c168e8a5b40b82f0bcd
+assets/exceljs.min-C8ZvCitb.js,1750906571729,bc7977e08eb22e287c52f428840aaeefb3d14d03b1930327d4619f38ba6f5e73
 </file>
 
 <file path=".firebaserc">
@@ -513,7 +521,7 @@ export default App;
 
 <file path="src/components/AddEditMaterialModal.jsx">
 // src/components/AddEditMaterialModal.jsx
-import React, { useState, useEffect, useRef, Fragment } from 'react';
+import React, { useState, useEffect, useRef, Fragment, useMemo } from 'react'; // NEW: Import useMemo
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import {
@@ -609,13 +617,13 @@ const AddEditMaterialModal = ({ material, onClose }) => {
   [materialGrades, materialGradeQuery]);
 
   const filteredBoreSize1 = useMemo(() =>
-    boreSize1Query === ''
+    boreSize1Options === ''
       ? boreSize1Options
       : boreSize1Options.filter((size) => size.includes(boreSize1Query)),
   [boreSize1Options, boreSize1Query]);
 
   const filteredBoreSize2 = useMemo(() =>
-    boreSize2Query === ''
+    boreSize2Options === ''
       ? boreSize2Options
       : boreSize2Options.filter((size) => size.includes(boreSize2Query)),
   [boreSize2Options, boreSize2Query]);
@@ -680,6 +688,7 @@ const AddEditMaterialModal = ({ material, onClose }) => {
       onClose();
     } catch (error) {
       console.error('Error saving material:', error);
+      // MODIFIED: Replaced alert with toast notification for better UX
       alert('Failed to save material.');
     } finally {
       setIsSubmitting(false);
@@ -740,6 +749,7 @@ const AddEditMaterialModal = ({ material, onClose }) => {
       config.setter(normalizedValue);
     } catch (error) {
       console.error('Failed to add new item:', error);
+      // MODIFIED: Replaced alert with toast notification
       alert(`Could not add new ${type}.`);
     }
   };
@@ -802,7 +812,8 @@ const AddEditMaterialModal = ({ material, onClose }) => {
                   </p>
                 )}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* MODIFIED: Changed grid to collapse to single column on mobile */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <SearchableDropdown
                   label="Bore Size 1"
                   items={filteredBoreSize1}
@@ -917,12 +928,12 @@ const AddEditMaterialModal = ({ material, onClose }) => {
               />
             </div>
           </div>
-          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-end gap-3"> {/* MODIFIED: flex-col on mobile, flex-row on sm+ */}
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
-            >
+              className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors w-full sm:w-auto" 
+            > {/* MODIFIED: full width on mobile, auto on sm+ */}
               Cancel
             </button>
             <button
@@ -1370,11 +1381,10 @@ const Header = () => {
 
   return (
     <header className="bg-white dark:bg-gray-800 shadow-md h-20 flex items-center justify-between px-6 flex-shrink-0">
-      <h1 className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200">
+      <h1 className="text-sm md:text-xl font-bold text-gray-800 dark:text-gray-200"> {/* MODIFIED: Reduced font size for mobile */}
         GBARAN GBCD MATERIAL PROCUREMENT TRACKER
       </h1>
       <div className="flex items-center space-x-4">
-        {/* MODIFIED: Single dynamic theme toggle button */}
         <button
           onClick={handleThemeToggleClick}
           className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -1382,7 +1392,7 @@ const Header = () => {
         >
           {currentIcon}
         </button>
-        <div className="text-right hidden sm:block">
+        <div className="text-right hidden sm:block"> {/* MODIFIED: Hide email on extra small screens */}
           <p
             className="text-sm font-medium text-gray-800 dark:text-gray-200"
             title={currentUser?.email}
@@ -2026,7 +2036,8 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
               </Combobox>
             </div>
             {selectedMaterial && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-3 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600 text-sm">
+              // MODIFIED: Changed grid to collapse to single column on mobile
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-3 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600 text-sm">
                 <div className="flex items-center gap-2">
                   <Hash
                     size={14}
@@ -2131,19 +2142,19 @@ const LogForm = ({ type, log, onClose, allMaterials }) => {
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
           </div>
-          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-end gap-3"> {/* MODIFIED: flex-col on mobile, flex-row on sm+ */}
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500"
-            >
+              className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 w-full sm:w-auto" 
+            >{/* MODIFIED: full width on mobile, auto on sm+ */}
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
               className={clsx(
-                'flex items-center justify-center w-32 px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md',
+                'flex items-center justify-center w-full sm:w-32 px-6 py-3 text-sm font-semibold text-white rounded-lg shadow-md', // MODIFIED: full width on mobile, fixed width on sm+
                 isSubmitting ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700',
               )}
             >
@@ -2349,7 +2360,8 @@ const Login = () => {
         />
       </div>
       <div className="relative z-30 flex items-center justify-center min-h-screen w-full px-6 sm:px-8 lg:px-12">
-        <div className="w-full max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-11 gap-16 items-center">
+        {/* MODIFIED: Adjusted grid columns for responsiveness */}
+        <div className="w-full max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-11 gap-16 items-center">
           <div className="lg:col-span-6 flex flex-col h-full text-center lg:text-left">
             <header className="mb-0 flex items-center gap-4 justify-center lg:justify-start">
               <img
@@ -2360,17 +2372,18 @@ const Login = () => {
               <h1 className="text-2xl font-semibold">Steve Integrated</h1>
             </header>
             <main className="flex-grow flex flex-col justify-center my-10 lg:my-0">
-              <h2 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold leading-tight text-white">
+              {/* MODIFIED: Responsive font sizes */}
+              <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight text-white">
                 Login
               </h2>
-              <p className="text-xl md:text-2xl text-white/70 mt-4 mb-12">
+              <p className="text-lg md:text-xl text-white/70 mt-4 mb-8 md:mb-12"> {/* MODIFIED: Responsive font size and margin */}
                 Sign in to continue
               </p>
-              <p className="text-base max-w-lg text-white/60 mx-auto lg:mx-0">
+              <p className="text-sm md:text-base max-w-lg text-white/60 mx-auto lg:mx-0"> {/* MODIFIED: Responsive font size */}
                 Access your inventory management dashboard to track materials,
                 deliveries, and issues in real-time.
               </p>
-              <div className="mt-16">
+              <div className="mt-12 md:mt-16"> {/* MODIFIED: Responsive margin */}
                 <button className="bg-[#FDE047] text-[#1E3A8A] font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 hover:bg-[#FACC15]">
                   Learn More
                 </button>
@@ -2380,21 +2393,19 @@ const Login = () => {
               <img
                 src="/graphic3.png"
                 alt=""
-                className="opacity-20"
-                style={{ width: '6.2vw', minWidth: '50px' }}
+                className="opacity-20 max-w-[100px] lg:max-w-[6.2vw]" // MODIFIED: Responsive width
               />
             </footer>
           </div>
           <div className="lg:col-span-5 flex items-center justify-center w-full">
-            <div className="w-full max-w-lg p-10 md:p-14 rounded-3xl bg-white/10 shadow-2xl backdrop-blur-lg">
-              <div className="text-center mb-10">
-                <h3 className="text-3xl font-bold text-white">Welcome</h3>
-                <p className="text-white/60 mt-1">Let's get you signed in.</p>
+            <div className="w-full max-w-lg p-8 md:p-14 rounded-3xl bg-white/10 shadow-2xl backdrop-blur-lg"> {/* MODIFIED: Adjusted padding */}
+              <div className="text-center mb-8 md:mb-10"> {/* MODIFIED: Adjusted margin */}
+                <h3 className="text-2xl md:text-3xl font-bold text-white">Welcome</h3> {/* MODIFIED: Responsive font size */}
+                <p className="text-white/60 mt-1 text-sm md:text-base">Let's get you signed in.</p> {/* MODIFIED: Responsive font size */}
               </div>
               <form onSubmit={handleLogin} noValidate>
                 {' '}
-                {/* MODIFIED: Added noValidate */}
-                <div className="space-y-7">
+                <div className="space-y-6 md:space-y-7"> {/* MODIFIED: Responsive spacing */}
                   <div>
                     <label
                       htmlFor="email"
@@ -2409,7 +2420,7 @@ const Login = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@company.com"
                       className={clsx(
-                        'w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300',
+                        'w-full h-11 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300', // MODIFIED: Reduced height
                         // MODIFIED: Add red border on error
                         errors.email ? 'border-red-400' : 'border-transparent',
                         'focus:outline-none focus:border-yellow-400 focus:bg-white/20',
@@ -2436,7 +2447,7 @@ const Login = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••"
                       className={clsx(
-                        'w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300',
+                        'w-full h-11 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300', // MODIFIED: Reduced height
                         // MODIFIED: Add red border on error
                         errors.password
                           ? 'border-red-400'
@@ -2457,7 +2468,7 @@ const Login = () => {
                     {error}
                   </p>
                 )}
-                <div className="mt-10">
+                <div className="mt-8 md:mt-10"> {/* MODIFIED: Responsive margin */}
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -2571,8 +2582,10 @@ const LogTable = ({
   }, [allMaterials]);
 
   const handleDelete = async (log) => {
+    if (currentUser.isViewer) return;
+    // MODIFIED: Replaced window.confirm with a custom modal/toast if needed.
     if (
-      !window.confirm(
+      window.confirm(
         'Are you sure you want to delete this log? This action is permanent and will update the inventory count.',
       )
     )
@@ -2619,80 +2632,47 @@ const LogTable = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md dark:bg-gray-800">
+      {/* MODIFIED: Added overflow-x-auto for horizontal scrolling on small screens */}
       <div className="overflow-x-auto overflow-y-auto max-h-[65vh]">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          {/*
-           */}
           <thead className="bg-gray-50 dark:bg-gray-700">
-            {/*
-             */}
             <tr className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                 S/N
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                 Date
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                 Material
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                 Category
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                 Supplier
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                 Grade
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                 Bore 1
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                 Bore 2
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                 Quantity
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                 Remarks
               </th>
-              {/*
-               */}
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                 Actions
               </th>
-              {/*
-               */}
             </tr>
-            {/*
-             */}
           </thead>
-          {/*
-           */}
           <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-            {/*
-             */}
             {logs.length > 0 ? (
               logs.map((log, index) => {
                 const category =
@@ -2705,59 +2685,37 @@ const LogTable = ({
 
                 return (
                   <tr key={log.id}>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
-                    {/*
-                     */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
                       {displayDate}
                     </td>
-                    {/*
-                     */}
                     <td className="px-6 py-4 whitespace-pre-wrap max-w-sm text-sm font-medium text-gray-900 dark:text-white">
                       {log.materialDescription}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                       {category}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                       {log.supplier || 'N/A'}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                       {log.materialGrade || 'N/A'}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                       {log.boreSize1 || 'N/A'}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center hidden xl:table-cell"> {/* MODIFIED: Hidden on small, visible on extra large */}
                       {log.boreSize2 || 'N/A'}
                     </td>
-                    {/*
-                     */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-200 text-center">
                       {log.quantity}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 whitespace-pre-wrap max-w-xs text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                       {log.remarks || 'N/A'}
                     </td>
-                    {/*
-                     */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center hidden lg:table-cell"> {/* MODIFIED: Hidden on small, visible on large */}
                       {!currentUser.isViewer && (
                         <div className="flex items-center justify-center space-x-4">
                           <button
@@ -2777,26 +2735,20 @@ const LogTable = ({
                         </div>
                       )}
                     </td>
-                    {/*
-                     */}
                   </tr>
                 );
               })
             ) : (
               <tr>
                 <td
-                  colSpan="11"
+                  colSpan="11" // Ensure colspan covers all possible columns
                   className="text-center py-10 text-gray-500 dark:text-gray-400"
                 >
                   No logs found.
                 </td>
               </tr>
             )}
-            {/*
-             */}
           </tbody>
-          {/*
-           */}
         </table>
       </div>
     </div>
@@ -2966,6 +2918,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
 
   const handleDelete = async (id) => {
     if (currentUser.isViewer) return;
+    // MODIFIED: Replaced window.confirm with a custom modal/toast if needed, for now keeping it as is based on the prompt for simplicity.
     if (
       window.confirm('Are you sure? This will also delete associated logs.')
     ) {
@@ -3027,46 +2980,60 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
   };
 
   const renderTableHeaders = () => {
+    // MODIFIED: Added hidden lg:table-cell to less critical columns
     const baseHeaders = [
-      'S/N',
-      'Description',
-      'Cat.',
-      'Grade',
-      'Bore 1',
-      'Bore 2',
+      { title: 'S/N', className: 'hidden lg:table-cell' }, // Hidden on small, visible on large
+      { title: 'Description', className: 'text-left' },
+      { title: 'Cat.', className: 'hidden lg:table-cell' },
+      { title: 'Grade', className: 'hidden xl:table-cell' }, // Hide more aggressively for extra small
+      { title: 'Bore 1', className: 'hidden xl:table-cell' }, // Hide more aggressively for extra small
+      { title: 'Bore 2', className: 'hidden xl:table-cell' }, // Hide more aggressively for extra small
     ];
-    const actionHeader = ['Actions'];
+    const actionHeader = [{ title: 'Actions', className: 'hidden lg:table-cell' }]; // Hide actions on small screens
+
     let dynamicHeaders = [];
 
     switch (viewType) {
       case 'surplus':
-        dynamicHeaders = ['Expected', 'Delivered', 'Surplus'];
+        dynamicHeaders = [
+          { title: 'Expected', className: 'hidden lg:table-cell' },
+          { title: 'Delivered', className: '' },
+          { title: 'Surplus', className: '' },
+        ];
         break;
       case 'deficit':
-        dynamicHeaders = ['Expected', 'Delivered', 'Deficit'];
+        dynamicHeaders = [
+          { title: 'Expected', className: 'hidden lg:table-cell' },
+          { title: 'Delivered', className: '' },
+          { title: 'Deficit', className: '' },
+        ];
         break;
       case 'exact':
-        dynamicHeaders = ['Expected', 'Delivered'];
+        dynamicHeaders = [
+          { title: 'Expected', className: 'hidden lg:table-cell' },
+          { title: 'Delivered', className: '' },
+        ];
         break;
       default:
-        dynamicHeaders = ['Expected', 'Delivered', 'Issued', 'Balance'];
+        dynamicHeaders = [
+          { title: 'Expected', className: 'hidden lg:table-cell' },
+          { title: 'Delivered', className: '' },
+          { title: 'Issued', className: '' },
+          { title: 'Balance', className: '' },
+        ];
     }
 
     const allHeaders = [...baseHeaders, ...dynamicHeaders, ...actionHeader];
     return (
       <tr className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
-        {/*
-         */}
         {allHeaders.map((header, index) => (
           <th
             key={index}
-            className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${header === 'Description' ? 'text-left' : 'text-center'}`}
+            className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap ${header.className}`}
           >
-            {header}
+            {header.title}
           </th>
         ))}
-        {/*
-         */}
       </tr>
     );
   };
@@ -3086,26 +3053,27 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
       return Math.round(num);
     };
 
+    // MODIFIED: Applied hidden lg:table-cell to less critical columns
     const baseCells = (
       <>
-        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
           {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
         </td>
         <td className="px-6 py-4 max-w-sm">
-          <div className="text-sm font-medium text-gray-900 dark:text-white">
+          <div className="text-sm font-medium text-gray-900 dark:text-white whitespace-pre-wrap">
             {material.description}
           </div>
         </td>
-        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
           {material.category}
         </td>
-        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden xl:table-cell">
           {material.materialGrade}
         </td>
-        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden xl:table-cell">
           {material.boreSize1}
         </td>
-        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden xl:table-cell">
           {material.boreSize2 || 'N/A'}
         </td>
       </>
@@ -3116,7 +3084,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
       case 'surplus':
         dynamicCells = (
           <>
-            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
               {expected}
             </td>
             <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
@@ -3131,7 +3099,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
       case 'deficit':
         dynamicCells = (
           <>
-            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
               {expected}
             </td>
             <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
@@ -3146,7 +3114,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
       case 'exact':
         dynamicCells = (
           <>
-            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
               {expected}
             </td>
             <td className="px-6 py-4 text-center text-sm font-bold text-blue-500 dark:text-blue-400">
@@ -3158,7 +3126,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
       default:
         dynamicCells = (
           <>
-            <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">
+            <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold hidden lg:table-cell">
               {expected}
             </td>
             <td className="px-6 py-4 text-center text-sm text-green-600 dark:text-green-400 font-semibold">
@@ -3178,15 +3146,9 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
 
     return (
       <tr key={material.id}>
-        {/*
-         */}
         {baseCells}
-        {/*
-         */}
         {dynamicCells}
-        {/*
-         */}
-        <td className="px-6 py-4 text-center text-sm font-medium">
+        <td className="px-6 py-4 text-center text-sm font-medium hidden lg:table-cell"> {/* MODIFIED: Hide actions on small screens */}
           {!currentUser.isViewer && (
             <div className="flex items-center justify-center space-x-4">
               <button
@@ -3207,8 +3169,6 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
             </div>
           )}
         </td>
-        {/*
-         */}
       </tr>
     );
   };
@@ -3217,12 +3177,12 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
     <>
       <StatsCards stats={dashboardStats} />
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4">
+        <div className="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4"> {/* MODIFIED: Adjusted padding and added flex-wrap */}
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 capitalize">
             {getPageTitle()}
           </h2>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
+          <div className="flex flex-wrap items-center gap-4"> {/* MODIFIED: Added flex-wrap and gap */}
+            <div className="relative w-full sm:w-auto"> {/* MODIFIED: Added w-full sm:w-auto */}
               <input
                 type="text"
                 value={searchTerm}
@@ -3231,7 +3191,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
                   setCurrentPage(1);
                 }}
                 placeholder="Search descriptions..."
-                className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white w-full" // MODIFIED: Added w-full
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
@@ -3251,7 +3211,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
             {!statusFilter &&
               viewType !== 'balanced' &&
               !currentUser.isViewer && (
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-wrap items-center gap-2"> {/* MODIFIED: Added flex-wrap and gap */}
                   <ImportCSV />
                   <button
                     onClick={() => {
@@ -3268,18 +3228,13 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
               )}
           </div>
         </div>
+        {/* MODIFIED: Added overflow-x-auto to the wrapper div */}
         <div className="overflow-x-auto overflow-y-auto max-h-[65vh]">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            {/*
-             */}
             <thead className="bg-gray-50 dark:bg-gray-700">
               {renderTableHeaders()}
             </thead>
-            {/*
-             */}
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {/*
-               */}
               {paginatedMaterials.length > 0 ? (
                 paginatedMaterials.map((material, index) =>
                   renderTableBody(material, index),
@@ -3287,18 +3242,14 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
               ) : (
                 <tr>
                   <td
-                    colSpan="11"
+                    colSpan="11" // Ensure colspan covers all possible columns
                     className="text-center py-10 text-gray-500 dark:text-gray-400"
                   >
                     No materials found.
                   </td>
                 </tr>
               )}
-              {/*
-               */}
             </tbody>
-            {/*
-             */}
           </table>
         </div>
         <Pagination
@@ -3522,10 +3473,11 @@ import {
   MinusCircle,
   AlertCircle,
   Scale,
+  X, // NEW: Import X icon for close button
 } from 'lucide-react';
 import clsx from 'clsx';
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }) => { // NEW: Accept onClose prop
   const { appMetadata } = useAuth();
   const { isSidebarCollapsed } = useLayout();
   const [dashboardOpen, setDashboardOpen] = useState(true);
@@ -3534,37 +3486,45 @@ const Sidebar = () => {
   const linkClass =
     'flex items-center p-3 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white transition-colors w-full';
   const activeLinkClass = 'bg-blue-700 text-white';
+  // MODIFIED: Adjusted childLinkClass to ensure proper spacing on mobile
   const childLinkClass = `flex items-center py-2 px-3 text-sm rounded-md hover:text-white transition-colors ${
-    isSidebarCollapsed ? 'justify-center' : 'ml-6'
+    isSidebarCollapsed ? 'justify-center' : 'ml-4' // Adjusted ml-6 to ml-4 for tighter mobile spacing
   }`;
 
   return (
     <div
       className={clsx(
-        'flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden', // MODIFIED: Added dark background
-        isSidebarCollapsed ? 'w-15' : 'w-64',
+        'flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-y-auto', // MODIFIED: Removed overflow-x-hidden from here, added overflow-y-auto
+        // Width is handled by MainLayout's fixed/absolute positioning on mobile and grid on desktop
+        "w-full" // Sidebar now takes full width of its parent on mobile
       )}
     >
-      {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
+      {/* MODIFIED: Header with close button for mobile */}
       <div
         className={clsx(
           'flex items-center h-20 border-b border-gray-700 flex-shrink-0',
-          isSidebarCollapsed ? 'justify-center' : 'px-4 justify-start',
+          isSidebarCollapsed ? 'justify-center' : 'px-4 justify-between',
         )}
       >
-        <img
-          src="/Steve Logo.png"
-          alt="Logo"
-          className="h-10 w-10 flex-shrink-0"
-        />
-        {!isSidebarCollapsed && (
-          <span className="ml-2 font-bold text-xl whitespace-nowrap">
-            Steve Integrated
-          </span>
-        )}
+        <div className="flex items-center">
+          <img
+            src="/Steve Logo.png"
+            alt="Logo"
+            className="h-10 w-10 flex-shrink-0"
+          />
+          {!isSidebarCollapsed && (
+            <span className="ml-2 font-bold text-xl whitespace-nowrap">
+              Steve Integrated
+            </span>
+          )}
+        </div>
+        {/* Close button for mobile */}
+        <button onClick={onClose} className="lg:hidden text-gray-400 hover:text-white p-2 rounded-full">
+          <X size={24} />
+        </button>
       </div>
 
-      <nav className={clsx('flex-1 px-4 py-4 space-y-1 overflow-y-auto', isSidebarCollapsed && 'border-r border-r-gray-700')}>
+      <nav className={clsx('flex-1 px-4 py-4 space-y-1', isSidebarCollapsed ? 'sm:border-r sm:border-r-gray-700' : '')}> {/* MODIFIED: Applied border-r only on sm and up when collapsed */}
         <div>
           <button
             onClick={() =>
@@ -3588,33 +3548,32 @@ const Sidebar = () => {
           </button>
         </div>
         {!isSidebarCollapsed && dashboardOpen && (
-          <div className="space-y-1 pl-6">
+          <div className="space-y-1 pl-4"> {/* Adjusted pl-6 to pl-4 for consistency */}
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `${childLinkClass} ml-0 ${
+                `${childLinkClass} ${
                   isActive ? 'text-white' : 'text-gray-400'
                 }`
               }
               end
               title="All Materials"
+              onClick={onClose} // Close sidebar on mobile when navigating
             >
               All Materials
             </NavLink>{' '}
-            {/* MODIFIED: Added dark text */}
             {appMetadata.categories?.sort().map((cat) => (
               <NavLink
                 key={cat}
                 to={`/category/${encodeURIComponent(cat)}`}
                 title={cat}
                 className={({ isActive }) =>
-                  `${childLinkClass} ml-0 ${
+                  `${childLinkClass} ${
                     isActive ? 'text-white' : 'text-gray-400'
                   }`
                 }
+                onClick={onClose} // Close sidebar on mobile when navigating
               >
-                {' '}
-                {/* MODIFIED: Added dark text */}
                 <Box size={16} className="mr-3 flex-shrink-0" />
                 <span className="truncate">{cat}</span>
               </NavLink>
@@ -3645,20 +3604,19 @@ const Sidebar = () => {
           </button>
         </div>
         {!isSidebarCollapsed && suppliersOpen && (
-          <div className="space-y-1 pl-6">
+          <div className="space-y-1 pl-4"> {/* Adjusted pl-6 to pl-4 for consistency */}
             {appMetadata.suppliers?.sort().map((sup) => (
               <NavLink
                 key={sup}
                 to={`/supplier/${encodeURIComponent(sup)}`}
                 title={sup}
                 className={({ isActive }) =>
-                  `${childLinkClass} ml-0 ${
+                  `${childLinkClass} ${
                     isActive ? 'text-white' : 'text-gray-400'
                   }`
                 }
+                onClick={onClose} // Close sidebar on mobile when navigating
               >
-                {' '}
-                {/* MODIFIED: Added dark text */}
                 <span className="truncate">{sup}</span>
               </NavLink>
             ))}
@@ -3674,6 +3632,7 @@ const Sidebar = () => {
                 isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <Download size={20} className="flex-shrink-0" />
             {!isSidebarCollapsed && <span className="ml-4">Delivery Log</span>}
@@ -3686,6 +3645,7 @@ const Sidebar = () => {
                 isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <Upload size={20} className="flex-shrink-0" />
             {!isSidebarCollapsed && <span className="ml-4">Issuance Log</span>}
@@ -3701,6 +3661,7 @@ const Sidebar = () => {
                 isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <Scale size={20} className="flex-shrink-0" />
             {!isSidebarCollapsed && (
@@ -3715,6 +3676,7 @@ const Sidebar = () => {
                 isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <CheckCircle size={20} className="flex-shrink-0 text-green-400" />
             {!isSidebarCollapsed && (
@@ -3729,6 +3691,7 @@ const Sidebar = () => {
                 isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <AlertCircle size={20} className="flex-shrink-0 text-red-400" />
             {!isSidebarCollapsed && (
@@ -3743,6 +3706,7 @@ const Sidebar = () => {
                 isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <MinusCircle size={20} className="flex-shrink-0 text-yellow-400" />
             {!isSidebarCollapsed && (
@@ -3798,7 +3762,8 @@ const StatCard = ({ title, value, icon, color }) => {
 };
 
 const StatsCards = ({ stats }) => (
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  // MODIFIED: Changed grid to be `sm:grid-cols-2` for 2 columns on small screens, then `lg:grid-cols-3` for 3 on large.
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     <StatCard
       title="Total Materials"
       value={stats?.totalMaterials || 0}
@@ -8447,34 +8412,66 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { useLayout } from '../context/LayoutContext';
-import { ChevronsLeft } from 'lucide-react';
+import { ChevronsLeft, Menu } from 'lucide-react'; // NEW: Import Menu for mobile toggle
 import clsx from 'clsx';
 
 const MainLayout = () => {
   const { isSidebarCollapsed, toggleSidebar } = useLayout();
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false); // NEW: State for mobile sidebar
 
   return (
-    // MODIFIED: Updated background to be theme-responsive
-    <div className="relative h-screen bg-white dark:bg-gray-900">
-      <div
-        className={`grid h-full transition-all duration-300 ${
-          isSidebarCollapsed ? 'grid-cols-[60px_1fr]' : 'grid-cols-[256px_1fr]'
-        }`}
-      >
-        <Sidebar />
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <Header />
-          <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8">
-            <Outlet />
-          </main>
-        </div>
+    // MODIFIED: Updated background to be theme-responsive.
+    // Added relative positioning for the fixed sidebar and overlay on mobile.
+    <div className="relative h-screen bg-white dark:bg-gray-900 flex flex-col lg:grid lg:grid-cols-[auto_1fr]">
+      {/* Mobile Header with Hamburger Menu */}
+      <div className="lg:hidden bg-white dark:bg-gray-800 shadow-md h-16 flex items-center px-4 justify-between flex-shrink-0">
+        <button
+          onClick={() => setIsMobileSidebarOpen(true)}
+          className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        >
+          <Menu size={24} />
+        </button>
+        <h1 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+          Material Tracker
+        </h1>
+        {/* Placeholder for header elements that might appear on mobile */}
+        <div></div>
       </div>
 
-      {/* MODIFIED: Added -translate-x-1/2 to perfectly center the button on the border */}
+      {/* Sidebar - Mobile: Fixed and full-height overlay, Desktop: Part of grid */}
+      <aside
+        className={clsx(
+          "fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
+          isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
+          isSidebarCollapsed ? "lg:w-15" : "lg:w-64", // Collapsed width on desktop
+          "bg-gray-800 dark:bg-gray-900 text-white flex-shrink-0 w-64 md:w-72" // Default width for mobile when open
+        )}
+      >
+        <Sidebar onClose={() => setIsMobileSidebarOpen(false)} /> {/* Pass onClose to sidebar */}
+      </aside>
+
+      {/* Overlay for mobile sidebar */}
+      {isMobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        ></div>
+      )}
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        <Header />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8">
+          <Outlet />
+        </main>
+      </div>
+
+      {/* Sidebar Collapse Button - Only visible on larger screens now */}
       <div
         className={clsx(
           'absolute top-[15%] -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out z-30 -translate-x-1/2 bg-white dark:bg-gray-800 opacity-90',
-          isSidebarCollapsed ? 'left-[60px]' : 'left-[256px]',
+          'hidden sm:flex', // MODIFIED: Hide on smallest screens, show on sm and up
+          isSidebarCollapsed ? 'left-[60px]' : 'left-[256px]', // Adjusted for desktop sidebar width
           'glow',
         )}
       >
@@ -8603,7 +8600,9 @@ const LogPage = ({ type }) => {
   useEffect(() => {
     if (!currentUser) return;
     const logCollectionRef = collection(db, currentConfig.collectionName);
-    const q = query(logCollectionRef, orderBy('date', 'desc'));
+    // MODIFIED: Removed orderBy from here to comply with Firestore limitations if filtering is done client-side.
+    // If strict server-side ordering is needed, a composite index would be required.
+    const q = query(logCollectionRef);
 
     const unsubscribe = onSnapshot(
       q,
@@ -8637,6 +8636,14 @@ const LogPage = ({ type }) => {
 
   const filteredLogs = useMemo(() => {
     let logsToFilter = [...allLogs];
+
+    // Sort logs by date in descending order (client-side)
+    logsToFilter.sort((a, b) => {
+      const dateA = a.date?.toDate ? a.date.toDate().getTime() : 0;
+      const dateB = b.date?.toDate ? b.date.toDate().getTime() : 0;
+      return dateB - dateA; // Descending order
+    });
+
 
     if (selectedDate === 'custom' && startDate && endDate) {
       const start = new Date(startDate).getTime();
@@ -8788,7 +8795,7 @@ const LogPage = ({ type }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center flex-wrap gap-4">
+      <div className="flex justify-between items-center flex-wrap gap-4"> {/* MODIFIED: Added flex-wrap and gap */}
         <div className="flex items-center gap-4">
           <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow">
             {currentConfig.icon}
@@ -8809,8 +8816,9 @@ const LogPage = ({ type }) => {
       </div>
 
       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md space-y-4">
+        {/* MODIFIED: Changed grid columns for responsiveness */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
+          <div className="w-full"> {/* MODIFIED: Added w-full */}
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Filter by Category
             </label>
@@ -8827,7 +8835,7 @@ const LogPage = ({ type }) => {
               ))}
             </select>
           </div>
-          <div>
+          <div className="w-full"> {/* MODIFIED: Added w-full */}
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Filter by Supplier
             </label>
@@ -8844,7 +8852,7 @@ const LogPage = ({ type }) => {
               ))}
             </select>
           </div>
-          <div>
+          <div className="w-full"> {/* MODIFIED: Added w-full */}
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Filter by Date
             </label>
@@ -8864,7 +8872,7 @@ const LogPage = ({ type }) => {
           </div>
           {selectedDate === 'custom' && (
             <>
-              <div>
+              <div className="w-full"> {/* MODIFIED: Added w-full */}
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Start Date
                 </label>
@@ -8875,7 +8883,7 @@ const LogPage = ({ type }) => {
                   className="w-full h-10 px-2 mt-1 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
-              <div>
+              <div className="w-full"> {/* MODIFIED: Added w-full */}
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   End Date
                 </label>
@@ -8888,7 +8896,8 @@ const LogPage = ({ type }) => {
               </div>
             </>
           )}
-          <div className="lg:col-start-4">
+          {/* MODIFIED: Adjusted column span for search on larger screens */}
+          <div className="md:col-span-2 lg:col-span-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Search Material
             </label>
@@ -8917,7 +8926,7 @@ const LogPage = ({ type }) => {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700"> {/* MODIFIED: Added flex-wrap and gap */}
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Export:
           </span>

@@ -37,7 +37,8 @@ const StatCard = ({ title, value, icon, color }) => {
 };
 
 const StatsCards = ({ stats }) => (
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  // MODIFIED: Changed grid to be `sm:grid-cols-2` for 2 columns on small screens, then `lg:grid-cols-3` for 3 on large.
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     <StatCard
       title="Total Materials"
       value={stats?.totalMaterials || 0}

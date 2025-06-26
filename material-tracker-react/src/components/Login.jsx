@@ -80,7 +80,8 @@ const Login = () => {
         />
       </div>
       <div className="relative z-30 flex items-center justify-center min-h-screen w-full px-6 sm:px-8 lg:px-12">
-        <div className="w-full max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-11 gap-16 items-center">
+        {/* MODIFIED: Adjusted grid columns for responsiveness */}
+        <div className="w-full max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-11 gap-16 items-center">
           <div className="lg:col-span-6 flex flex-col h-full text-center lg:text-left">
             <header className="mb-0 flex items-center gap-4 justify-center lg:justify-start">
               <img
@@ -91,17 +92,18 @@ const Login = () => {
               <h1 className="text-2xl font-semibold">Steve Integrated</h1>
             </header>
             <main className="flex-grow flex flex-col justify-center my-10 lg:my-0">
-              <h2 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold leading-tight text-white">
+              {/* MODIFIED: Responsive font sizes */}
+              <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight text-white">
                 Login
               </h2>
-              <p className="text-xl md:text-2xl text-white/70 mt-4 mb-12">
+              <p className="text-lg md:text-xl text-white/70 mt-4 mb-8 md:mb-12"> {/* MODIFIED: Responsive font size and margin */}
                 Sign in to continue
               </p>
-              <p className="text-base max-w-lg text-white/60 mx-auto lg:mx-0">
+              <p className="text-sm md:text-base max-w-lg text-white/60 mx-auto lg:mx-0"> {/* MODIFIED: Responsive font size */}
                 Access your inventory management dashboard to track materials,
                 deliveries, and issues in real-time.
               </p>
-              <div className="mt-16">
+              <div className="mt-12 md:mt-16"> {/* MODIFIED: Responsive margin */}
                 <button className="bg-[#FDE047] text-[#1E3A8A] font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 hover:bg-[#FACC15]">
                   Learn More
                 </button>
@@ -111,21 +113,19 @@ const Login = () => {
               <img
                 src="/graphic3.png"
                 alt=""
-                className="opacity-20"
-                style={{ width: '6.2vw', minWidth: '50px' }}
+                className="opacity-20 max-w-[100px] lg:max-w-[6.2vw]" // MODIFIED: Responsive width
               />
             </footer>
           </div>
           <div className="lg:col-span-5 flex items-center justify-center w-full">
-            <div className="w-full max-w-lg p-10 md:p-14 rounded-3xl bg-white/10 shadow-2xl backdrop-blur-lg">
-              <div className="text-center mb-10">
-                <h3 className="text-3xl font-bold text-white">Welcome</h3>
-                <p className="text-white/60 mt-1">Let's get you signed in.</p>
+            <div className="w-full max-w-lg p-8 md:p-14 rounded-3xl bg-white/10 shadow-2xl backdrop-blur-lg"> {/* MODIFIED: Adjusted padding */}
+              <div className="text-center mb-8 md:mb-10"> {/* MODIFIED: Adjusted margin */}
+                <h3 className="text-2xl md:text-3xl font-bold text-white">Welcome</h3> {/* MODIFIED: Responsive font size */}
+                <p className="text-white/60 mt-1 text-sm md:text-base">Let's get you signed in.</p> {/* MODIFIED: Responsive font size */}
               </div>
               <form onSubmit={handleLogin} noValidate>
                 {' '}
-                {/* MODIFIED: Added noValidate */}
-                <div className="space-y-7">
+                <div className="space-y-6 md:space-y-7"> {/* MODIFIED: Responsive spacing */}
                   <div>
                     <label
                       htmlFor="email"
@@ -140,7 +140,7 @@ const Login = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@company.com"
                       className={clsx(
-                        'w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300',
+                        'w-full h-11 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300', // MODIFIED: Reduced height
                         // MODIFIED: Add red border on error
                         errors.email ? 'border-red-400' : 'border-transparent',
                         'focus:outline-none focus:border-yellow-400 focus:bg-white/20',
@@ -167,7 +167,7 @@ const Login = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••"
                       className={clsx(
-                        'w-full h-12 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300',
+                        'w-full h-11 px-4 bg-white/10 rounded-lg text-white placeholder-white/50 border transition-all duration-300', // MODIFIED: Reduced height
                         // MODIFIED: Add red border on error
                         errors.password
                           ? 'border-red-400'
@@ -188,7 +188,7 @@ const Login = () => {
                     {error}
                   </p>
                 )}
-                <div className="mt-10">
+                <div className="mt-8 md:mt-10"> {/* MODIFIED: Responsive margin */}
                   <button
                     type="submit"
                     disabled={isSubmitting}

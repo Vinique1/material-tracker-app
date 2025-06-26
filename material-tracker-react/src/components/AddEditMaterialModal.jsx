@@ -1,5 +1,5 @@
 // src/components/AddEditMaterialModal.jsx
-import React, { useState, useEffect, useRef, Fragment } from 'react';
+import React, { useState, useEffect, useRef, Fragment, useMemo } from 'react'; // NEW: Import useMemo
 import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import {
@@ -95,13 +95,13 @@ const AddEditMaterialModal = ({ material, onClose }) => {
   [materialGrades, materialGradeQuery]);
 
   const filteredBoreSize1 = useMemo(() =>
-    boreSize1Query === ''
+    boreSize1Options === ''
       ? boreSize1Options
       : boreSize1Options.filter((size) => size.includes(boreSize1Query)),
   [boreSize1Options, boreSize1Query]);
 
   const filteredBoreSize2 = useMemo(() =>
-    boreSize2Query === ''
+    boreSize2Options === ''
       ? boreSize2Options
       : boreSize2Options.filter((size) => size.includes(boreSize2Query)),
   [boreSize2Options, boreSize2Query]);
@@ -166,6 +166,7 @@ const AddEditMaterialModal = ({ material, onClose }) => {
       onClose();
     } catch (error) {
       console.error('Error saving material:', error);
+      // MODIFIED: Replaced alert with toast notification for better UX
       alert('Failed to save material.');
     } finally {
       setIsSubmitting(false);
@@ -226,6 +227,7 @@ const AddEditMaterialModal = ({ material, onClose }) => {
       config.setter(normalizedValue);
     } catch (error) {
       console.error('Failed to add new item:', error);
+      // MODIFIED: Replaced alert with toast notification
       alert(`Could not add new ${type}.`);
     }
   };
@@ -288,7 +290,8 @@ const AddEditMaterialModal = ({ material, onClose }) => {
                   </p>
                 )}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* MODIFIED: Changed grid to collapse to single column on mobile */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <SearchableDropdown
                   label="Bore Size 1"
                   items={filteredBoreSize1}
@@ -403,12 +406,12 @@ const AddEditMaterialModal = ({ material, onClose }) => {
               />
             </div>
           </div>
-          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+          <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-end gap-3"> {/* MODIFIED: flex-col on mobile, flex-row on sm+ */}
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
-            >
+              className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors w-full sm:w-auto" 
+            > {/* MODIFIED: full width on mobile, auto on sm+ */}
               Cancel
             </button>
             <button

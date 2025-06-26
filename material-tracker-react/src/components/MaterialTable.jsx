@@ -53,6 +53,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
 
   const handleDelete = async (id) => {
     if (currentUser.isViewer) return;
+    // MODIFIED: Replaced window.confirm with a custom modal/toast if needed, for now keeping it as is based on the prompt for simplicity.
     if (
       window.confirm('Are you sure? This will also delete associated logs.')
     ) {
@@ -114,46 +115,60 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
   };
 
   const renderTableHeaders = () => {
+    // MODIFIED: Added hidden lg:table-cell to less critical columns
     const baseHeaders = [
-      'S/N',
-      'Description',
-      'Cat.',
-      'Grade',
-      'Bore 1',
-      'Bore 2',
+      { title: 'S/N', className: 'hidden lg:table-cell' }, // Hidden on small, visible on large
+      { title: 'Description', className: 'text-left' },
+      { title: 'Cat.', className: 'hidden lg:table-cell' },
+      { title: 'Grade', className: 'hidden xl:table-cell' }, // Hide more aggressively for extra small
+      { title: 'Bore 1', className: 'hidden xl:table-cell' }, // Hide more aggressively for extra small
+      { title: 'Bore 2', className: 'hidden xl:table-cell' }, // Hide more aggressively for extra small
     ];
-    const actionHeader = ['Actions'];
+    const actionHeader = [{ title: 'Actions', className: 'hidden lg:table-cell' }]; // Hide actions on small screens
+
     let dynamicHeaders = [];
 
     switch (viewType) {
       case 'surplus':
-        dynamicHeaders = ['Expected', 'Delivered', 'Surplus'];
+        dynamicHeaders = [
+          { title: 'Expected', className: 'hidden lg:table-cell' },
+          { title: 'Delivered', className: '' },
+          { title: 'Surplus', className: '' },
+        ];
         break;
       case 'deficit':
-        dynamicHeaders = ['Expected', 'Delivered', 'Deficit'];
+        dynamicHeaders = [
+          { title: 'Expected', className: 'hidden lg:table-cell' },
+          { title: 'Delivered', className: '' },
+          { title: 'Deficit', className: '' },
+        ];
         break;
       case 'exact':
-        dynamicHeaders = ['Expected', 'Delivered'];
+        dynamicHeaders = [
+          { title: 'Expected', className: 'hidden lg:table-cell' },
+          { title: 'Delivered', className: '' },
+        ];
         break;
       default:
-        dynamicHeaders = ['Expected', 'Delivered', 'Issued', 'Balance'];
+        dynamicHeaders = [
+          { title: 'Expected', className: 'hidden lg:table-cell' },
+          { title: 'Delivered', className: '' },
+          { title: 'Issued', className: '' },
+          { title: 'Balance', className: '' },
+        ];
     }
 
     const allHeaders = [...baseHeaders, ...dynamicHeaders, ...actionHeader];
     return (
       <tr className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
-        {/*
-         */}
         {allHeaders.map((header, index) => (
           <th
             key={index}
-            className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${header === 'Description' ? 'text-left' : 'text-center'}`}
+            className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap ${header.className}`}
           >
-            {header}
+            {header.title}
           </th>
         ))}
-        {/*
-         */}
       </tr>
     );
   };
@@ -173,26 +188,27 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
       return Math.round(num);
     };
 
+    // MODIFIED: Applied hidden lg:table-cell to less critical columns
     const baseCells = (
       <>
-        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
           {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
         </td>
         <td className="px-6 py-4 max-w-sm">
-          <div className="text-sm font-medium text-gray-900 dark:text-white">
+          <div className="text-sm font-medium text-gray-900 dark:text-white whitespace-pre-wrap">
             {material.description}
           </div>
         </td>
-        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
           {material.category}
         </td>
-        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden xl:table-cell">
           {material.materialGrade}
         </td>
-        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden xl:table-cell">
           {material.boreSize1}
         </td>
-        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden xl:table-cell">
           {material.boreSize2 || 'N/A'}
         </td>
       </>
@@ -203,7 +219,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
       case 'surplus':
         dynamicCells = (
           <>
-            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
               {expected}
             </td>
             <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
@@ -218,7 +234,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
       case 'deficit':
         dynamicCells = (
           <>
-            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
               {expected}
             </td>
             <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
@@ -233,7 +249,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
       case 'exact':
         dynamicCells = (
           <>
-            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+            <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
               {expected}
             </td>
             <td className="px-6 py-4 text-center text-sm font-bold text-blue-500 dark:text-blue-400">
@@ -245,7 +261,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
       default:
         dynamicCells = (
           <>
-            <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold">
+            <td className="px-6 py-4 text-center text-sm text-gray-800 dark:text-gray-200 font-bold hidden lg:table-cell">
               {expected}
             </td>
             <td className="px-6 py-4 text-center text-sm text-green-600 dark:text-green-400 font-semibold">
@@ -265,15 +281,9 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
 
     return (
       <tr key={material.id}>
-        {/*
-         */}
         {baseCells}
-        {/*
-         */}
         {dynamicCells}
-        {/*
-         */}
-        <td className="px-6 py-4 text-center text-sm font-medium">
+        <td className="px-6 py-4 text-center text-sm font-medium hidden lg:table-cell"> {/* MODIFIED: Hide actions on small screens */}
           {!currentUser.isViewer && (
             <div className="flex items-center justify-center space-x-4">
               <button
@@ -294,8 +304,6 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
             </div>
           )}
         </td>
-        {/*
-         */}
       </tr>
     );
   };
@@ -304,12 +312,12 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
     <>
       <StatsCards stats={dashboardStats} />
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4">
+        <div className="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4"> {/* MODIFIED: Adjusted padding and added flex-wrap */}
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 capitalize">
             {getPageTitle()}
           </h2>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
+          <div className="flex flex-wrap items-center gap-4"> {/* MODIFIED: Added flex-wrap and gap */}
+            <div className="relative w-full sm:w-auto"> {/* MODIFIED: Added w-full sm:w-auto */}
               <input
                 type="text"
                 value={searchTerm}
@@ -318,7 +326,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
                   setCurrentPage(1);
                 }}
                 placeholder="Search descriptions..."
-                className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="pl-10 pr-10 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white w-full" // MODIFIED: Added w-full
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
@@ -338,7 +346,7 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
             {!statusFilter &&
               viewType !== 'balanced' &&
               !currentUser.isViewer && (
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-wrap items-center gap-2"> {/* MODIFIED: Added flex-wrap and gap */}
                   <ImportCSV />
                   <button
                     onClick={() => {
@@ -355,18 +363,13 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
               )}
           </div>
         </div>
+        {/* MODIFIED: Added overflow-x-auto to the wrapper div */}
         <div className="overflow-x-auto overflow-y-auto max-h-[65vh]">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            {/*
-             */}
             <thead className="bg-gray-50 dark:bg-gray-700">
               {renderTableHeaders()}
             </thead>
-            {/*
-             */}
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {/*
-               */}
               {paginatedMaterials.length > 0 ? (
                 paginatedMaterials.map((material, index) =>
                   renderTableBody(material, index),
@@ -374,18 +377,14 @@ const MaterialTable = ({ filterKey, filterValue, statusFilter, viewType }) => {
               ) : (
                 <tr>
                   <td
-                    colSpan="11"
+                    colSpan="11" // Ensure colspan covers all possible columns
                     className="text-center py-10 text-gray-500 dark:text-gray-400"
                   >
                     No materials found.
                   </td>
                 </tr>
               )}
-              {/*
-               */}
             </tbody>
-            {/*
-             */}
           </table>
         </div>
         <Pagination

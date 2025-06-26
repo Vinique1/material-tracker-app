@@ -47,11 +47,10 @@ const Header = () => {
 
   return (
     <header className="bg-white dark:bg-gray-800 shadow-md h-20 flex items-center justify-between px-6 flex-shrink-0">
-      <h1 className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200">
+      <h1 className="text-sm md:text-xl font-bold text-gray-800 dark:text-gray-200"> {/* MODIFIED: Reduced font size for mobile */}
         GBARAN GBCD MATERIAL PROCUREMENT TRACKER
       </h1>
       <div className="flex items-center space-x-4">
-        {/* MODIFIED: Single dynamic theme toggle button */}
         <button
           onClick={handleThemeToggleClick}
           className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -59,7 +58,7 @@ const Header = () => {
         >
           {currentIcon}
         </button>
-        <div className="text-right hidden sm:block">
+        <div className="text-right hidden sm:block"> {/* MODIFIED: Hide email on extra small screens */}
           <p
             className="text-sm font-medium text-gray-800 dark:text-gray-200"
             title={currentUser?.email}
