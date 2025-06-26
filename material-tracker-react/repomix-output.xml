@@ -60,6 +60,7 @@ src/assets/react.svg
 src/components/AddEditMaterialModal.jsx
 src/components/AddEditMaterialModal.test.jsx
 src/components/Dashboard.jsx
+src/components/DatePickerModal.jsx
 src/components/Header.jsx
 src/components/Header.test.jsx
 src/components/ImportCSV.jsx
@@ -80,6 +81,7 @@ src/components/StatsCards.jsx
 src/context/authContext.jsx
 src/context/LayoutContext.jsx
 src/context/ThemeContext.jsx
+src/data/mir-template.json.json
 src/firebase.js
 src/index.css
 src/layouts/MainLayout.jsx
@@ -89,6 +91,7 @@ src/pages/MaterialListPage.jsx
 src/setupTests.js
 src/ui/Button.jsx
 src/ui/Button.stories.jsx
+src/utils/exportToMir.js
 tailwind.config.js
 vite.config.js
 </directory_structure>
@@ -323,6 +326,8 @@ module.exports = {
     "@headlessui/react": "^2.2.4",
     "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "firebase": "^11.9.1",
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
@@ -359,7 +364,6 @@ module.exports = {
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "eslint-plugin-storybook": "^0.8.0",
-
     "globals": "^16.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
@@ -1206,6 +1210,102 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+</file>
+
+<file path="src/components/DatePickerModal.jsx">
+// src/components/DatePickerModal.jsx
+import React, { useState } from 'react';
+import { X, Printer } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const DatePickerModal = ({ isOpen, onClose, onExport, availableDates }) => {
+  // Set the default date to the most recent available date
+  const [selectedDate, setSelectedDate] = useState(availableDates[0] || '');
+
+  if (!isOpen) return null;
+
+  const handleExportClick = () => {
+    if (!selectedDate) {
+      toast.error('Please select a date to export.');
+      return;
+    }
+    onExport(selectedDate);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-gray-600 bg-opacity-75 h-full w-full flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <div
+        className="relative mx-auto p-8 w-full max-w-md shadow-lg rounded-xl bg-white dark:bg-gray-800"
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+            Export MIR by Date
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-white"
+          >
+            <X />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <label
+            htmlFor="date-select"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            Select a delivery date to export:
+          </label>
+          <select
+            id="date-select"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-full h-11 px-4 rounded-md border border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          >
+            {availableDates.length > 0 ? (
+              availableDates.map((date) => (
+                <option key={date} value={date}>
+                  {new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </option>
+              ))
+            ) : (
+              <option disabled>No delivery dates found</option>
+            )}
+          </select>
+        </div>
+
+        <div className="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleExportClick}
+            disabled={!selectedDate}
+            className="flex items-center justify-center gap-2 w-auto px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Printer size={16} />
+            Export
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DatePickerModal;
 </file>
 
 <file path="src/components/Header.jsx">
@@ -3426,7 +3526,7 @@ const Sidebar = () => {
     <div
       className={clsx(
         'flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-x-hidden', // MODIFIED: Added dark background
-        isSidebarCollapsed ? 'w-20' : 'w-64',
+        isSidebarCollapsed ? 'w-15' : 'w-64',
       )}
     >
       {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
@@ -3448,7 +3548,7 @@ const Sidebar = () => {
         )}
       </div>
 
-      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+      <nav className={clsx('flex-1 px-4 py-4 space-y-1 overflow-y-auto', isSidebarCollapsed && 'border-r border-r-gray-700')}>
         <div>
           <button
             onClick={() =>
@@ -3879,6 +3979,4342 @@ export const ThemeProvider = ({ children }) => {
 export const useTheme = () => useContext(ThemeContext);
 </file>
 
+<file path="src/data/mir-template.json.json">
+{
+    "sheet_properties": {
+        "sheet_name": "17TH JUNE"
+    },
+    "rows": [
+        {
+            "row_index": 1,
+            "cells": [
+                {
+                    "cell_address": "A1",
+                    "value": "STEVE INTEGRATED TECH.",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 9.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "#000000"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "A1:C4"
+                },
+                {
+                    "cell_address": "D1",
+                    "value": "MATERIAL RECEIVING INSPECTION REPORT",
+                    "font": {
+                        "name": "Times New Roman",
+                        "size": 20.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "D1:J4"
+                },
+                {
+                    "cell_address": "K1",
+                    "value": "Contract No",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "L1",
+                    "value": "CW60925",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "L1:M1"
+                },
+                {
+                    "cell_address": "N1",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 10.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "N1:O4"
+                }
+            ]
+        },
+        {
+            "row_index": 2,
+            "cells": [
+                {
+                    "cell_address": "K2",
+                    "value": "Sheet No.",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "L2",
+                    "value": 1,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "L2:M2"
+                }
+            ]
+        },
+        {
+            "row_index": 3,
+            "cells": [
+                {
+                    "cell_address": "K3",
+                    "value": "Date",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "L3",
+                    "value": "2025-06-17T00:00:00",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "mm-dd-yy",
+                    "merged_cells": "L3:M3"
+                }
+            ]
+        },
+        {
+            "row_index": 4,
+            "cells": [
+                {
+                    "cell_address": "K4",
+                    "value": "Doc No",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "medium",
+                        "top": null,
+                        "bottom": null
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "L4",
+                    "value": "SITSL/GBARAN/25/QMS/MIR/001",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "L4:M4"
+                }
+            ]
+        },
+        {
+            "row_index": 5,
+            "cells": [
+                {
+                    "cell_address": "A5",
+                    "value": "PROJECT TITLE: GBARAN GAS CAP BLOWDOWN PROJECT PHASE 2",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "A5:O5"
+                }
+            ]
+        },
+        {
+            "row_index": 6,
+            "cells": [
+                {
+                    "cell_address": "A6",
+                    "value": "CLIENT: RENAISSANCE AFRICA ENERGY COMPANY",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": null
+                    },
+                    "number_format": "General",
+                    "merged_cells": "A6:O6"
+                }
+            ]
+        },
+        {
+            "row_index": 7,
+            "cells": [
+                {
+                    "cell_address": "A7",
+                    "value": "S/NO",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "medium",
+                        "bottom": null
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B7",
+                    "value": "ITEM DESCRIPTION",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "medium",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B7:H7"
+                },
+                {
+                    "cell_address": "I7",
+                    "value": "UOM",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "medium",
+                        "bottom": null
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J7",
+                    "value": "QTY",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "medium",
+                        "bottom": null
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K7",
+                    "value": "Mat. Sap No",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "medium",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K7:L7"
+                },
+                {
+                    "cell_address": "M7",
+                    "value": "INSPECTION REMARK",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M7:O7"
+                }
+            ]
+        },
+        {
+            "row_index": 8,
+            "cells": [
+                {
+                    "cell_address": "A8",
+                    "value": 1,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B8",
+                    "value": "PIPE MET 316L 10S DN80 3\" EN10204/3.1",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B8:H8"
+                },
+                {
+                    "cell_address": "I8",
+                    "value": "metres",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J8",
+                    "value": 12,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K8",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K8:L8"
+                },
+                {
+                    "cell_address": "M8",
+                    "value": "EXCELLENT CONDITION",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M8:O8"
+                }
+            ]
+        },
+        {
+            "row_index": 9,
+            "cells": [
+                {
+                    "cell_address": "A9",
+                    "value": 2,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B9",
+                    "value": "PIPE MET UNS S31803 160 DN150 6\"\nEN10204/3.1",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B9:H9"
+                },
+                {
+                    "cell_address": "I9",
+                    "value": "metres",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J9",
+                    "value": 13.4,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K9",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K9:L9"
+                },
+                {
+                    "cell_address": "M9",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M9:O9"
+                }
+            ]
+        },
+        {
+            "row_index": 10,
+            "cells": [
+                {
+                    "cell_address": "A10",
+                    "value": 3,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B10",
+                    "value": "PIPE MET UNS S31803 80S DN50 2\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B10:H10"
+                },
+                {
+                    "cell_address": "I10",
+                    "value": "metres",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J10",
+                    "value": 5.81,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K10",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K10:L10"
+                },
+                {
+                    "cell_address": "M10",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M10:O10"
+                }
+            ]
+        },
+        {
+            "row_index": 11,
+            "cells": [
+                {
+                    "cell_address": "A11",
+                    "value": 4,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B11",
+                    "value": "PIPE MET UNS S31803 120 DN100 4\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B11:H11"
+                },
+                {
+                    "cell_address": "I11",
+                    "value": "metres",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J11",
+                    "value": 20.79,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K11",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K11:L11"
+                },
+                {
+                    "cell_address": "M11",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M11:O11"
+                }
+            ]
+        },
+        {
+            "row_index": 12,
+            "cells": [
+                {
+                    "cell_address": "A12",
+                    "value": 5,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B12",
+                    "value": "PIPE MET 316L 10S DN150 6\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B12:H12"
+                },
+                {
+                    "cell_address": "I12",
+                    "value": "metres",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J12",
+                    "value": 11.3,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K12",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K12:L12"
+                },
+                {
+                    "cell_address": "M12",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M12:O12"
+                }
+            ]
+        },
+        {
+            "row_index": 13,
+            "cells": [
+                {
+                    "cell_address": "A13",
+                    "value": 6,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B13",
+                    "value": "PIPE MET 316L 10S DN80 3\"\nEN10204/3.1",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B13:H13"
+                },
+                {
+                    "cell_address": "I13",
+                    "value": "metres",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J13",
+                    "value": 12.08,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K13",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K13:L13"
+                },
+                {
+                    "cell_address": "M13",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M13:O13"
+                }
+            ]
+        },
+        {
+            "row_index": 14,
+            "cells": [
+                {
+                    "cell_address": "A14",
+                    "value": 7,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B14",
+                    "value": "Seamless pipe BE SRL 4\" XXS A106B Table Y-1 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B14:H14"
+                },
+                {
+                    "cell_address": "I14",
+                    "value": "metres",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J14",
+                    "value": 12,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K14",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K14:L14"
+                },
+                {
+                    "cell_address": "M14",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M14:O14"
+                }
+            ]
+        },
+        {
+            "row_index": 15,
+            "cells": [
+                {
+                    "cell_address": "A15",
+                    "value": 8,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B15",
+                    "value": "Smls elbow 90LR 6\" S160 A815 UNS S31803/1.4462 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B15:H15"
+                },
+                {
+                    "cell_address": "I15",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J15",
+                    "value": 3,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K15",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K15:L15"
+                },
+                {
+                    "cell_address": "M15",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M15:O15"
+                }
+            ]
+        },
+        {
+            "row_index": 16,
+            "cells": [
+                {
+                    "cell_address": "A16",
+                    "value": 9,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B16",
+                    "value": "WN flange RF SMF 150LBS 2\" S10S A182F316/316L EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B16:H16"
+                },
+                {
+                    "cell_address": "I16",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J16",
+                    "value": 2,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K16",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K16:L16"
+                },
+                {
+                    "cell_address": "M16",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M16:O16"
+                }
+            ]
+        },
+        {
+            "row_index": 17,
+            "cells": [
+                {
+                    "cell_address": "A17",
+                    "value": 10,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B17",
+                    "value": "WN flange RF SMF 1500LBS 2\" XXS A105N/A350LF2 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B17:H17"
+                },
+                {
+                    "cell_address": "I17",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J17",
+                    "value": 1,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K17",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K17:L17"
+                },
+                {
+                    "cell_address": "M17",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M17:O17"
+                }
+            ]
+        },
+        {
+            "row_index": 18,
+            "cells": [
+                {
+                    "cell_address": "A18",
+                    "value": 11,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B18",
+                    "value": "WN flange RF SMF 150LBS 8\" S10S A182F316/316L EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B18:H18"
+                },
+                {
+                    "cell_address": "I18",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J18",
+                    "value": 1,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K18",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K18:L18"
+                },
+                {
+                    "cell_address": "M18",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M18:O18"
+                }
+            ]
+        },
+        {
+            "row_index": 19,
+            "cells": [
+                {
+                    "cell_address": "A19",
+                    "value": 12,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B19",
+                    "value": "WN flange RF SMF 150LBS 3\" S10S A182F316/316L EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B19:H19"
+                },
+                {
+                    "cell_address": "I19",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J19",
+                    "value": 6,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K19",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K19:L19"
+                },
+                {
+                    "cell_address": "M19",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M19:O19"
+                }
+            ]
+        },
+        {
+            "row_index": 20,
+            "cells": [
+                {
+                    "cell_address": "A20",
+                    "value": 13,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B20",
+                    "value": "BL flange RF SMF 150LBS 1/2\" A182F316/316L EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B20:H20"
+                },
+                {
+                    "cell_address": "I20",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J20",
+                    "value": 1,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K20",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K20:L20"
+                },
+                {
+                    "cell_address": "M20",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M20:O20"
+                }
+            ]
+        },
+        {
+            "row_index": 21,
+            "cells": [
+                {
+                    "cell_address": "A21",
+                    "value": 14,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B21",
+                    "value": "BL flange RF SMF 1500LBS 4\" A182F51/1.4462 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B21:H21"
+                },
+                {
+                    "cell_address": "I21",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J21",
+                    "value": 2,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K21",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K21:L21"
+                },
+                {
+                    "cell_address": "M21",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M21:O21"
+                }
+            ]
+        },
+        {
+            "row_index": 22,
+            "cells": [
+                {
+                    "cell_address": "A22",
+                    "value": 15,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B22",
+                    "value": "BL flange RF SMF 2500LBS 2\" A105N/A350LF2 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B22:H22"
+                },
+                {
+                    "cell_address": "I22",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J22",
+                    "value": 8,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K22",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K22:L22"
+                },
+                {
+                    "cell_address": "M22",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M22:O22"
+                }
+            ]
+        },
+        {
+            "row_index": 23,
+            "cells": [
+                {
+                    "cell_address": "A23",
+                    "value": 16,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B23",
+                    "value": "BL flange RF SMF 2500LBS 3/4\" A105N/A350LF2 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B23:H23"
+                },
+                {
+                    "cell_address": "I23",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J23",
+                    "value": 1,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K23",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K23:L23"
+                },
+                {
+                    "cell_address": "M23",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M23:O23"
+                }
+            ]
+        },
+        {
+            "row_index": 24,
+            "cells": [
+                {
+                    "cell_address": "A24",
+                    "value": 17,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B24",
+                    "value": "BL flange RF SMF 1500LBS 2\" A182F51/1.4462 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B24:H24"
+                },
+                {
+                    "cell_address": "I24",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J24",
+                    "value": 7,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K24",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K24:L24"
+                },
+                {
+                    "cell_address": "M24",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M24:O24"
+                }
+            ]
+        },
+        {
+            "row_index": 25,
+            "cells": [
+                {
+                    "cell_address": "A25",
+                    "value": 18,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B25",
+                    "value": "BL flange RF SMF 2500LBS 4\" A105N/A350LF2 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B25:H25"
+                },
+                {
+                    "cell_address": "I25",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J25",
+                    "value": 5,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K25",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K25:L25"
+                },
+                {
+                    "cell_address": "M25",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M25:O25"
+                }
+            ]
+        },
+        {
+            "row_index": 26,
+            "cells": [
+                {
+                    "cell_address": "A26",
+                    "value": 19,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B26",
+                    "value": "BL flange RF SMF 150LBS 1/2\" A182F316/316L EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B26:H26"
+                },
+                {
+                    "cell_address": "I26",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J26",
+                    "value": 1,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K26",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K26:L26"
+                },
+                {
+                    "cell_address": "M26",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M26:O26"
+                }
+            ]
+        },
+        {
+            "row_index": 27,
+            "cells": [
+                {
+                    "cell_address": "A27",
+                    "value": 20,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B27",
+                    "value": "BL flange RF SMF 2500LBS 2\" A182F51/1.4462 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B27:H27"
+                },
+                {
+                    "cell_address": "I27",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J27",
+                    "value": 14,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K27",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K27:L27"
+                },
+                {
+                    "cell_address": "M27",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M27:O27"
+                }
+            ]
+        },
+        {
+            "row_index": 28,
+            "cells": [
+                {
+                    "cell_address": "A28",
+                    "value": 21,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B28",
+                    "value": "BL flange RF SMF 1500LBS 2\" A105N/A350LF2 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B28:H28"
+                },
+                {
+                    "cell_address": "I28",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J28",
+                    "value": 4,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K28",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K28:L28"
+                },
+                {
+                    "cell_address": "M28",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M28:O28"
+                }
+            ]
+        },
+        {
+            "row_index": 29,
+            "cells": [
+                {
+                    "cell_address": "A29",
+                    "value": 22,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "B29",
+                    "value": "BL flange RF SMF 1500LBS 4\" A105N/A350LF2 EN10204/3.1 ",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "left",
+                        "vertical": null,
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "B29:H29"
+                },
+                {
+                    "cell_address": "I29",
+                    "value": "pcs",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": null,
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "J29",
+                    "value": 5,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General"
+                },
+                {
+                    "cell_address": "K29",
+                    "value": "N/A",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "thin",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "K29:L29"
+                },
+                {
+                    "cell_address": "M29",
+                    "value": "\"",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "thin",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "M29:O29"
+                }
+            ]
+        },
+        {
+            "row_index": 30,
+            "cells": [
+                {
+                    "cell_address": "A30",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 11.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "fill": {
+                        "pattern": "solid",
+                        "color": "FFFFFFFF"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": "center",
+                        "wrap_text": null
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "thin",
+                        "bottom": "thin"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "A30:O30"
+                }
+            ]
+        },
+        {
+            "row_index": 31,
+            "cells": [
+                {
+                    "cell_address": "A31",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": null,
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "A31:B31"
+                },
+                {
+                    "cell_address": "C31",
+                    "value": "RECEIVED BY (STEVE INTEGRATED)",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": null,
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "C31:G31"
+                },
+                {
+                    "cell_address": "H31",
+                    "value": "WITNESSED BY (ZECH OIL)",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": null,
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "H31:K31"
+                },
+                {
+                    "cell_address": "L31",
+                    "value": "APPROVED BY (RAEC)",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": null,
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "L31:O31"
+                }
+            ]
+        },
+        {
+            "row_index": 32,
+            "cells": [
+                {
+                    "cell_address": "A32",
+                    "value": "NAME:",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "A32:B32"
+                },
+                {
+                    "cell_address": "C32",
+                    "value": "VICTOR IKEH",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "C32:G32"
+                },
+                {
+                    "cell_address": "H32",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "H32:K32"
+                },
+                {
+                    "cell_address": "L32",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "L32:O32"
+                }
+            ]
+        },
+        {
+            "row_index": 33,
+            "cells": [
+                {
+                    "cell_address": "A33",
+                    "value": "POSITION:",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "A33:B33"
+                },
+                {
+                    "cell_address": "C33",
+                    "value": "QAQC ENGINEER",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "C33:G33"
+                },
+                {
+                    "cell_address": "H33",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "H33:K33"
+                },
+                {
+                    "cell_address": "L33",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "L33:O33"
+                }
+            ]
+        },
+        {
+            "row_index": 34,
+            "cells": [
+                {
+                    "cell_address": "A34",
+                    "value": "SIGNATURE:",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "A34:B34"
+                },
+                {
+                    "cell_address": "C34",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "C34:G34"
+                },
+                {
+                    "cell_address": "H34",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "H34:K34"
+                },
+                {
+                    "cell_address": "L34",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "L34:O34"
+                }
+            ]
+        },
+        {
+            "row_index": 35,
+            "cells": [
+                {
+                    "cell_address": "A35",
+                    "value": "DATE:",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": true,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "A35:B35"
+                },
+                {
+                    "cell_address": "C35",
+                    "value": "2025-06-17T00:00:00",
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "mm-dd-yy",
+                    "merged_cells": "C35:G35"
+                },
+                {
+                    "cell_address": "H35",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": "center",
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "H35:K35"
+                },
+                {
+                    "cell_address": "L35",
+                    "value": null,
+                    "font": {
+                        "name": "Calibri",
+                        "size": 12.0,
+                        "bold": false,
+                        "italic": false,
+                        "color": "Values must be of type <class 'str'>"
+                    },
+                    "alignment": {
+                        "horizontal": null,
+                        "vertical": null,
+                        "wrap_text": true
+                    },
+                    "border": {
+                        "left": "medium",
+                        "right": "medium",
+                        "top": "medium",
+                        "bottom": "medium"
+                    },
+                    "number_format": "General",
+                    "merged_cells": "L35:O35"
+                }
+            ]
+        }
+    ]
+}
+</file>
+
 <file path="src/firebase.js">
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
@@ -3991,7 +8427,7 @@ const MainLayout = () => {
     <div className="relative h-screen bg-white dark:bg-gray-900">
       <div
         className={`grid h-full transition-all duration-300 ${
-          isSidebarCollapsed ? 'grid-cols-[80px_1fr]' : 'grid-cols-[256px_1fr]'
+          isSidebarCollapsed ? 'grid-cols-[60px_1fr]' : 'grid-cols-[256px_1fr]'
         }`}
       >
         <Sidebar />
@@ -4007,7 +8443,7 @@ const MainLayout = () => {
       <div
         className={clsx(
           'absolute top-[15%] -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out z-30 -translate-x-1/2 bg-white dark:bg-gray-800 opacity-90',
-          isSidebarCollapsed ? 'left-[80px]' : 'left-[256px]',
+          isSidebarCollapsed ? 'left-[60px]' : 'left-[256px]',
           'glow',
         )}
       >
@@ -4077,7 +8513,17 @@ import 'jspdf-autotable';
 import LogForm from '../components/LogForm';
 import LogTable from '../components/LogTable';
 import Pagination from '../components/Pagination';
-import { Download, Upload, FileDown, Plus, Search, X } from 'lucide-react';
+import {
+  Download,
+  Upload,
+  FileDown,
+  Plus,
+  Search,
+  X,
+  Printer,
+} from 'lucide-react';
+import { exportToMir } from '../utils/exportToMir';
+import DatePickerModal from '../components/DatePickerModal'; // NEW: Import the modal
 
 const ITEMS_PER_PAGE = 10;
 
@@ -4096,6 +8542,9 @@ const LogPage = ({ type }) => {
   const [selectedSupplier, setSelectedSupplier] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+
+  // NEW: State to control the date picker modal
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const config = useMemo(
     () => ({
@@ -4128,49 +8577,32 @@ const LogPage = ({ type }) => {
   }, [ADMIN_UID]);
 
   useEffect(() => {
-    const logCollectionRef = collection(db, currentConfig.collectionName);
-    getDocs(query(logCollectionRef)).then((snapshot) => {
-      const dates = snapshot.docs.map((doc) => {
-        const data = doc.data();
-        if (data.date?.toDate) {
-          return data.date.toDate().toISOString().split('T')[0];
-        }
-        return data.date;
-      });
-      setUniqueDates(
-        Array.from(new Set(dates)).sort((a, b) => new Date(b) - new Date(a)),
-      );
-    });
-  }, [currentConfig.collectionName]);
-
-  useEffect(() => {
+    // This effect now fetches all logs and also populates the unique dates for the new modal
     if (!currentUser) return;
     const logCollectionRef = collection(db, currentConfig.collectionName);
-
-    let q = query(logCollectionRef, orderBy('date', 'desc'));
-
-    // This diagnostic client-side filtering logic remains for now
-    // In a production environment, this would be reverted to server-side with indexes
-
-    if (selectedDate === 'custom' && startDate && endDate) {
-      const start = Timestamp.fromDate(new Date(startDate));
-      const end = Timestamp.fromDate(new Date(endDate + 'T23:59:59'));
-      q = query(q, where('date', '>=', start), where('date', '<=', end));
-    } else if (selectedDate !== 'all' && selectedDate !== 'custom') {
-      const startOfDay = Timestamp.fromDate(new Date(selectedDate));
-      const endOfDay = Timestamp.fromDate(new Date(selectedDate + 'T23:59:59'));
-      q = query(
-        q,
-        where('date', '>=', startOfDay),
-        where('date', '<=', endOfDay),
-      );
-    }
+    const q = query(logCollectionRef, orderBy('date', 'desc'));
 
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        setAllLogs(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-        setCurrentPage(1);
+        const logs = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAllLogs(logs);
+
+        // Also extract unique dates from all logs for the picker
+        const dates = logs.map((log) => {
+          if (log.date?.toDate) {
+            return log.date.toDate().toISOString().split('T')[0];
+          }
+          return null;
+        });
+        setUniqueDates(
+          [...new Set(dates.filter(Boolean))].sort(
+            (a, b) => new Date(b) - new Date(a),
+          ),
+        );
       },
       (error) => {
         console.error('Firestore Query Error:', error);
@@ -4179,18 +8611,28 @@ const LogPage = ({ type }) => {
     );
 
     return () => unsubscribe();
-  }, [
-    currentUser,
-    currentConfig.collectionName,
-    type,
-    selectedDate,
-    startDate,
-    endDate,
-  ]);
+  }, [currentUser, currentConfig.collectionName, type]);
 
-  // Client-side filtering for category and supplier
   const filteredLogs = useMemo(() => {
-    return allLogs.filter((log) => {
+    let logsToFilter = [...allLogs];
+
+    // Apply date range filters
+    if (selectedDate === 'custom' && startDate && endDate) {
+      const start = new Date(startDate).getTime();
+      const end = new Date(endDate + 'T23:59:59').getTime();
+      logsToFilter = logsToFilter.filter((log) => {
+        const logTime = log.date?.toDate().getTime();
+        return logTime >= start && logTime <= end;
+      });
+    } else if (selectedDate !== 'all' && selectedDate !== 'custom') {
+      logsToFilter = logsToFilter.filter((log) => {
+        const logDateStr = log.date?.toDate().toISOString().split('T')[0];
+        return logDateStr === selectedDate;
+      });
+    }
+
+    // Apply category and supplier filters
+    logsToFilter = logsToFilter.filter((log) => {
       const categoryMatch =
         selectedCategory === 'all' ||
         (log.category || '').toLowerCase().trim() ===
@@ -4201,7 +8643,9 @@ const LogPage = ({ type }) => {
           selectedSupplier.toLowerCase().trim();
       return categoryMatch && supplierMatch;
     });
-  }, [allLogs, selectedCategory, selectedSupplier]);
+
+    return logsToFilter;
+  }, [allLogs, selectedCategory, selectedSupplier, selectedDate, startDate, endDate]);
 
   const searchedLogs = useMemo(() => {
     if (!searchTerm) return filteredLogs;
@@ -4272,6 +8716,43 @@ const LogPage = ({ type }) => {
       });
       doc.save(`${filename}.pdf`);
     }
+  };
+  
+  // NEW: This function handles the export after a date is selected from the modal
+  const handleExportByDate = (date) => {
+    setIsDatePickerOpen(false); // Close the modal
+
+    if (!date) {
+      toast.error('No date was selected.');
+      return;
+    }
+
+    // Filter all logs to get only the ones for the selected date
+    const logsForDate = allLogs.filter((log) => {
+      const logDate = log.date?.toDate
+        ? log.date.toDate().toISOString().split('T')[0]
+        : null;
+      return logDate === date;
+    });
+
+    if (logsForDate.length === 0) {
+      toast.error(`No delivery logs found for ${date}.`);
+      return;
+    }
+    
+    // Prepare details for the report header
+    const reportDetails = {
+      sheetNo: 1,
+      date: date,
+      docNo: `SITSL/GBARAN/25/QMS/MIR/001`,
+      receivedBy: {
+          name: 'VICTOR IKEH',
+          position: 'QAQC ENGINEER'
+      }
+    };
+    
+    toast.success(`Exporting ${logsForDate.length} logs for ${date}...`);
+    exportToMir(logsForDate, reportDetails);
   };
 
   return (
@@ -4425,6 +8906,16 @@ const LogPage = ({ type }) => {
           >
             <FileDown size={16} /> PDF
           </button>
+          {/* MODIFIED: The MIR button now opens the modal */}
+          {type === 'delivery' && (
+            <button
+              onClick={() => setIsDatePickerOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200"
+              title="Export MIR for a Specific Date"
+            >
+              <Printer size={16} /> MIR
+            </button>
+          )}
         </div>
       </div>
 
@@ -4447,6 +8938,16 @@ const LogPage = ({ type }) => {
           log={editingLog}
           onClose={handleCloseForm}
           allMaterials={allMaterials}
+        />
+      )}
+      
+      {/* NEW: Render the modal conditionally at the end of the component */}
+      {isDatePickerOpen && (
+        <DatePickerModal
+          isOpen={isDatePickerOpen}
+          onClose={() => setIsDatePickerOpen(false)}
+          onExport={handleExportByDate}
+          availableDates={uniqueDates}
         />
       )}
     </div>
@@ -4610,6 +9111,214 @@ Disabled.args = {
   children: 'Disabled Button',
   variant: 'primary',
   disabled: true,
+};
+</file>
+
+<file path="src/utils/exportToMir.js">
+// src/utils/exportToMir.js
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+import mirTemplate from '../data/mir-template.json';
+
+// Helper to fetch images from the public folder or a URL
+const getImageAsBase64 = async (url) => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error(`Failed to fetch image at URL: ${url}`, error);
+    return null;
+  }
+};
+
+// Helper to format the border style object for ExcelJS
+const getBorderStyle = (styleName) => {
+  if (!styleName) return undefined;
+  return { style: styleName };
+};
+
+// Main export function with the new dynamic logic
+export const exportToMir = async (deliveryLogs, reportDetails) => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet(mirTemplate.sheet_properties.sheet_name || 'MIR');
+
+  // --- 1. Isolate Template Sections ---
+  const headerRows = mirTemplate.rows.filter(r => r.row_index <= 7);
+  const dataRowTemplate = mirTemplate.rows.find(r => r.row_index === 8); // For style reference
+  const blankRowTemplate = mirTemplate.rows.find(r => r.row_index === 30); // For style reference
+  const footerRows = mirTemplate.rows.filter(r => r.row_index >= 31);
+
+  // --- 2. Build Static Header (Rows 1-7) ---
+  headerRows.forEach(rowData => {
+    // Apply merges first
+    if (rowData.cells) {
+      rowData.cells.forEach(cellData => {
+        if (cellData.merged_cells) {
+          worksheet.mergeCells(cellData.merged_cells);
+        }
+      });
+    }
+    // Then apply values and styles
+    if (rowData.cells) {
+      rowData.cells.forEach(cellData => {
+        const cell = worksheet.getCell(cellData.cell_address);
+        cell.value = cellData.value;
+        // Apply styles... (font, alignment, border, etc.)
+        cell.font = { name: cellData.font.name || 'Calibri', size: cellData.font.size || 11, bold: cellData.font.bold || false, color: { argb: (cellData.font.color && cellData.font.color.startsWith('#')) ? `FF${cellData.font.color.substring(1)}` : 'FF000000' } };
+        cell.alignment = { horizontal: cellData.alignment.horizontal || 'left', vertical: cellData.alignment.vertical || 'center', wrapText: cellData.alignment.wrap_text || false, };
+        cell.border = { top: getBorderStyle(cellData.border.top), left: getBorderStyle(cellData.border.left), bottom: getBorderStyle(cellData.border.bottom), right: getBorderStyle(cellData.border.right), };
+        if (cellData.number_format && cellData.number_format !== 'General') { cell.numFmt = cellData.number_format; }
+      });
+    }
+  });
+  // Overwrite dynamic header values
+  worksheet.getCell('L2').value = reportDetails.sheetNo || 1;
+  worksheet.getCell('L3').value = new Date(reportDetails.date || new Date());
+  worksheet.getCell('L4').value = reportDetails.docNo || 'SITSL/GBARAN/25/QMS/MIR/001';
+
+
+  // --- 3. Build Dynamic Data Section ---
+  const dataRowStartIndex = 8;
+  const logsCount = deliveryLogs.length;
+
+  if (logsCount > 0) {
+    deliveryLogs.forEach((log, index) => {
+      const rowNumber = dataRowStartIndex + index;
+      const row = worksheet.getRow(rowNumber);
+      
+      // Set values
+      row.getCell('A').value = index + 1;
+      row.getCell('B').value = log.materialDescription;
+      row.getCell('I').value = log.category?.toLowerCase() === 'pipes' ? 'metres' : 'pcs';
+      row.getCell('J').value = log.quantity;
+      row.getCell('K').value = 'N/A';
+      row.getCell('M').value = log.remarks || 'EXCELLENT CONDITION';
+
+      // Apply merges for this specific row
+      worksheet.mergeCells(`B${rowNumber}:H${rowNumber}`);
+      worksheet.mergeCells(`K${rowNumber}:L${rowNumber}`);
+      worksheet.mergeCells(`M${rowNumber}:O${rowNumber}`);
+
+      // Apply styles using the template as a reference
+      row.eachCell({ includeEmpty: true }, cell => {
+        cell.font = { name: 'Calibri', size: 11 };
+        cell.alignment = { horizontal: 'center', vertical: 'center', wrapText: true };
+        cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }, };
+      });
+      // Style overrides
+      row.getCell('B').alignment.horizontal = 'left';
+      row.getCell('A').border.left = { style: 'medium' };
+      row.getCell('O').border.right = { style: 'medium' };
+    });
+  }
+
+  // --- 4. Build Dynamic Footer ---
+  const lastDataRowIndex = dataRowStartIndex + logsCount - 1;
+  const footerStartIndex = lastDataRowIndex + 2; // +1 for blank row, +1 to start footer
+
+  // Add a blank row with border style
+  const blankRowIndex = footerStartIndex - 1;
+  worksheet.mergeCells(`A${blankRowIndex}:O${blankRowIndex}`);
+  const blankCell = worksheet.getCell(`A${blankRowIndex}`);
+  blankCell.style = {
+      border: { top: { style: 'thin' }, bottom: { style: 'thin' }, left: { style: 'medium' }, right: { style: 'medium' } }
+  };
+  
+  // Create footer rows at the new dynamic position
+  footerRows.forEach(footerRowData => {
+    const newRowIndex = footerStartIndex + (footerRowData.row_index - 31);
+    const newRow = worksheet.getRow(newRowIndex);
+
+    if (footerRowData.cells) {
+      // Apply merges first, updating the row index in the range string
+      footerRowData.cells.forEach(cellData => {
+         if (cellData.merged_cells) {
+             const newRange = cellData.merged_cells.replace(/\d+/g, newRowIndex);
+             worksheet.mergeCells(newRange);
+         }
+      });
+      // Then apply values and styles
+      footerRowData.cells.forEach(cellData => {
+          const colLetter = cellData.cell_address.match(/[A-Z]+/)[0];
+          const cell = newRow.getCell(colLetter);
+          // Apply styles...
+          cell.value = cellData.value;
+          cell.font = { name: cellData.font.name || 'Calibri', size: cellData.font.size || 11, bold: cellData.font.bold || false, color: { argb: (cellData.font.color && cellData.font.color.startsWith('#')) ? `FF${cellData.font.color.substring(1)}` : 'FF000000' } };
+          cell.alignment = { horizontal: cellData.alignment.horizontal || 'left', vertical: cellData.alignment.vertical || 'center', wrapText: cellData.alignment.wrap_text || false, };
+          cell.border = { top: getBorderStyle(cellData.border.top), left: getBorderStyle(cellData.border.left), bottom: getBorderStyle(cellData.border.bottom), right: getBorderStyle(cellData.border.right), };
+      });
+    }
+  });
+
+  // Overwrite dynamic footer values
+  const receivedByNameCell = worksheet.getCell(`C${footerStartIndex + 1}`);
+  receivedByNameCell.value = reportDetails.receivedBy?.name || 'VICTOR IKEH';
+  const receivedByPosCell = worksheet.getCell(`C${footerStartIndex + 2}`);
+  receivedByPosCell.value = reportDetails.receivedBy?.position || 'QAQC ENGINEER';
+  const receivedByDateCell = worksheet.getCell(`C${footerStartIndex + 4}`);
+  receivedByDateCell.value = new Date(reportDetails.date || new Date());
+  receivedByDateCell.numFmt = 'mm-dd-yy';
+
+
+  // --- 5. Add Images Dynamically ---
+  worksheet.getCell('A1').value = null;
+  worksheet.getCell('N1').value = null;
+
+  const imageUrls = {
+    companyLogo: '/images/steve-logo.png',
+    clientLogo: '/images/renaissance-logo.jpg',
+    signature: '/images/signature.png'
+  };
+
+  const [companyLogoB64, clientLogoB64, signatureB64] = await Promise.all([
+    getImageAsBase64(imageUrls.companyLogo),
+    getImageAsBase64(imageUrls.clientLogo),
+    getImageAsBase64(imageUrls.signature)
+  ]);
+
+  if(companyLogoB64) {
+    const companyLogoId = workbook.addImage({ base64: companyLogoB64, extension: 'png' });
+    worksheet.addImage(companyLogoId, 'A1:C4');
+  }
+  if(clientLogoB64) {
+    const clientLogoId = workbook.addImage({ base64: clientLogoB64, extension: 'jpeg' });
+    worksheet.addImage(clientLogoId, 'N1:O4');
+  }
+  if(signatureB64) {
+    // Place signature in its new dynamic position
+    const signatureRow = footerStartIndex + 3; // 3 rows down from footer start
+    worksheet.getCell(`C${signatureRow}`).value = null; // Clear placeholder
+    const signatureId = workbook.addImage({ base64: signatureB64, extension: 'png' });
+    worksheet.addImage(signatureId, `C${signatureRow}:G${signatureRow}`);
+  }
+
+  // --- 6. Set Column Widths ---
+  worksheet.getColumn('A').width = 5;
+  worksheet.getColumn('B').width = 15;
+  worksheet.getColumn('C').width = 10;
+  worksheet.getColumn('D').width = 10;
+  worksheet.getColumn('E').width = 10;
+  worksheet.getColumn('F').width = 10;
+  worksheet.getColumn('G').width = 10;
+  worksheet.getColumn('H').width = 10;
+  worksheet.getColumn('I').width = 8;
+  worksheet.getColumn('J').width = 8;
+  worksheet.getColumn('K').width = 10;
+  worksheet.getColumn('L').width = 10;
+  worksheet.getColumn('M').width = 12;
+  worksheet.getColumn('N').width = 12;
+  worksheet.getColumn('O').width = 12;
+
+  // --- 7. Generate and Download File ---
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.sheet' });
+  saveAs(blob, `MIR_Report_${reportDetails.date || 'export'}.xlsx`);
 };
 </file>
 

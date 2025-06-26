@@ -18,8 +18,17 @@ import 'jspdf-autotable';
 import LogForm from '../components/LogForm';
 import LogTable from '../components/LogTable';
 import Pagination from '../components/Pagination';
-import { Download, Upload, FileDown, Plus, Search, X, Printer } from 'lucide-react';
-import { exportToMir } from '../utils/exportToMir'; // Import our new function
+import {
+  Download,
+  Upload,
+  FileDown,
+  Plus,
+  Search,
+  X,
+  Printer,
+} from 'lucide-react';
+import { exportToMir } from '../utils/exportToMir';
+import DatePickerModal from '../components/DatePickerModal'; // NEW: Import the modal
 
 const ITEMS_PER_PAGE = 10;
 
@@ -38,6 +47,9 @@ const LogPage = ({ type }) => {
   const [selectedSupplier, setSelectedSupplier] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+
+  // NEW: State to control the date picker modal
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const config = useMemo(
     () => ({
@@ -70,49 +82,32 @@ const LogPage = ({ type }) => {
   }, [ADMIN_UID]);
 
   useEffect(() => {
-    const logCollectionRef = collection(db, currentConfig.collectionName);
-    getDocs(query(logCollectionRef)).then((snapshot) => {
-      const dates = snapshot.docs.map((doc) => {
-        const data = doc.data();
-        if (data.date?.toDate) {
-          return data.date.toDate().toISOString().split('T')[0];
-        }
-        return data.date;
-      });
-      setUniqueDates(
-        Array.from(new Set(dates)).sort((a, b) => new Date(b) - new Date(a)),
-      );
-    });
-  }, [currentConfig.collectionName]);
-
-  useEffect(() => {
+    // This effect now fetches all logs and also populates the unique dates for the new modal
     if (!currentUser) return;
     const logCollectionRef = collection(db, currentConfig.collectionName);
-
-    let q = query(logCollectionRef, orderBy('date', 'desc'));
-
-    // This diagnostic client-side filtering logic remains for now
-    // In a production environment, this would be reverted to server-side with indexes
-
-    if (selectedDate === 'custom' && startDate && endDate) {
-      const start = Timestamp.fromDate(new Date(startDate));
-      const end = Timestamp.fromDate(new Date(endDate + 'T23:59:59'));
-      q = query(q, where('date', '>=', start), where('date', '<=', end));
-    } else if (selectedDate !== 'all' && selectedDate !== 'custom') {
-      const startOfDay = Timestamp.fromDate(new Date(selectedDate));
-      const endOfDay = Timestamp.fromDate(new Date(selectedDate + 'T23:59:59'));
-      q = query(
-        q,
-        where('date', '>=', startOfDay),
-        where('date', '<=', endOfDay),
-      );
-    }
+    const q = query(logCollectionRef, orderBy('date', 'desc'));
 
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        setAllLogs(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-        setCurrentPage(1);
+        const logs = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAllLogs(logs);
+
+        // Also extract unique dates from all logs for the picker
+        const dates = logs.map((log) => {
+          if (log.date?.toDate) {
+            return log.date.toDate().toISOString().split('T')[0];
+          }
+          return null;
+        });
+        setUniqueDates(
+          [...new Set(dates.filter(Boolean))].sort(
+            (a, b) => new Date(b) - new Date(a),
+          ),
+        );
       },
       (error) => {
         console.error('Firestore Query Error:', error);
@@ -121,18 +116,28 @@ const LogPage = ({ type }) => {
     );
 
     return () => unsubscribe();
-  }, [
-    currentUser,
-    currentConfig.collectionName,
-    type,
-    selectedDate,
-    startDate,
-    endDate,
-  ]);
+  }, [currentUser, currentConfig.collectionName, type]);
 
-  // Client-side filtering for category and supplier
   const filteredLogs = useMemo(() => {
-    return allLogs.filter((log) => {
+    let logsToFilter = [...allLogs];
+
+    // Apply date range filters
+    if (selectedDate === 'custom' && startDate && endDate) {
+      const start = new Date(startDate).getTime();
+      const end = new Date(endDate + 'T23:59:59').getTime();
+      logsToFilter = logsToFilter.filter((log) => {
+        const logTime = log.date?.toDate().getTime();
+        return logTime >= start && logTime <= end;
+      });
+    } else if (selectedDate !== 'all' && selectedDate !== 'custom') {
+      logsToFilter = logsToFilter.filter((log) => {
+        const logDateStr = log.date?.toDate().toISOString().split('T')[0];
+        return logDateStr === selectedDate;
+      });
+    }
+
+    // Apply category and supplier filters
+    logsToFilter = logsToFilter.filter((log) => {
       const categoryMatch =
         selectedCategory === 'all' ||
         (log.category || '').toLowerCase().trim() ===
@@ -143,7 +148,9 @@ const LogPage = ({ type }) => {
           selectedSupplier.toLowerCase().trim();
       return categoryMatch && supplierMatch;
     });
-  }, [allLogs, selectedCategory, selectedSupplier]);
+
+    return logsToFilter;
+  }, [allLogs, selectedCategory, selectedSupplier, selectedDate, startDate, endDate]);
 
   const searchedLogs = useMemo(() => {
     if (!searchTerm) return filteredLogs;
@@ -215,21 +222,42 @@ const LogPage = ({ type }) => {
       doc.save(`${filename}.pdf`);
     }
   };
+  
+  // NEW: This function handles the export after a date is selected from the modal
+  const handleExportByDate = (date) => {
+    setIsDatePickerOpen(false); // Close the modal
 
-  const handleExportMir = () => {
-    if (searchedLogs.length === 0) {
-      toast.error('No logs selected to export in MIR format.');
+    if (!date) {
+      toast.error('No date was selected.');
+      return;
+    }
+
+    // Filter all logs to get only the ones for the selected date
+    const logsForDate = allLogs.filter((log) => {
+      const logDate = log.date?.toDate
+        ? log.date.toDate().toISOString().split('T')[0]
+        : null;
+      return logDate === date;
+    });
+
+    if (logsForDate.length === 0) {
+      toast.error(`No delivery logs found for ${date}.`);
       return;
     }
     
-    // You can gather these details from a form or use the current filter state
+    // Prepare details for the report header
     const reportDetails = {
-      sheetNo: 1, // Example
-      date: selectedDate !== 'all' ? selectedDate : new Date().toISOString().split('T')[0],
-      docNo: 'SITSL/GBARAN/25/QMS/MIR/002' // Example
+      sheetNo: 1,
+      date: date,
+      docNo: `SITSL/GBARAN/25/QMS/MIR/001`,
+      receivedBy: {
+          name: 'VICTOR IKEH',
+          position: 'QAQC ENGINEER'
+      }
     };
     
-    exportToMir(searchedLogs, reportDetails);
+    toast.success(`Exporting ${logsForDate.length} logs for ${date}...`);
+    exportToMir(logsForDate, reportDetails);
   };
 
   return (
@@ -383,19 +411,16 @@ const LogPage = ({ type }) => {
           >
             <FileDown size={16} /> PDF
           </button>
-
-         {/* ---- ADD THIS NEW BUTTON ---- */}
-         {type === 'delivery' && (
-             <button
-              onClick={handleExportMir}
-              disabled={searchedLogs.length === 0}
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 disabled:opacity-50"
-              title="Export current view to MIR Excel format"
-             >
+          {/* MODIFIED: The MIR button now opens the modal */}
+          {type === 'delivery' && (
+            <button
+              onClick={() => setIsDatePickerOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200"
+              title="Export MIR for a Specific Date"
+            >
               <Printer size={16} /> MIR
-             </button>
-        )}
-
+            </button>
+          )}
         </div>
       </div>
 
@@ -418,6 +443,16 @@ const LogPage = ({ type }) => {
           log={editingLog}
           onClose={handleCloseForm}
           allMaterials={allMaterials}
+        />
+      )}
+      
+      {/* NEW: Render the modal conditionally at the end of the component */}
+      {isDatePickerOpen && (
+        <DatePickerModal
+          isOpen={isDatePickerOpen}
+          onClose={() => setIsDatePickerOpen(false)}
+          onExport={handleExportByDate}
+          availableDates={uniqueDates}
         />
       )}
     </div>
