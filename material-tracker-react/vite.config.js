@@ -3,11 +3,22 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-// This is the entire corrected file content.
 export default defineConfig({
-  plugins: [
-    react(),
-    // The plugin will now automatically find and use your tailwind.config.js
-    tailwindcss(),
-  ],
+  plugins: [react(), tailwindcss()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Create a separate chunk for Firebase
+          if (id.includes('node_modules/firebase')) {
+            return 'firebase';
+          }
+          // Create a separate chunk for headless-ui
+          if (id.includes('node_modules/@headlessui')) {
+            return 'headlessui';
+          }
+        },
+      },
+    },
+  },
 });

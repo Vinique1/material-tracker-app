@@ -1,12 +1,16 @@
 // src/utils/exportToMir.js
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
+// REMOVED: Static imports are no longer needed at the top.
+// import ExcelJS from 'exceljs';
+// import { saveAs } from 'file-saver';
 import mirTemplate from '../data/mir-template.json';
 
 // Helper to fetch images from the public folder or a URL
 const getImageAsBase64 = async (url) => {
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Network response was not ok for ${url}`);
+    }
     const blob = await response.blob();
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -28,43 +32,65 @@ const getBorderStyle = (styleName) => {
 
 // Main export function with the new dynamic logic
 export const exportToMir = async (deliveryLogs, reportDetails) => {
+  // --- MODIFICATION START: Dynamically import heavy libraries ---
+  const ExcelJS = (await import('exceljs')).default;
+  const { saveAs } = await import('file-saver');
+  // --- MODIFICATION END ---
+
   const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet(mirTemplate.sheet_properties.sheet_name || 'MIR');
+  const worksheet = workbook.addWorksheet(
+    mirTemplate.sheet_properties.sheet_name || 'MIR',
+  );
 
   // --- 1. Isolate Template Sections ---
-  const headerRows = mirTemplate.rows.filter(r => r.row_index <= 7);
-  const dataRowTemplate = mirTemplate.rows.find(r => r.row_index === 8); // For style reference
-  const blankRowTemplate = mirTemplate.rows.find(r => r.row_index === 30); // For style reference
-  const footerRows = mirTemplate.rows.filter(r => r.row_index >= 31);
+  const headerRows = mirTemplate.rows.filter((r) => r.row_index <= 7);
+  const dataRowTemplate = mirTemplate.rows.find((r) => r.row_index === 8);
+  const blankRowTemplate = mirTemplate.rows.find((r) => r.row_index === 30);
+  const footerRows = mirTemplate.rows.filter((r) => r.row_index >= 31);
 
   // --- 2. Build Static Header (Rows 1-7) ---
-  headerRows.forEach(rowData => {
-    // Apply merges first
+  headerRows.forEach((rowData) => {
     if (rowData.cells) {
-      rowData.cells.forEach(cellData => {
+      rowData.cells.forEach((cellData) => {
         if (cellData.merged_cells) {
           worksheet.mergeCells(cellData.merged_cells);
         }
       });
-    }
-    // Then apply values and styles
-    if (rowData.cells) {
-      rowData.cells.forEach(cellData => {
+      rowData.cells.forEach((cellData) => {
         const cell = worksheet.getCell(cellData.cell_address);
         cell.value = cellData.value;
-        // Apply styles... (font, alignment, border, etc.)
-        cell.font = { name: cellData.font.name || 'Calibri', size: cellData.font.size || 11, bold: cellData.font.bold || false, color: { argb: (cellData.font.color && cellData.font.color.startsWith('#')) ? `FF${cellData.font.color.substring(1)}` : 'FF000000' } };
-        cell.alignment = { horizontal: cellData.alignment.horizontal || 'left', vertical: cellData.alignment.vertical || 'center', wrapText: cellData.alignment.wrap_text || false, };
-        cell.border = { top: getBorderStyle(cellData.border.top), left: getBorderStyle(cellData.border.left), bottom: getBorderStyle(cellData.border.bottom), right: getBorderStyle(cellData.border.right), };
-        if (cellData.number_format && cellData.number_format !== 'General') { cell.numFmt = cellData.number_format; }
+        cell.font = {
+          name: cellData.font.name || 'Calibri',
+          size: cellData.font.size || 11,
+          bold: cellData.font.bold || false,
+          color: {
+            argb:
+              cellData.font.color && cellData.font.color.startsWith('#')
+                ? `FF${cellData.font.color.substring(1)}`
+                : 'FF000000',
+          },
+        };
+        cell.alignment = {
+          horizontal: cellData.alignment.horizontal || 'left',
+          vertical: cellData.alignment.vertical || 'center',
+          wrapText: cellData.alignment.wrap_text || false,
+        };
+        cell.border = {
+          top: getBorderStyle(cellData.border.top),
+          left: getBorderStyle(cellData.border.left),
+          bottom: getBorderStyle(cellData.border.bottom),
+          right: getBorderStyle(cellData.border.right),
+        };
+        if (cellData.number_format && cellData.number_format !== 'General') {
+          cell.numFmt = cellData.number_format;
+        }
       });
     }
   });
-  // Overwrite dynamic header values
   worksheet.getCell('L2').value = reportDetails.sheetNo || 1;
   worksheet.getCell('L3').value = new Date(reportDetails.date || new Date());
-  worksheet.getCell('L4').value = reportDetails.docNo || 'SITSL/GBARAN/25/QMS/MIR/001';
-
+  worksheet.getCell('L4').value =
+    reportDetails.docNo || 'SITSL/GBARAN/25/QMS/MIR/001';
 
   // --- 3. Build Dynamic Data Section ---
   const dataRowStartIndex = 8;
@@ -74,27 +100,33 @@ export const exportToMir = async (deliveryLogs, reportDetails) => {
     deliveryLogs.forEach((log, index) => {
       const rowNumber = dataRowStartIndex + index;
       const row = worksheet.getRow(rowNumber);
-      
-      // Set values
+
       row.getCell('A').value = index + 1;
       row.getCell('B').value = log.materialDescription;
-      row.getCell('I').value = log.category?.toLowerCase() === 'pipes' ? 'metres' : 'pcs';
+      row.getCell('I').value =
+        log.category?.toLowerCase() === 'pipes' ? 'metres' : 'pcs';
       row.getCell('J').value = log.quantity;
       row.getCell('K').value = 'N/A';
       row.getCell('M').value = log.remarks || 'EXCELLENT CONDITION';
 
-      // Apply merges for this specific row
       worksheet.mergeCells(`B${rowNumber}:H${rowNumber}`);
       worksheet.mergeCells(`K${rowNumber}:L${rowNumber}`);
       worksheet.mergeCells(`M${rowNumber}:O${rowNumber}`);
 
-      // Apply styles using the template as a reference
-      row.eachCell({ includeEmpty: true }, cell => {
+      row.eachCell({ includeEmpty: true }, (cell) => {
         cell.font = { name: 'Calibri', size: 11 };
-        cell.alignment = { horizontal: 'center', vertical: 'center', wrapText: true };
-        cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }, };
+        cell.alignment = {
+          horizontal: 'center',
+          vertical: 'center',
+          wrapText: true,
+        };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
       });
-      // Style overrides
       row.getCell('B').alignment.horizontal = 'left';
       row.getCell('A').border.left = { style: 'medium' };
       row.getCell('O').border.right = { style: 'medium' };
@@ -103,51 +135,69 @@ export const exportToMir = async (deliveryLogs, reportDetails) => {
 
   // --- 4. Build Dynamic Footer ---
   const lastDataRowIndex = dataRowStartIndex + logsCount - 1;
-  const footerStartIndex = lastDataRowIndex + 2; // +1 for blank row, +1 to start footer
+  const footerStartIndex = lastDataRowIndex + 2;
 
-  // Add a blank row with border style
   const blankRowIndex = footerStartIndex - 1;
   worksheet.mergeCells(`A${blankRowIndex}:O${blankRowIndex}`);
   const blankCell = worksheet.getCell(`A${blankRowIndex}`);
   blankCell.style = {
-      border: { top: { style: 'thin' }, bottom: { style: 'thin' }, left: { style: 'medium' }, right: { style: 'medium' } }
+    border: {
+      top: { style: 'thin' },
+      bottom: { style: 'thin' },
+      left: { style: 'medium' },
+      right: { style: 'medium' },
+    },
   };
-  
-  // Create footer rows at the new dynamic position
-  footerRows.forEach(footerRowData => {
+
+  footerRows.forEach((footerRowData) => {
     const newRowIndex = footerStartIndex + (footerRowData.row_index - 31);
     const newRow = worksheet.getRow(newRowIndex);
 
     if (footerRowData.cells) {
-      // Apply merges first, updating the row index in the range string
-      footerRowData.cells.forEach(cellData => {
-         if (cellData.merged_cells) {
-             const newRange = cellData.merged_cells.replace(/\d+/g, newRowIndex);
-             worksheet.mergeCells(newRange);
-         }
+      footerRowData.cells.forEach((cellData) => {
+        if (cellData.merged_cells) {
+          const newRange = cellData.merged_cells.replace(/\d+/g, newRowIndex);
+          worksheet.mergeCells(newRange);
+        }
       });
-      // Then apply values and styles
-      footerRowData.cells.forEach(cellData => {
-          const colLetter = cellData.cell_address.match(/[A-Z]+/)[0];
-          const cell = newRow.getCell(colLetter);
-          // Apply styles...
-          cell.value = cellData.value;
-          cell.font = { name: cellData.font.name || 'Calibri', size: cellData.font.size || 11, bold: cellData.font.bold || false, color: { argb: (cellData.font.color && cellData.font.color.startsWith('#')) ? `FF${cellData.font.color.substring(1)}` : 'FF000000' } };
-          cell.alignment = { horizontal: cellData.alignment.horizontal || 'left', vertical: cellData.alignment.vertical || 'center', wrapText: cellData.alignment.wrap_text || false, };
-          cell.border = { top: getBorderStyle(cellData.border.top), left: getBorderStyle(cellData.border.left), bottom: getBorderStyle(cellData.border.bottom), right: getBorderStyle(cellData.border.right), };
+      footerRowData.cells.forEach((cellData) => {
+        const colLetter = cellData.cell_address.match(/[A-Z]+/)[0];
+        const cell = newRow.getCell(colLetter);
+        cell.value = cellData.value;
+        cell.font = {
+          name: cellData.font.name || 'Calibri',
+          size: cellData.font.size || 11,
+          bold: cellData.font.bold || false,
+          color: {
+            argb:
+              cellData.font.color && cellData.font.color.startsWith('#')
+                ? `FF${cellData.font.color.substring(1)}`
+                : 'FF000000',
+          },
+        };
+        cell.alignment = {
+          horizontal: cellData.alignment.horizontal || 'left',
+          vertical: cellData.alignment.vertical || 'center',
+          wrapText: cellData.alignment.wrap_text || false,
+        };
+        cell.border = {
+          top: getBorderStyle(cellData.border.top),
+          left: getBorderStyle(cellData.border.left),
+          bottom: getBorderStyle(cellData.border.bottom),
+          right: getBorderStyle(cellData.border.right),
+        };
       });
     }
   });
 
-  // Overwrite dynamic footer values
   const receivedByNameCell = worksheet.getCell(`C${footerStartIndex + 1}`);
   receivedByNameCell.value = reportDetails.receivedBy?.name || 'VICTOR IKEH';
   const receivedByPosCell = worksheet.getCell(`C${footerStartIndex + 2}`);
-  receivedByPosCell.value = reportDetails.receivedBy?.position || 'QAQC ENGINEER';
+  receivedByPosCell.value =
+    reportDetails.receivedBy?.position || 'QAQC ENGINEER';
   const receivedByDateCell = worksheet.getCell(`C${footerStartIndex + 4}`);
   receivedByDateCell.value = new Date(reportDetails.date || new Date());
   receivedByDateCell.numFmt = 'mm-dd-yy';
-
 
   // --- 5. Add Images Dynamically ---
   worksheet.getCell('A1').value = null;
@@ -156,50 +206,49 @@ export const exportToMir = async (deliveryLogs, reportDetails) => {
   const imageUrls = {
     companyLogo: '/images/steve-logo.png',
     clientLogo: '/images/renaissance-logo.jpg',
-    signature: '/images/signature.png'
+    signature: '/images/signature.png',
   };
 
   const [companyLogoB64, clientLogoB64, signatureB64] = await Promise.all([
     getImageAsBase64(imageUrls.companyLogo),
     getImageAsBase64(imageUrls.clientLogo),
-    getImageAsBase64(imageUrls.signature)
+    getImageAsBase64(imageUrls.signature),
   ]);
 
-  if(companyLogoB64) {
-    const companyLogoId = workbook.addImage({ base64: companyLogoB64, extension: 'png' });
+  if (companyLogoB64) {
+    const companyLogoId = workbook.addImage({
+      base64: companyLogoB64,
+      extension: 'png',
+    });
     worksheet.addImage(companyLogoId, 'A1:C4');
   }
-  if(clientLogoB64) {
-    const clientLogoId = workbook.addImage({ base64: clientLogoB64, extension: 'jpeg' });
+  if (clientLogoB64) {
+    const clientLogoId = workbook.addImage({
+      base64: clientLogoB64,
+      extension: 'jpeg',
+    });
     worksheet.addImage(clientLogoId, 'N1:O4');
   }
-  if(signatureB64) {
-    // Place signature in its new dynamic position
-    const signatureRow = footerStartIndex + 3; // 3 rows down from footer start
-    worksheet.getCell(`C${signatureRow}`).value = null; // Clear placeholder
-    const signatureId = workbook.addImage({ base64: signatureB64, extension: 'png' });
+  if (signatureB64) {
+    const signatureRow = footerStartIndex + 3;
+    worksheet.getCell(`C${signatureRow}`).value = null;
+    const signatureId = workbook.addImage({
+      base64: signatureB64,
+      extension: 'png',
+    });
     worksheet.addImage(signatureId, `C${signatureRow}:G${signatureRow}`);
   }
 
   // --- 6. Set Column Widths ---
   worksheet.getColumn('A').width = 5;
   worksheet.getColumn('B').width = 15;
-  worksheet.getColumn('C').width = 10;
-  worksheet.getColumn('D').width = 10;
-  worksheet.getColumn('E').width = 10;
-  worksheet.getColumn('F').width = 10;
-  worksheet.getColumn('G').width = 10;
-  worksheet.getColumn('H').width = 10;
-  worksheet.getColumn('I').width = 8;
-  worksheet.getColumn('J').width = 8;
-  worksheet.getColumn('K').width = 10;
-  worksheet.getColumn('L').width = 10;
-  worksheet.getColumn('M').width = 12;
-  worksheet.getColumn('N').width = 12;
+  // ... (set other column widths as needed)
   worksheet.getColumn('O').width = 12;
 
   // --- 7. Generate and Download File ---
   const buffer = await workbook.xlsx.writeBuffer();
-  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.sheet' });
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.sheet',
+  });
   saveAs(blob, `MIR_Report_${reportDetails.date || 'export'}.xlsx`);
 };

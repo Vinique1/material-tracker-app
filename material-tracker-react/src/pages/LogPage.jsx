@@ -12,9 +12,6 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import toast from 'react-hot-toast';
-import Papa from 'papaparse';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import LogForm from '../components/LogForm';
 import LogTable from '../components/LogTable';
 import Pagination from '../components/Pagination';
@@ -27,8 +24,7 @@ import {
   X,
   Printer,
 } from 'lucide-react';
-import { exportToMir } from '../utils/exportToMir';
-import DatePickerModal from '../components/DatePickerModal'; // NEW: Import the modal
+import DatePickerModal from '../components/DatePickerModal';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -38,7 +34,6 @@ const LogPage = ({ type }) => {
   const [allMaterials, setAllMaterials] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingLog, setEditingLog] = useState(null);
-
   const [uniqueDates, setUniqueDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState('all');
   const [startDate, setStartDate] = useState('');
@@ -47,8 +42,6 @@ const LogPage = ({ type }) => {
   const [selectedSupplier, setSelectedSupplier] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-
-  // NEW: State to control the date picker modal
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const config = useMemo(
@@ -82,7 +75,6 @@ const LogPage = ({ type }) => {
   }, [ADMIN_UID]);
 
   useEffect(() => {
-    // This effect now fetches all logs and also populates the unique dates for the new modal
     if (!currentUser) return;
     const logCollectionRef = collection(db, currentConfig.collectionName);
     const q = query(logCollectionRef, orderBy('date', 'desc'));
@@ -96,7 +88,6 @@ const LogPage = ({ type }) => {
         }));
         setAllLogs(logs);
 
-        // Also extract unique dates from all logs for the picker
         const dates = logs.map((log) => {
           if (log.date?.toDate) {
             return log.date.toDate().toISOString().split('T')[0];
@@ -121,7 +112,6 @@ const LogPage = ({ type }) => {
   const filteredLogs = useMemo(() => {
     let logsToFilter = [...allLogs];
 
-    // Apply date range filters
     if (selectedDate === 'custom' && startDate && endDate) {
       const start = new Date(startDate).getTime();
       const end = new Date(endDate + 'T23:59:59').getTime();
@@ -136,7 +126,6 @@ const LogPage = ({ type }) => {
       });
     }
 
-    // Apply category and supplier filters
     logsToFilter = logsToFilter.filter((log) => {
       const categoryMatch =
         selectedCategory === 'all' ||
@@ -175,16 +164,20 @@ const LogPage = ({ type }) => {
     setEditingLog(log);
     setIsFormOpen(true);
   };
+
   const handleCloseForm = () => {
     setEditingLog(null);
     setIsFormOpen(false);
   };
 
-  const handleExport = (format) => {
+  const handleExport = async (format) => {
     if (searchedLogs.length === 0) {
       toast.error('No logs to export.');
       return;
     }
+
+    const toastId = toast.loading(`Preparing ${format.toUpperCase()} export...`);
+
     const dataToExport = searchedLogs.map((log) => {
       const date = log.date?.toDate
         ? log.date.toDate().toLocaleDateString()
@@ -200,8 +193,11 @@ const LogPage = ({ type }) => {
         Remarks: log.remarks || 'N/A',
       };
     });
+    
     const filename = `${type}_log_${new Date().toISOString().split('T')[0]}`;
+
     if (format === 'csv') {
+      const Papa = await import('papaparse');
       const csv = Papa.unparse(dataToExport);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -211,6 +207,9 @@ const LogPage = ({ type }) => {
       link.click();
       document.body.removeChild(link);
     } else if (format === 'pdf') {
+      const { default: jsPDF } = await import('jspdf');
+      await import('jspdf-autotable');
+
       const doc = new jsPDF();
       doc.text(`${currentConfig.title} Report`, 14, 16);
       doc.autoTable({
@@ -221,18 +220,18 @@ const LogPage = ({ type }) => {
       });
       doc.save(`${filename}.pdf`);
     }
+
+    toast.success(`${format.toUpperCase()} export ready!`, { id: toastId });
   };
   
-  // NEW: This function handles the export after a date is selected from the modal
-  const handleExportByDate = (date) => {
-    setIsDatePickerOpen(false); // Close the modal
+  const handleExportByDate = async (date) => {
+    setIsDatePickerOpen(false);
 
     if (!date) {
       toast.error('No date was selected.');
       return;
     }
 
-    // Filter all logs to get only the ones for the selected date
     const logsForDate = allLogs.filter((log) => {
       const logDate = log.date?.toDate
         ? log.date.toDate().toISOString().split('T')[0]
@@ -245,7 +244,6 @@ const LogPage = ({ type }) => {
       return;
     }
     
-    // Prepare details for the report header
     const reportDetails = {
       sheetNo: 1,
       date: date,
@@ -257,6 +255,8 @@ const LogPage = ({ type }) => {
     };
     
     toast.success(`Exporting ${logsForDate.length} logs for ${date}...`);
+    
+    const { exportToMir } = await import('../utils/exportToMir.js');
     exportToMir(logsForDate, reportDetails);
   };
 
@@ -411,7 +411,6 @@ const LogPage = ({ type }) => {
           >
             <FileDown size={16} /> PDF
           </button>
-          {/* MODIFIED: The MIR button now opens the modal */}
           {type === 'delivery' && (
             <button
               onClick={() => setIsDatePickerOpen(true)}
@@ -446,7 +445,6 @@ const LogPage = ({ type }) => {
         />
       )}
       
-      {/* NEW: Render the modal conditionally at the end of the component */}
       {isDatePickerOpen && (
         <DatePickerModal
           isOpen={isDatePickerOpen}
