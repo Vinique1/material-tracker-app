@@ -113,15 +113,18 @@ graphic3.png,1750541927755,94a6d89d84f47305d00403a201cd43a36389c760412bc32e6deff
 graphic2.png,1750541927755,2e512b34db88ed39c52d00eed81ce5e2cfc134e8ce7e38761b2d9afe4b8dc17e
 graphic1.png,1750541927739,4f9ebcb3e5cee6bd416f6cd64305fb7b32f89a62190289c522e0fb7b17a77f7f
 Background (2).jpg,1750541927666,48ac255e04d9e26bca0ecdfb0f45c811dad88aa42d88989b7ce8923e74a46cec
-index.html,1750753362044,fa30d6d48d6085e86390f28079f4d4808792519b7b7218f638cc215855a7645c
-assets/purify.es-CQJ0hv7W.js,1750753362044,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
-assets/MaterialListPage-k8V9faLC.js,1750753362042,6c9de874aeb37527b8db7dd3389b9eb4ad12954e15b66ba4cf164e886f15a67d
-assets/index-FqfMdoVz.css,1750753362033,097de65a848feb77a87628eea9e884944797b44277246832c80675a941d1d673
-assets/Pagination-BblXdSGM.js,1750753362043,cdb0c6cd7c4395fe1aea1b2dfe4069597a2e638a1cfcf70429f1884c2e1c699b
-assets/index.es-B14Nhn-u.js,1750753362045,6571c23c7227372ae8a59b7a1fe31372385dbb90c4b5602aee275807f8438c7d
-assets/html2canvas.esm-CBrSDip1.js,1750753362044,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
-assets/LogPage-BkJtV85W.js,1750753362043,5c5f9e762fcb9ca3884d138289c39a480f216c070623df030993ff21e2ab2727
-assets/index-C3eL4ZaR.js,1750753362045,348a02ecc0978b4ee7c5fd6ff461d414aebde289aa4162df1ee864bf800b5e90
+index.html,1750903634593,c516fc8180124a7062300a23b5595203ce9846d61775086968a1756fc2e3a826
+assets/purify.es-CQJ0hv7W.js,1750903634593,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
+assets/MaterialListPage-C0YsAMse.js,1750903634585,73d1a7953bab2a4fc42a97e0cbaf944e69e2314f370e53de8f38fd0edb7bc3bb
+assets/index-CVC6vaVq.css,1750903634540,28e41be84b8daa1e9245d14c25e3636b5b4a1fef92dcc3f680913f6af71f052d
+images/renaissance-logo.jpg,1745847536964,1fcb9452a26521e5ba1d6548f217943907a0d68e0b8174b48c5b959d35332d30
+images/steve-logo.png,1750541927739,3bfb0bde2112da01a6053f8b3b35bf512eeeb488f58989a2cc4b67e1be58caa1
+assets/Pagination-BaAfbKCn.js,1750903634593,17a323077956cd4a8f010905a8bf862809b149aac4d8563c094932797ce9dd92
+assets/index.es-BSO68Fvu.js,1750903634593,9a82c9c5c06fbe1364486202274ea31e2ab0af673767ef4058f146a2f706f9ca
+assets/html2canvas.esm-CBrSDip1.js,1750903634593,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
+assets/index-M5oaK7vR.js,1750903634593,30564e6a9b620fb1b78acac3922ae0e73bff3cddae1f302f1434725501288492
+images/signature.png,1709225457779,a63d742f7cabdb7c8d47e400822fadf6c180305138b79c6620f4038d0abaee8a
+assets/LogPage-DE-Xof7X.js,1750903634645,1dfc1c46ef0306a4bd8348a7bf435f3e31f42a16d0a9992a39b13e9d97a73c12
 </file>
 
 <file path=".firebaserc">
@@ -581,32 +584,41 @@ const AddEditMaterialModal = ({ material, onClose }) => {
     setTimeout(() => descriptionInputRef.current?.focus(), 100);
   }, []); // Dependency array can now be empty.
 
-  const filteredCategories =
+  const filteredCategories = useMemo(() =>
     categoryQuery === ''
       ? categories
       : categories.filter((cat) =>
           cat.toLowerCase().includes(categoryQuery.toLowerCase()),
-        );
-  const filteredSuppliers =
+        ),
+  [categories, categoryQuery]);
+
+  const filteredSuppliers = useMemo(() =>
     supplierQuery === ''
       ? suppliers
       : suppliers.filter((sup) =>
           sup.toLowerCase().includes(supplierQuery.toLowerCase()),
-        );
-  const filteredMaterialGrades =
+        ),
+  [suppliers, supplierQuery]);
+
+  const filteredMaterialGrades = useMemo(() =>
     materialGradeQuery === ''
       ? materialGrades
       : materialGrades.filter((grade) =>
           grade.toLowerCase().includes(materialGradeQuery.toLowerCase()),
-        );
-  const filteredBoreSize1 =
+        ),
+  [materialGrades, materialGradeQuery]);
+
+  const filteredBoreSize1 = useMemo(() =>
     boreSize1Query === ''
       ? boreSize1Options
-      : boreSize1Options.filter((size) => size.includes(boreSize1Query));
-  const filteredBoreSize2 =
+      : boreSize1Options.filter((size) => size.includes(boreSize1Query)),
+  [boreSize1Options, boreSize1Query]);
+
+  const filteredBoreSize2 = useMemo(() =>
     boreSize2Query === ''
       ? boreSize2Options
-      : boreSize2Options.filter((size) => size.includes(boreSize2Query));
+      : boreSize2Options.filter((size) => size.includes(boreSize2Query)),
+  [boreSize2Options, boreSize2Query]);
 
   const handleQtyChange = (amount) => {
     setExpectedQty((prev) => Math.max(0, prev + amount));
@@ -1494,6 +1506,10 @@ const ImportCSV = () => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    // Reset the input value immediately to allow re-selection of the same file
+    if (event.target) {
+      event.target.value = null;
+    }
     if (!file) return;
 
     setIsImporting(true);
@@ -8319,6 +8335,21 @@ export const useTheme = () => useContext(ThemeContext);
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+
+const requiredEnvVars = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_STORAGE_BUCKET',
+  'VITE_FIREBASE_MESSAGING_SENDER_ID',
+  'VITE_FIREBASE_APP_ID',
+];
+
+for (const varName of requiredEnvVars) {
+  if (!import.meta.env[varName]) {
+    throw new Error(`Configuration Error: Missing required environment variable ${varName}`);
+  }
+}
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

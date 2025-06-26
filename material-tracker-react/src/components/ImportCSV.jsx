@@ -14,6 +14,10 @@ const ImportCSV = () => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    // Reset the input value immediately to allow re-selection of the same file
+    if (event.target) {
+      event.target.value = null;
+    }
     if (!file) return;
 
     setIsImporting(true);

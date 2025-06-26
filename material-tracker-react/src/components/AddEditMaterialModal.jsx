@@ -70,32 +70,41 @@ const AddEditMaterialModal = ({ material, onClose }) => {
     setTimeout(() => descriptionInputRef.current?.focus(), 100);
   }, []); // Dependency array can now be empty.
 
-  const filteredCategories =
+  const filteredCategories = useMemo(() =>
     categoryQuery === ''
       ? categories
       : categories.filter((cat) =>
           cat.toLowerCase().includes(categoryQuery.toLowerCase()),
-        );
-  const filteredSuppliers =
+        ),
+  [categories, categoryQuery]);
+
+  const filteredSuppliers = useMemo(() =>
     supplierQuery === ''
       ? suppliers
       : suppliers.filter((sup) =>
           sup.toLowerCase().includes(supplierQuery.toLowerCase()),
-        );
-  const filteredMaterialGrades =
+        ),
+  [suppliers, supplierQuery]);
+
+  const filteredMaterialGrades = useMemo(() =>
     materialGradeQuery === ''
       ? materialGrades
       : materialGrades.filter((grade) =>
           grade.toLowerCase().includes(materialGradeQuery.toLowerCase()),
-        );
-  const filteredBoreSize1 =
+        ),
+  [materialGrades, materialGradeQuery]);
+
+  const filteredBoreSize1 = useMemo(() =>
     boreSize1Query === ''
       ? boreSize1Options
-      : boreSize1Options.filter((size) => size.includes(boreSize1Query));
-  const filteredBoreSize2 =
+      : boreSize1Options.filter((size) => size.includes(boreSize1Query)),
+  [boreSize1Options, boreSize1Query]);
+
+  const filteredBoreSize2 = useMemo(() =>
     boreSize2Query === ''
       ? boreSize2Options
-      : boreSize2Options.filter((size) => size.includes(boreSize2Query));
+      : boreSize2Options.filter((size) => size.includes(boreSize2Query)),
+  [boreSize2Options, boreSize2Query]);
 
   const handleQtyChange = (amount) => {
     setExpectedQty((prev) => Math.max(0, prev + amount));
