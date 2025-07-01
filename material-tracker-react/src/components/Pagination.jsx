@@ -1,3 +1,5 @@
+// src/components/Pagination.jsx
+
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -8,8 +10,13 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
   return (
     <div className="flex items-center justify-between mt-4 px-6 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-      <p className="text-sm text-gray-700 dark:text-gray-300">
-        Page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
+      {/* MODIFIED: Added data-testid for robust testing */}
+      <p
+        className="text-sm text-gray-700 dark:text-gray-300"
+        data-testid="pagination-info"
+      >
+        Page <span className="font-medium">{currentPage}</span> of{' '}
+        <span className="font-medium">{totalPages}</span>
       </p>
       <div className="flex items-center space-x-2">
         <button

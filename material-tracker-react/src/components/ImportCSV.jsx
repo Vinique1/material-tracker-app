@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { db } from '../firebase';
 import { collection, doc, writeBatch, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import Papa from 'papaparse';
@@ -14,6 +14,10 @@ const ImportCSV = () => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    // Reset the input value immediately to allow re-selection of the same file
+    if (event.target) {
+      event.target.value = null;
+    }
     if (!file) return;
 
     setIsImporting(true);
@@ -23,7 +27,13 @@ const ImportCSV = () => {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        processAndUpload(results.data, toastId);
+        // ✅ ADD THIS LINE to filter out empty rows
+        const validData = results.data.filter(
+          (row) => row.Description && row.Description.trim() !== ''
+        );
+        
+        // Pass the CLEANED data to the upload function
+        processAndUpload(validData, toastId);
       },
       error: (error) => {
         toast.error(`Error parsing file: ${error.message}`, { id: toastId });
@@ -31,20 +41,19 @@ const ImportCSV = () => {
       },
     });
 
-    // Reset file input to allow re-uploading the same file
-    event.target.value = null;
+    // MODIFIED: This line is removed as it causes issues in the test environment.
+    // event.target.value = null;
   };
 
   const processAndUpload = async (data, toastId) => {
     toast.loading('Preparing data for upload...', { id: toastId });
 
-    if (data.length === 0) {
+    if (data.length === 0 || !data[0]) {
       toast.error('CSV file is empty or has no data rows.', { id: toastId });
       setIsImporting(false);
       return;
     }
 
-    // --- Validate Headers ---
     const requiredHeaders = ['Description', 'ExpectedQuantity', 'Category', 'Supplier', 'MaterialGrade', 'BoreSize1'];
     const fileHeaders = Object.keys(data[0]);
     const missingHeaders = requiredHeaders.filter(h => !fileHeaders.includes(h));
@@ -56,10 +65,8 @@ const ImportCSV = () => {
     }
 
     try {
-      const batch = writeBatch(db);
       const materialsCollectionRef = collection(db, `materials/${ADMIN_UID}/items`);
       const metadataRef = doc(db, 'app_metadata', 'lists');
-
       const newMetadata = {
         categories: new Set(),
         suppliers: new Set(),
@@ -69,47 +76,58 @@ const ImportCSV = () => {
       };
 
       data.forEach(row => {
-        // --- Prepare Material Document ---
-        const newMaterialRef = doc(materialsCollectionRef);
-        const materialData = {
-          description: row.Description || '',
-          expectedQty: Number(row.ExpectedQuantity) || 0,
-          category: row.Category || '',
-          supplier: row.Supplier || '',
-          materialGrade: row.MaterialGrade || '',
-          boreSize1: row.BoreSize1 || '',
-          boreSize2: row.BoreSize2 || null,
-          delivered: 0,
-          issued: 0,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        };
-        batch.set(newMaterialRef, materialData);
-
-        // --- Collect New Metadata ---
-        if (materialData.category) newMetadata.categories.add(materialData.category);
-        if (materialData.supplier) newMetadata.suppliers.add(materialData.supplier);
-        if (materialData.materialGrade) newMetadata.materialGrades.add(materialData.materialGrade);
-        if (materialData.boreSize1) newMetadata.boreSize1Options.add(materialData.boreSize1);
-        if (materialData.boreSize2) newMetadata.boreSize2Options.add(materialData.boreSize2);
+        if (row.Category) newMetadata.categories.add(row.Category);
+        if (row.Supplier) newMetadata.suppliers.add(row.Supplier);
+        if (row.MaterialGrade) newMetadata.materialGrades.add(row.MaterialGrade);
+        if (row.BoreSize1) newMetadata.boreSize1Options.add(row.BoreSize1);
+        if (row.BoreSize2) newMetadata.boreSize2Options.add(row.BoreSize2);
       });
-      
-      // --- Prepare Metadata Update ---
-      batch.update(metadataRef, {
+
+      const metadataBatch = writeBatch(db);
+      metadataBatch.update(metadataRef, {
         categories: arrayUnion(...Array.from(newMetadata.categories)),
         suppliers: arrayUnion(...Array.from(newMetadata.suppliers)),
         materialGrades: arrayUnion(...Array.from(newMetadata.materialGrades)),
         boreSize1Options: arrayUnion(...Array.from(newMetadata.boreSize1Options)),
         boreSize2Options: arrayUnion(...Array.from(newMetadata.boreSize2Options)),
       });
+      await metadataBatch.commit();
       
-      toast.loading(`Uploading ${data.length} materials...`, { id: toastId });
-      await batch.commit();
+      toast.loading('Metadata updated. Now uploading materials...', { id: toastId });
+
+      const BATCH_SIZE = 499;
+      const batchPromises = [];
+      for (let i = 0; i < data.length; i += BATCH_SIZE) {
+        const chunk = data.slice(i, i + BATCH_SIZE);
+        const batch = writeBatch(db);
+
+        chunk.forEach(row => {
+          const newMaterialRef = doc(materialsCollectionRef);
+          const materialData = {
+            description: row.Description || '',
+            expectedQty: Number(row.ExpectedQuantity) || 0,
+            category: row.Category || '',
+            supplier: row.Supplier || '',
+            materialGrade: row.MaterialGrade || '',
+            boreSize1: row.BoreSize1 || '',
+            boreSize2: row.BoreSize2 || null,
+            delivered: 0,
+            issued: 0,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          };
+          batch.set(newMaterialRef, materialData);
+        });
+        
+        batchPromises.push(batch.commit());
+      }
+
+      await Promise.all(batchPromises);
 
       toast.success(`Successfully imported ${data.length} materials!`, { id: toastId });
 
     } catch (error) {
-      console.error("Import failed: ", error);
+      console.error('Import failed: ', error);
       toast.error(`Import failed: ${error.message}`, { id: toastId });
     } finally {
       setIsImporting(false);
@@ -126,6 +144,7 @@ const ImportCSV = () => {
         className="hidden"
         accept=".csv"
         onChange={handleFileChange}
+        data-testid="csv-input"
       />
       <button
         onClick={() => fileInputRef.current.click()}

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useLayout } from "../context/LayoutContext";
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/authContext';
+import { useLayout } from '../context/LayoutContext';
 import {
   Box,
   Building,
@@ -14,56 +14,65 @@ import {
   MinusCircle,
   AlertCircle,
   Scale,
-} from "lucide-react";
-import clsx from "clsx";
+  X, // NEW: Import X icon for close button
+} from 'lucide-react';
+import clsx from 'clsx';
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }) => { // NEW: Accept onClose prop
   const { appMetadata } = useAuth();
   const { isSidebarCollapsed } = useLayout();
   const [dashboardOpen, setDashboardOpen] = useState(true);
   const [suppliersOpen, setSuppliersOpen] = useState(false);
 
   const linkClass =
-    "flex items-center p-3 rounded-lg text-black font-medium dark:text-gray-300 hover:bg-blue-700 hover:text-white  transition-colors w-full";
-  const activeLinkClass = "bg-blue-700 text-black dark:text-white";
-  const childLinkClass = `flex items-center py-2 px-3 text-sm rounded-md hover:text-[#2b7fff] dark:hover:text-white transition-colors ${
-    isSidebarCollapsed ? "justify-center" : "ml-6"
+    'flex items-center p-3 rounded-lg text-gray-300 hover:bg-blue-700 hover:text-white transition-colors w-full';
+  const activeLinkClass = 'bg-blue-700 text-white';
+  // MODIFIED: Adjusted childLinkClass to ensure proper spacing on mobile
+  const childLinkClass = `flex items-center py-2 px-3 text-sm rounded-md hover:text-white transition-colors ${
+    isSidebarCollapsed ? 'justify-center' : 'ml-4' // Adjusted ml-6 to ml-4 for tighter mobile spacing
   }`;
 
   return (
     <div
       className={clsx(
-        "flex flex-col bg-white dark:bg-gray-800 text-white h-full overflow-x-hidden",
-        isSidebarCollapsed ? "w-20" : "w-64"
+        'flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out', // MODIFIED: Removed overflow-x-hidden from here, added overflow-y-auto
+        // Width is handled by MainLayout's fixed/absolute positioning on mobile and grid on desktop
+        "w-full" // Sidebar now takes full width of its parent on mobile
       )}
     >
-      {/* MODIFIED: Header logic simplified to guarantee logo visibility and centering */}
+      {/* MODIFIED: Header with close button for mobile */}
       <div
         className={clsx(
-          "flex items-center h-20 border-b border-gray-700 flex-shrink-0",
-          isSidebarCollapsed ? "justify-center" : "px-4 justify-start"
+          'flex items-center h-20 border-b border-gray-700 flex-shrink-0',
+          isSidebarCollapsed ? 'justify-center' : 'px-4 justify-between',
         )}
       >
-        <img
-          src="/Steve Logo.png"
-          alt="Logo"
-          className="h-10 w-10 flex-shrink-0"
-        />
-        {!isSidebarCollapsed && (
-          <span className="ml-2 font-bold text-xl whitespace-nowrap text-[#2b7fff] dark:text-white">
-            Steve Integrated
-          </span>
-        )}
+        <div className="flex items-center">
+          <img
+            src="/Steve Logo.png"
+            alt="Logo"
+            className="h-10 w-10 flex-shrink-0"
+          />
+          {!isSidebarCollapsed && (
+            <span className="ml-2 font-bold text-xl whitespace-nowrap">
+              Steve Integrated
+            </span>
+          )}
+        </div>
+        {/* Close button for mobile */}
+        <button onClick={onClose} className="lg:hidden text-gray-400 hover:text-white p-2 rounded-full">
+          <X size={24} />
+        </button>
       </div>
 
-      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+      <nav className={clsx('flex-1 px-4 py-4 space-y-1 overflow-y-auto', isSidebarCollapsed ? 'sm:border-r sm:border-r-gray-700' : '')}> {/* MODIFIED: Applied border-r only on sm and up when collapsed */}
         <div>
           <button
             onClick={() =>
               !isSidebarCollapsed && setDashboardOpen(!dashboardOpen)
             }
             className={`${linkClass} ${
-              isSidebarCollapsed ? "justify-center" : "justify-between"
+              isSidebarCollapsed ? 'justify-center' : 'justify-between'
             }`}
             title="Dashboard"
           >
@@ -80,29 +89,31 @@ const Sidebar = () => {
           </button>
         </div>
         {!isSidebarCollapsed && dashboardOpen && (
-          <div className="space-y-1 pl-6">
+          <div className="space-y-1 pl-4"> {/* Adjusted pl-6 to pl-4 for consistency */}
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `${childLinkClass} ml-0 ${
-                  isActive ? "text-black dark:text-white" : "text-gray-400"
+                `${childLinkClass} ${
+                  isActive ? 'text-white' : 'text-gray-400'
                 }`
               }
               end
               title="All Materials"
+              onClick={onClose} // Close sidebar on mobile when navigating
             >
               All Materials
-            </NavLink>
+            </NavLink>{' '}
             {appMetadata.categories?.sort().map((cat) => (
               <NavLink
                 key={cat}
                 to={`/category/${encodeURIComponent(cat)}`}
                 title={cat}
                 className={({ isActive }) =>
-                  `${childLinkClass} ml-0 ${
-                    isActive ? "text-black dark:text-white" : "text-gray-400"
+                  `${childLinkClass} ${
+                    isActive ? 'text-white' : 'text-gray-400'
                   }`
                 }
+                onClick={onClose} // Close sidebar on mobile when navigating
               >
                 <Box size={16} className="mr-3 flex-shrink-0" />
                 <span className="truncate">{cat}</span>
@@ -117,7 +128,7 @@ const Sidebar = () => {
               !isSidebarCollapsed && setSuppliersOpen(!suppliersOpen)
             }
             className={`${linkClass} ${
-              isSidebarCollapsed ? "justify-center" : "justify-between"
+              isSidebarCollapsed ? 'justify-center' : 'justify-between'
             }`}
             title="Suppliers"
           >
@@ -134,17 +145,18 @@ const Sidebar = () => {
           </button>
         </div>
         {!isSidebarCollapsed && suppliersOpen && (
-          <div className="space-y-1 pl-6">
+          <div className="space-y-1 pl-4"> {/* Adjusted pl-6 to pl-4 for consistency */}
             {appMetadata.suppliers?.sort().map((sup) => (
               <NavLink
                 key={sup}
                 to={`/supplier/${encodeURIComponent(sup)}`}
                 title={sup}
                 className={({ isActive }) =>
-                  `${childLinkClass} ml-0 ${
-                    isActive ? "text-white" : "text-gray-400"
+                  `${childLinkClass} ${
+                    isActive ? 'text-white' : 'text-gray-400'
                   }`
                 }
+                onClick={onClose} // Close sidebar on mobile when navigating
               >
                 <span className="truncate">{sup}</span>
               </NavLink>
@@ -157,10 +169,11 @@ const Sidebar = () => {
             to="/delivery-log"
             title="Delivery Log"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <Download size={20} className="flex-shrink-0" />
             {!isSidebarCollapsed && <span className="ml-4">Delivery Log</span>}
@@ -169,10 +182,11 @@ const Sidebar = () => {
             to="/issuance-log"
             title="Issuance Log"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <Upload size={20} className="flex-shrink-0" />
             {!isSidebarCollapsed && <span className="ml-4">Issuance Log</span>}
@@ -184,10 +198,11 @@ const Sidebar = () => {
             to="/balanced-materials"
             title="Balanced Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <Scale size={20} className="flex-shrink-0" />
             {!isSidebarCollapsed && (
@@ -198,10 +213,11 @@ const Sidebar = () => {
             to="/status/surplus"
             title="Surplus Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <CheckCircle size={20} className="flex-shrink-0 text-green-400" />
             {!isSidebarCollapsed && (
@@ -212,10 +228,11 @@ const Sidebar = () => {
             to="/status/deficit"
             title="Deficit Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <AlertCircle size={20} className="flex-shrink-0 text-red-400" />
             {!isSidebarCollapsed && (
@@ -226,10 +243,11 @@ const Sidebar = () => {
             to="/status/exact"
             title="Exact Materials"
             className={({ isActive }) =>
-              `${linkClass} ${isActive ? activeLinkClass : ""} ${
-                isSidebarCollapsed ? "justify-center" : ""
+              `${linkClass} ${isActive ? activeLinkClass : ''} ${
+                isSidebarCollapsed ? 'justify-center' : ''
               }`
             }
+            onClick={onClose} // Close sidebar on mobile when navigating
           >
             <MinusCircle size={20} className="flex-shrink-0 text-yellow-400" />
             {!isSidebarCollapsed && (

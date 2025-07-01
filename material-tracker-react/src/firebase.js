@@ -2,13 +2,28 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
+const requiredEnvVars = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_STORAGE_BUCKET',
+  'VITE_FIREBASE_MESSAGING_SENDER_ID',
+  'VITE_FIREBASE_APP_ID',
+];
+
+for (const varName of requiredEnvVars) {
+  if (!import.meta.env[varName]) {
+    throw new Error(`Configuration Error: Missing required environment variable ${varName}`);
+  }
+}
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBMA6HduuXEM-OF953tDiaXG3a8zYXnlEk",
-  authDomain: "inventory-tracker-e5b38.firebaseapp.com",
-  projectId: "inventory-tracker-e5b38",
-  storageBucket: "inventory-tracker-e5b38.appspot.com",
-  messagingSenderId: "486657758459",
-  appId: "1:486657758459:web:ba935a81c82aa5c8394c5e"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);

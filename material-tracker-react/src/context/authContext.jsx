@@ -1,30 +1,31 @@
+// src/context/authContext.jsx
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
-const AuthContext = createContext();
+const authContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(authContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  // MODIFIED: Added new empty arrays to the initial state for the new fields.
-  const [appMetadata, setAppMetadata] = useState({ 
-    categories: [], 
-    suppliers: [], 
+  const [appMetadata, setAppMetadata] = useState({
+    categories: [],
+    suppliers: [],
     materialGrades: [],
     boreSize1Options: [],
-    boreSize2Options: []
+    boreSize2Options: [],
   });
-  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [metadataLoaded, setMetadataLoaded] = useState(false); // New state for metadata status
 
-  const ADMIN_UID = "V8zL2oH8b1ZSmG1tdp11gmdtylM2";
-  const VIEWER_UID = "Z35t7DqNx5OJktX39895BK2MS773";
+  const ADMIN_UID = 'liClr3tmuecp40P96GCXoHmzc6x1';
+  const VIEWER_UID = 'DY1kwGWNwET1VauTFlNN0xxtH9O2';
   const authorizedUIDs = [ADMIN_UID, VIEWER_UID];
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, user => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user && authorizedUIDs.includes(user.uid)) {
         const isViewer = user.uid === VIEWER_UID;
         setCurrentUser({ ...user, isViewer, isAdmin: !isViewer });
@@ -32,18 +33,30 @@ export const AuthProvider = ({ children }) => {
         if (user) signOut(auth);
         setCurrentUser(null);
       }
-      setLoading(false);
+      setAuthLoading(false);
     });
 
     const metadataRef = doc(db, 'app_metadata', 'lists');
-    const unsubscribeMetadata = onSnapshot(metadataRef, (docSnap) => {
-      if (docSnap.exists()) {
-        // MODIFIED: The entire metadata document is now fetched and set.
-        setAppMetadata(docSnap.data());
-      } else {
-        console.log("Metadata document does not exist! Please create it in Firestore.");
-      }
-    });
+    const unsubscribeMetadata = onSnapshot(
+      metadataRef,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setAppMetadata(docSnap.data());
+        } else {
+          console.log(
+            'Metadata document does not exist! Please create it in Firestore.',
+          );
+        }
+        setMetadataLoaded(true); // Mark metadata as loaded
+      },
+      (error) => {
+        console.error(
+          'AuthContext: Error fetching metadata! Check Firestore Rules.',
+          error,
+        );
+        setMetadataLoaded(true); // Mark as loaded even on error to prevent infinite loading
+      },
+    );
 
     return () => {
       unsubscribeAuth();
@@ -57,9 +70,12 @@ export const AuthProvider = ({ children }) => {
     appMetadata,
   };
 
+  // The application is considered loading until both auth and metadata are ready
+  const isLoading = authLoading || !metadataLoaded;
+
   return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
+    <authContext.Provider value={value}>
+      {!isLoading && children}
+    </authContext.Provider>
   );
 };

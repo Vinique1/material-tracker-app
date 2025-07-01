@@ -1,31 +1,64 @@
-import React from "react";
-import { useAuth } from "../context/AuthContext";
-import { useLayout } from "../context/LayoutContext";
-import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
-import { LogOut, Sun, Moon } from "lucide-react";
+import React from 'react';
+import { useAuth } from '../context/authContext';
+import { useTheme } from '../context/ThemeContext';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
+import { LogOut, Sun, Moon, Monitor } from 'lucide-react'; // Import all necessary icons
 
 const Header = () => {
   const { currentUser } = useAuth();
-  const { theme, toggleTheme } = useLayout();
+  const { theme, toggleTheme } = useTheme();
 
   const handleSignOut = () => signOut(auth);
 
-  console.log(theme);
+  // Determine which icon to show based on the current theme
+  const getNextThemeAndIcon = () => {
+    if (theme === 'light') {
+      return {
+        nextTheme: 'dark',
+        icon: <Moon size={20} />,
+        title: 'Switch to Dark Mode',
+      };
+    }
+    if (theme === 'dark') {
+      return {
+        nextTheme: 'system',
+        icon: <Monitor size={20} />,
+        title: 'Switch to System Preference',
+      };
+    }
+    // If theme is 'system' or anything else, default to light
+    return {
+      nextTheme: 'light',
+      icon: <Sun size={20} />,
+      title: 'Switch to Light Mode',
+    };
+  };
+
+  const {
+    nextTheme,
+    icon: currentIcon,
+    title: iconTitle,
+  } = getNextThemeAndIcon();
+
+  const handleThemeToggleClick = () => {
+    toggleTheme(nextTheme);
+  };
+
   return (
     <header className="bg-white dark:bg-gray-800 shadow-md h-20 flex items-center justify-between px-6 flex-shrink-0">
-      <h1 className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200">
+      <h1 className="text-sm md:text-xl font-bold text-gray-800 dark:text-gray-200"> {/* MODIFIED: Reduced font size for mobile */}
         GBARAN GBCD MATERIAL PROCUREMENT TRACKER
       </h1>
       <div className="flex items-center space-x-4">
         <button
-          onClick={toggleTheme}
+          onClick={handleThemeToggleClick}
           className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-          title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          title={iconTitle}
         >
-          {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+          {currentIcon}
         </button>
-        <div className="text-right hidden sm:block">
+        <div className="text-right hidden sm:block"> {/* MODIFIED: Hide email on extra small screens */}
           <p
             className="text-sm font-medium text-gray-800 dark:text-gray-200"
             title={currentUser?.email}
