@@ -35,7 +35,7 @@ const Sidebar = ({ onClose }) => { // NEW: Accept onClose prop
   return (
     <div
       className={clsx(
-        'flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out overflow-y-auto', // MODIFIED: Removed overflow-x-hidden from here, added overflow-y-auto
+        'flex flex-col bg-gray-800 dark:bg-gray-900 text-white h-full transition-all duration-300 ease-in-out', // MODIFIED: Removed overflow-x-hidden from here, added overflow-y-auto
         // Width is handled by MainLayout's fixed/absolute positioning on mobile and grid on desktop
         "w-full" // Sidebar now takes full width of its parent on mobile
       )}
@@ -65,7 +65,7 @@ const Sidebar = ({ onClose }) => { // NEW: Accept onClose prop
         </button>
       </div>
 
-      <nav className={clsx('flex-1 px-4 py-4 space-y-1', isSidebarCollapsed ? 'sm:border-r sm:border-r-gray-700' : '')}> {/* MODIFIED: Applied border-r only on sm and up when collapsed */}
+      <nav className={clsx('flex-1 px-4 py-4 space-y-1 overflow-y-auto', isSidebarCollapsed ? 'sm:border-r sm:border-r-gray-700' : '')}> {/* MODIFIED: Applied border-r only on sm and up when collapsed */}
         <div>
           <button
             onClick={() =>

@@ -42,7 +42,7 @@ const ImportCSV = () => {
   const processAndUpload = async (data, toastId) => {
     toast.loading('Preparing data for upload...', { id: toastId });
 
-    if (data.length === 0) {
+    if (data.length === 0 || !data[0]) {
       toast.error('CSV file is empty or has no data rows.', { id: toastId });
       setIsImporting(false);
       return;

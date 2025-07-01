@@ -24,7 +24,7 @@ const LogTable = ({
     if (currentUser.isViewer) return;
     // MODIFIED: Replaced window.confirm with a custom modal/toast if needed.
     if (
-      window.confirm(
+      !window.confirm(
         'Are you sure you want to delete this log? This action is permanent and will update the inventory count.',
       )
     )

@@ -32,7 +32,7 @@ const MainLayout = () => {
       {/* Sidebar - Mobile: Fixed and full-height overlay, Desktop: Part of grid */}
       <aside
         className={clsx(
-          "fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:min-h-0",
           isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
           isSidebarCollapsed ? "lg:w-15" : "lg:w-64", // Collapsed width on desktop
           "bg-gray-800 dark:bg-gray-900 text-white flex-shrink-0 w-64 md:w-72" // Default width for mobile when open
