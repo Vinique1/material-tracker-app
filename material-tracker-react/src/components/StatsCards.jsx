@@ -40,19 +40,19 @@ const StatsCards = ({ stats }) => (
   // MODIFIED: Changed grid to be `sm:grid-cols-2` for 2 columns on small screens, then `lg:grid-cols-3` for 3 on large.
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     <StatCard
-      title="Total Materials"
+      title="Total Line Items"
       value={stats?.totalMaterials || 0}
       icon={<Package />}
       color="blue"
     />
     <StatCard
-      title="Total Delivered"
+      title="Total Qty Delivered"
       value={stats?.totalDelivered || 0}
       icon={<Truck />}
       color="green"
     />
     <StatCard
-      title="Total Issued"
+      title="Total Qty Issued"
       value={stats?.totalIssued || 0}
       icon={<Send />}
       color="yellow"

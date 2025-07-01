@@ -27,7 +27,13 @@ const ImportCSV = () => {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        processAndUpload(results.data, toastId);
+        // ✅ ADD THIS LINE to filter out empty rows
+        const validData = results.data.filter(
+          (row) => row.Description && row.Description.trim() !== ''
+        );
+        
+        // Pass the CLEANED data to the upload function
+        processAndUpload(validData, toastId);
       },
       error: (error) => {
         toast.error(`Error parsing file: ${error.message}`, { id: toastId });

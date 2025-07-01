@@ -116,23 +116,23 @@ Background (2).jpg,1750541927666,48ac255e04d9e26bca0ecdfb0f45c811dad88aa42d88989
 images/steve-logo.png,1750541927739,3bfb0bde2112da01a6053f8b3b35bf512eeeb488f58989a2cc4b67e1be58caa1
 images/signature.png,1709225457779,a63d742f7cabdb7c8d47e400822fadf6c180305138b79c6620f4038d0abaee8a
 images/renaissance-logo.jpg,1745847536964,1fcb9452a26521e5ba1d6548f217943907a0d68e0b8174b48c5b959d35332d30
-index.html,1750909107280,1707c81d71ff51549609b21fec98676c519ca52c8c7d6bec9e7b82b040f8816a
-assets/purify.es-CQJ0hv7W.js,1750909107280,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
-assets/papaparse.min-Bxou8dZH.js,1750909107263,e172ef51724d988920696a45bb7540df95ef3ab37e800d58775bcd37dd292bfb
-assets/Pagination-BAAYCQF4.js,1750909107263,6f398b6801b38081dd57beb498d1ac2b93f613b01ddbd4cf96fdf528d3a7fdde
-assets/MaterialListPage-DHmN-8HD.js,1750909107263,d2ac4ea622cc55f679631ba0f47f7d75df411085a74c5e555b1300d16b670f9e
-assets/LogPage-q0qC7Qlj.js,1750909107263,3abeb99be35e5b0048abf9417bedccf1303cff08a19bd26c48c01e81052c6519
-assets/jspdf.plugin.autotable-bUJAAMeG.js,1750909107278,802666951107e4c57b43db5dee80c379285edde0d92c15a10f055abce094bb40
-assets/index-B2-tXSem.css,1750909107242,52271b3468878b3c67b0aa69ed61bdf1799e9a1d35613b3d19e3c8cf1c663903
-assets/FileSaver.min-Bz0rJpIc.js,1750909107280,5b64f622fd29e7227a12df36c49c5340dfb3c9372cce1fc7dfaca0c2959d0b2f
-assets/exportToMir-DAF3Y44M.js,1750909107278,cba3feb3f6fa20799027caa8b2ca109228272e8f2cf9d91cb277443f556aef0c
-assets/headlessui-B13suh19.js,1750909107263,f59f2350eb76dd1eec04212cf35dc0334f1007ba4cbcfd99d8fb05a09f00e6d2
-assets/index.es-DFbd-IY_.js,1750909107280,b51ee2dde7b6e3f638c30034a90bde87943a4d0a5de5bc9695089c0214d5276c
-assets/index-B9PoEMFb.js,1750909107263,664c185a972ff26decdcbca583dc9a8ab6caddf1820a1b0ec8f431a63675d54b
-assets/html2canvas.esm-CBrSDip1.js,1750909107278,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
-assets/jspdf.es.min-BY73_4j_.js,1750909107278,c9c53d35d302016ff280b70c7a88247a2803703743c43d507b3219791320bc1a
-assets/firebase-yD2yAmNH.js,1750909107263,9bec1a2f1a356fa875fb92c6f2a2df8655bc0ec6d82fd9660ec82f0c569d6e5a
-assets/exceljs.min-C8ZvCitb.js,1750909107285,bc7977e08eb22e287c52f428840aaeefb3d14d03b1930327d4619f38ba6f5e73
+index.html,1751354264184,4756dc4ef0916fcb38eed77044bb0bcdfdf19fc38f4c967ff32f2bfd918ee87b
+assets/purify.es-CQJ0hv7W.js,1751354264184,95e0bb0121184e7d1da8e29461304d9e2df7093d781ad74995952aa4b775b603
+assets/papaparse.min-Bxou8dZH.js,1751354264182,e172ef51724d988920696a45bb7540df95ef3ab37e800d58775bcd37dd292bfb
+assets/MaterialListPage-gPgDrUX5.js,1751354264181,3b69038c6a8cd88eebfca31a8e7de4f7f28a62bdc7da6145020bd056b72676cb
+assets/Pagination-BLJ7Whvj.js,1751354264181,a5e72e47d3f23aee84ee8c1d20540175738b2f627f6e4186708d19b5dd18caa6
+assets/LogPage-CjNNMF9H.js,1751354264181,d88b66f07fab094adf745ddf676f6cca484c54ef0a2628e039c5088d50035dc4
+assets/index-D5iZK2Jd.css,1751354264147,4e1f0ba9bf5e09a35f2dbe43efee077597c77a5292b3cf3670833c73daab27d2
+assets/jspdf.plugin.autotable-bUJAAMeG.js,1751354264183,802666951107e4c57b43db5dee80c379285edde0d92c15a10f055abce094bb40
+assets/FileSaver.min-Bz0rJpIc.js,1751354264185,5b64f622fd29e7227a12df36c49c5340dfb3c9372cce1fc7dfaca0c2959d0b2f
+assets/exportToMir-CS3ELbmR.js,1751354264183,2478b5463d18757886b8e57ab9a5a908b944bf6c8f772497fc5f9a22ed7ba688
+assets/headlessui-B13suh19.js,1751354264180,f59f2350eb76dd1eec04212cf35dc0334f1007ba4cbcfd99d8fb05a09f00e6d2
+assets/index.es-C6dAMvDF.js,1751354264184,7a638d8f800fcaf89cdb2f3994cd1210ee59daef5365d379341b4747679782f1
+assets/html2canvas.esm-CBrSDip1.js,1751354264184,ded7ecd5734581383939d1afccae5caec1522d744916c1a8238850e3728709cb
+assets/index-D87vDPS_.js,1751354264180,3014cbb271d34968efc054e78f46a322339076b3b09607429ba992d86d59206f
+assets/jspdf.es.min-DPo4BuRp.js,1751354264183,9760b194d66e9ac12d092b0305ee3a967a4325efa0d5b3b3a03ae3e732f7b237
+assets/firebase-yD2yAmNH.js,1751354264181,9bec1a2f1a356fa875fb92c6f2a2df8655bc0ec6d82fd9660ec82f0c569d6e5a
+assets/exceljs.min-C8ZvCitb.js,1751354264904,bc7977e08eb22e287c52f428840aaeefb3d14d03b1930327d4619f38ba6f5e73
 </file>
 
 <file path=".firebaserc">
@@ -1529,7 +1529,13 @@ const ImportCSV = () => {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        processAndUpload(results.data, toastId);
+        // ✅ ADD THIS LINE to filter out empty rows
+        const validData = results.data.filter(
+          (row) => row.Description && row.Description.trim() !== ''
+        );
+        
+        // Pass the CLEANED data to the upload function
+        processAndUpload(validData, toastId);
       },
       error: (error) => {
         toast.error(`Error parsing file: ${error.message}`, { id: toastId });
@@ -3765,19 +3771,19 @@ const StatsCards = ({ stats }) => (
   // MODIFIED: Changed grid to be `sm:grid-cols-2` for 2 columns on small screens, then `lg:grid-cols-3` for 3 on large.
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     <StatCard
-      title="Total Materials"
+      title="Total Line Items"
       value={stats?.totalMaterials || 0}
       icon={<Package />}
       color="blue"
     />
     <StatCard
-      title="Total Delivered"
+      title="Total Qty Delivered"
       value={stats?.totalDelivered || 0}
       icon={<Truck />}
       color="green"
     />
     <StatCard
-      title="Total Issued"
+      title="Total Qty Issued"
       value={stats?.totalIssued || 0}
       icon={<Send />}
       color="yellow"
